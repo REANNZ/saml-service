@@ -134,21 +134,24 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
       {
         id: i,
         description: Faker::Lorem.sentence,
-        oid: "#{Faker::Number.number(4)}:#{Faker::Number.number(4)}",
+        oid: "#{Faker::Number.number(digits: 4)}:"\
+             "#{Faker::Number.number(digits: 4)}",
         values: []
       }
     end.push(
       id: attribute_count,
       description: Faker::Lorem.sentence,
-      oid: "#{Faker::Number.number(4)}:#{Faker::Number.number(4)}",
+      oid: "#{Faker::Number.number(digits: 4)}:"\
+           "#{Faker::Number.number(digits: 4)}",
       values: [],
       specification: true
     ).push(
       id: attribute_count + 1,
       description: Faker::Lorem.sentence,
-      oid: "#{Faker::Number.number(4)}:#{Faker::Number.number(4)}",
-      values: [{ approved: true, value: Faker::Number.number(4) },
-               { approved: false, value: Faker::Number.number(3) }],
+      oid: "#{Faker::Number.number(digits: 4)}:"\
+           "#{Faker::Number.number(digits: 4)}",
+      values: [{ approved: true, value: Faker::Number.number(digits: 4) },
+               { approved: false, value: Faker::Number.number(digits: 3) }],
       specification: true
     )
   end

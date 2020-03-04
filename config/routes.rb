@@ -3,8 +3,8 @@
 require 'api_constraints'
 
 Rails.application.routes.draw do
-  SHA1_REGEXP = /{sha1}(.*)?/
-  URN_REGEXP = /(http|https|urn)(.*)?/
+  SHA1_REGEXP = /{sha1}(.*)?/.freeze
+  URN_REGEXP = /(http|https|urn)(.*)?/.freeze
 
   scope '/mdq' do
     match '/:instance/entities',
@@ -26,6 +26,10 @@ Rails.application.routes.draw do
           to: 'metadata_query#specific_entity',
           constraints: { identifier: /.*/ }, via: :all
   end
+
+  match '/health',
+        to: 'application#health',
+        via: :all
 
   namespace :api, defaults: { format: 'json' } do
     scope constraints: APIConstraints.new(version: 1, default: true) do

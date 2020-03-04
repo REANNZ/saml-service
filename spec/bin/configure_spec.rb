@@ -228,7 +228,7 @@ RSpec.describe ConfigureCLI do
   end
 
   describe '#raw_entity_source' do
-    let(:rank) { Faker::Number.number(2).to_i }
+    let(:rank) { Faker::Number.number(digits: 2).to_i }
     let(:url) { Faker::Internet.url }
     let(:cert_path) { Rails.root.join('spec', 'tmp', 'res_cert.pem') }
     let(:rsa_key) { create(:rsa_key) }

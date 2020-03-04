@@ -6,10 +6,10 @@ FactoryBot.define do
     description { Faker::Lorem.sentence }
     contact_name { Faker::Name.name }
     contact_mail { Faker::Internet.email }
-    enabled true
+    enabled { true }
 
     trait :authorized do
-      transient { permission '*' }
+      transient { permission { '*' } }
 
       after(:create) do |api_subject, attrs|
         role = create :role

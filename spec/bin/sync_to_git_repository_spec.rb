@@ -28,6 +28,8 @@ RSpec.describe SyncToGitRepository do
                                    .and_return(remote_name)
       allow(config).to receive(:[]).with("branch.#{branch_name}.merge")
                                    .and_return(remote_branch)
+      allow(YAML).to receive(:load_file).with(sync_config_path)
+                                        .and_return(sync_config)
     end
 
     let(:written_blobs) { {} }
@@ -54,6 +56,15 @@ RSpec.describe SyncToGitRepository do
     let(:head_tree) { double(Rugged::Tree) }
     let(:new_tree) { double(Rugged::Tree) }
     let(:config) { double(Rugged::Config) }
+    let(:sync_config_path) { Faker::Lorem.words.unshift('').join('/') }
+
+    let(:sync_config) do
+      {
+        'git_author_name' => 'SAML Service',
+        'git_author_email' => 'noreply@aaf.edu.au',
+        'raw_entity_descriptor_root_node' => true
+      }
+    end
 
     let(:head) do
       double(Rugged::Reference, target: head_commit,
@@ -71,7 +82,9 @@ RSpec.describe SyncToGitRepository do
              config: config, branches: [branch])
     end
 
-    subject { described_class.new([md_instance.identifier, path]) }
+    subject do
+      described_class.new([sync_config_path, md_instance.identifier, path])
+    end
 
     def run
       subject.perform
@@ -107,7 +120,8 @@ RSpec.describe SyncToGitRepository do
         run
 
         expect(repo).to have_received(:push)
-          .with(remote_name, "#{canonical_branch_name}:#{remote_branch}")
+          .with(remote_name, "#{canonical_branch_name}:#{remote_branch}",
+                any_args)
       end
     end
 
@@ -142,7 +156,8 @@ RSpec.describe SyncToGitRepository do
         run
 
         expect(repo).to have_received(:push)
-          .with(remote_name, "#{canonical_branch_name}:#{remote_branch}")
+          .with(remote_name, "#{canonical_branch_name}:#{remote_branch}",
+                any_args)
       end
     end
 

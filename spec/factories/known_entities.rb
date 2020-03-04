@@ -7,7 +7,7 @@ FactoryBot.define do
     end
 
     association :entity_source
-    enabled true
+    enabled { true }
 
     trait :with_idp do
       after(:create) do |ke|

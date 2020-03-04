@@ -6,14 +6,14 @@ FactoryBot.define do
 
     name { Faker::Internet.domain_name }
 
-    hash_algorithm 'sha256'
+    hash_algorithm { 'sha256' }
     validity_period { 1.hour }
     cache_period { 6.hours }
     federation_identifier { Faker::Lorem.word }
 
     primary_tag { SecureRandom.urlsafe_base64(16) }
     identifier { SecureRandom.urlsafe_base64(16) }
-    all_entities true
+    all_entities { true }
 
     after :create do |mi|
       create(:mdrpi_publication_info, metadata_instance: mi)

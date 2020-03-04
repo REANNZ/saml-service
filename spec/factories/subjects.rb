@@ -4,8 +4,8 @@ FactoryBot.define do
   factory :subject do
     name { Faker::Name.name }
     mail { Faker::Internet.email }
-    enabled true
-    complete true
+    enabled { true }
+    complete { true }
 
     shared_token { SecureRandom.urlsafe_base64(16) }
     targeted_id do
@@ -13,7 +13,7 @@ FactoryBot.define do
     end
 
     trait :authorized do
-      transient { permission '*' }
+      transient { permission { '*' } }
 
       after(:create) do |subject, attrs|
         role = create :role

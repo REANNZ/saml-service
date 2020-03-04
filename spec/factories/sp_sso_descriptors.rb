@@ -3,8 +3,8 @@
 FactoryBot.define do
   factory :sp_sso_descriptor, parent: :sso_descriptor,
                               class: 'SPSSODescriptor' do
-    authn_requests_signed false
-    want_assertions_signed false
+    authn_requests_signed { false }
+    want_assertions_signed { false }
 
     after(:create) do |sp|
       sp.add_assertion_consumer_service(create(:assertion_consumer_service,
@@ -49,11 +49,11 @@ FactoryBot.define do
     end
 
     trait :with_authn_requests_signed do
-      authn_requests_signed true
+      authn_requests_signed { true }
     end
 
     trait :with_want_assertions_signed do
-      want_assertions_signed true
+      want_assertions_signed { true }
     end
 
     trait :with_multiple_assertion_consumer_services do

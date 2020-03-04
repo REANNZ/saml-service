@@ -22,3 +22,8 @@ config/unicorn.dev.rb
 
 # these should all be checked in to normalise the environment:
 # Gemfile.lock, .ruby-version, .ruby-gemset
+
+.idea
+saml-service.iml
+
+.rubocop-https---raw-githubusercontent-com-ausaccessfed-aaf-gumboot-develop-aaf-rubocop-yml

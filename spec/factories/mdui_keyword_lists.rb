@@ -12,7 +12,7 @@ FactoryBot.define do
 end
 
 def generate_keyword_list
-  keyword_list = Faker::Lorem.words(6)
-  encoded_keyword = Faker::Lorem.words(4).join('+')
+  keyword_list = Faker::Lorem.words(number: 6)
+  encoded_keyword = Faker::Lorem.words(number: 4).join('+')
   keyword_list.push(encoded_keyword).join(' ')
 end

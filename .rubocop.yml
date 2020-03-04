@@ -1,32 +1,33 @@
----
-inherit_gem:
-  aaf-gumboot: aaf-rubocop.yml
+require: rubocop-rails
+
+inherit_from:
+  - https://raw.githubusercontent.com/ausaccessfed/aaf-gumboot/develop/aaf-rubocop.yml
 
 AllCops:
   Exclude:
     - db/**/*
 
-AbcSize:
+Metrics/AbcSize:
   Exclude:
     - lib/metadata/**/*
 
-ClassLength:
+Metrics/ClassLength:
   Exclude:
     - lib/metadata/saml.rb
 
-MethodLength:
+Metrics/MethodLength:
   Exclude:
     - lib/metadata/saml.rb
 
-CyclomaticComplexity:
+Metrics/CyclomaticComplexity:
   Exclude:
     - lib/metadata/saml.rb
 
-PerceivedComplexity:
+Metrics/PerceivedComplexity:
   Exclude:
     - lib/metadata/saml.rb
 
-BlockLength:
+Metrics/BlockLength:
   Exclude:
     - lib/metadata/saml.rb
     - spec/**/*.rb
@@ -61,5 +62,5 @@ Lint/UriEscapeUnescape:
   Exclude:
     - spec/routes/metadata_query_controller_spec.rb
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false

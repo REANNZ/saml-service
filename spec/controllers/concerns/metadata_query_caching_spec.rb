@@ -7,7 +7,7 @@ RSpec.describe MetadataQueryCaching do
   subject { klass.new }
 
   def mocked_entity
-    time = Faker::Time.between(1.year.ago, 1.week.ago)
+    time = Faker::Time.between(from: 1.year.ago, to: 1.week.ago)
     double(KnownEntity, id: rand(1..1000), updated_at: time)
   end
 

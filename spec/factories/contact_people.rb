@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :contact_person do
-    contact_type :technical
+    contact_type { :technical }
     association :contact
 
     trait :without_company do

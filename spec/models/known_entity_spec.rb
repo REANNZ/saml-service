@@ -203,9 +203,11 @@ RSpec.describe KnownEntity do
   describe '#update_derived_tags' do
     before { DerivedTag.all.each(&:destroy) }
 
-    let(:tags) { Faker::Lorem.words(10).uniq }
+    let(:tags) { Faker::Lorem.words(number: 10).uniq }
     let(:derived_tag_name) { Faker::Lorem.words.join('-') }
-    let(:negative_tags) { (Faker::Lorem.words(100).uniq - tags).take(10) }
+    let(:negative_tags) do
+      (Faker::Lorem.words(number: 100).uniq - tags).take(10)
+    end
     let(:known_entity) { create(:known_entity) }
 
     let!(:derived_tag) do

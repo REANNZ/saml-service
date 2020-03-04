@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :entity_descriptor do
-    enabled true
+    enabled { true }
 
     association :known_entity
     association :organization

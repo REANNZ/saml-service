@@ -4,7 +4,7 @@ FactoryBot.define do
   test_rsa_keys = {}
 
   factory :rsa_key, class: OpenSSL::PKey::RSA do
-    transient { bits 2048 }
+    transient { bits { 2048 } }
 
     initialize_with do
       test_rsa_keys[bits.to_i] ||= OpenSSL::PKey::RSA.new(bits)
@@ -18,7 +18,7 @@ FactoryBot.define do
       rsa_key { create(:rsa_key) }
       subject_dn { "CN=#{SecureRandom.urlsafe_base64}" }
       issuer_dn { subject_dn }
-      digest_class OpenSSL::Digest::SHA256
+      digest_class { OpenSSL::Digest::SHA256 }
     end
 
     public_key { rsa_key.public_key }
@@ -27,8 +27,8 @@ FactoryBot.define do
 
     not_before { Time.zone.now }
     not_after { 1.hour.from_now }
-    serial 0
-    version 2
+    serial { 0 }
+    version { 2 }
 
     after(:build) do |cert, attr|
       cert.sign(attr.rsa_key, attr.digest_class.new)

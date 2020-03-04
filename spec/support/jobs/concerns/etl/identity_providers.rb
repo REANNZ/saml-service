@@ -111,7 +111,8 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
       {
         id: i,
         description: Faker::Lorem.sentence,
-        oid: "#{Faker::Number.number(4)}:#{Faker::Number.number(4)}"
+        oid: "#{Faker::Number.number(digits: 4)}:"\
+              "#{Faker::Number.number(digits: 4)}"
       }
     end
   end

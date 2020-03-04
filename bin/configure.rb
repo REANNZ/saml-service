@@ -4,7 +4,7 @@
 require_relative '../config/environment'
 require 'thor'
 
-# rubocop:disable ClassLength
+# rubocop:disable Metrics/ClassLength
 class ConfigureCLI < Thor
   desc 'fr_source [options...]', 'Create or update a Federation Registry source'
   option :source_tag,
@@ -30,7 +30,7 @@ class ConfigureCLI < Thor
     source ||= new_federation_registry_source(options[:source_tag])
 
     update_registration_info(source)
-    source.update(options.slice(:hostname, :secret))
+    source.update(options.symbolize_keys.slice(:hostname, :secret))
   end
 
   desc 'raw_entity_source [options...]', 'Create or update a source of entities
@@ -159,6 +159,6 @@ class ConfigureCLI < Thor
     pi.update(publisher: options[:publisher], metadata_instance_id: instance.id)
   end
 end
-# rubocop:enable ClassLength
+# rubocop:enable Metrics/ClassLength
 
 ConfigureCLI.start(ARGV) if $PROGRAM_NAME == __FILE__

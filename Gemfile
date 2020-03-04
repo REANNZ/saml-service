@@ -2,12 +2,13 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '>= 5.0.0', '< 5.1'
+gem 'rails', '>= 5', '< 6'
 
 gem 'accession'
 gem 'mysql2'
 gem 'sequel', '>= 4.0.0', '< 5'
 gem 'sequel-rails'
+gem 'sprockets', '3.7.2'
 
 gem 'nokogiri', '>= 1.8.5'
 gem 'xmldsig'
@@ -39,7 +40,7 @@ group :development, :test do
   gem 'webmock', require: false
 
   gem 'aaf-gumboot'
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '~> 4.11' # TODO: Upgrade to v5 in the furture.
   gem 'faker'
   gem 'rails-controller-testing'
   gem 'rspec_sequel_matchers', git: 'https://github.com/bradleybeddoes/rspec_sequel_matchers.git'
@@ -58,4 +59,6 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rubocop', require: false
+  gem 'rubocop-faker', require: false
+  gem 'rubocop-rails', require: false
 end

@@ -9,11 +9,11 @@ FactoryBot.define do
     end
 
     trait :signing do
-      key_type :signing
+      key_type { :signing }
     end
 
     trait :encryption do
-      key_type :encryption
+      key_type { :encryption }
     end
   end
 end

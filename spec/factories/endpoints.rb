@@ -3,22 +3,22 @@
 FactoryBot.define do
   trait :endpoint do
     binding { "urn:oasis:names:tc:SAML:2.0:bindings:#{Faker::Lorem.word}" }
-    location { Faker::Internet.url 'example.com' }
+    location { Faker::Internet.url host: 'example.com' }
   end
 
   trait :response_location do
-    response_location { Faker::Internet.url 'example.com' }
+    response_location { Faker::Internet.url host: 'example.com' }
   end
 
   trait :indexed_endpoint do
     endpoint
-    is_default false
+    is_default { false }
     index { Faker::Base.numerify '#' }
   end
 
   trait :default_indexed_endpoint do
     indexed_endpoint
-    is_default true
+    is_default { true }
   end
 
   factory :_endpoint, class: 'Endpoint', traits: [:endpoint]

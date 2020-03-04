@@ -7,12 +7,12 @@ FactoryBot.define do
       entity_id_uri { "https://#{hostname}/shibboleth" }
     end
 
-    enabled true
+    enabled { true }
 
     association :known_entity
 
     xml do
-      <<-ENTITY.strip_heredoc
+      <<-ENTITY.strip_heredoc.strip
         <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
           xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
           entityID="#{entity_id_uri}">
@@ -56,9 +56,9 @@ FactoryBot.define do
     end
 
     factory :raw_entity_descriptor_idp do
-      idp true
+      idp { true }
       xml do
-        <<-ENTITY.strip_heredoc
+        <<-ENTITY.strip_heredoc.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">
@@ -100,9 +100,9 @@ FactoryBot.define do
     end
 
     factory :raw_entity_descriptor_sp do
-      sp true
+      sp { true }
       xml do
-        <<-ENTITY.strip_heredoc
+        <<-ENTITY.strip_heredoc.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:idpdisc=
               "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
@@ -151,12 +151,12 @@ FactoryBot.define do
         entity_id_uri { "https://#{hostname}/shibboleth" }
       end
 
-      enabled true
+      enabled { true }
 
       association :known_entity
 
       xml do
-        <<-ENTITY.strip_heredoc
+        <<-ENTITY.strip_heredoc.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">
@@ -206,12 +206,12 @@ FactoryBot.define do
         entity_id_uri { "https://#{hostname}/shibboleth" }
       end
 
-      enabled true
+      enabled { true }
 
       association :known_entity
 
       xml do
-        <<-ENTITY.strip_heredoc
+        <<-ENTITY.strip_heredoc.strip
           <xyz:EntityDescriptor xmlns:xyz="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">

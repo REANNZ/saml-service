@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :role_descriptor do
     entity_descriptor
-    enabled true
+    enabled { true }
 
     after(:create) do |rd|
       rd.add_protocol_support(create(:protocol_support, role_descriptor: rd))

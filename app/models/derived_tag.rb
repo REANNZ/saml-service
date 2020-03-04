@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class DerivedTag < Sequel::Model
-  VALID_TAG_CHARS = /[a-zA-Z0-9_-]+/
+  VALID_TAG_CHARS = /[a-zA-Z0-9_-]+/.freeze
   VALID_TAG = Tag::URL_SAFE_BASE_64_ALPHABET
-  VALID_TAG_LIST = /\A((#{VALID_TAG_CHARS},)*#{VALID_TAG_CHARS})?\z/
+  VALID_TAG_LIST = /\A((#{VALID_TAG_CHARS},)*#{VALID_TAG_CHARS})?\z/.freeze
 
   def validate
     super

@@ -21,13 +21,13 @@ describe SamlURI do
       context 'as uri (but not url)' do
         context 'with a method' do
           let(:method) { Faker::Lorem.word }
-          let(:parts) { Faker::Lorem.characters(5) }
+          let(:parts) { Faker::Lorem.characters(number: 5) }
           let(:uri) { "#{method}:#{parts}" }
           it { is_expected.to be_valid }
 
           context 'and parts with numbers, letters, hyphens and periods' do
             def part
-              [Faker::Lorem.characters(5), '.', '-'].sample
+              [Faker::Lorem.characters(number: 5), '.', '-'].sample
             end
             let(:sections) { (1..10).to_a.sample }
             let(:parts) { Array.new(sections) { part }.join(':') }

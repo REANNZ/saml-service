@@ -71,11 +71,9 @@ module ETL
       rd.key_descriptors.each(&:destroy)
 
       key_descriptor_data.each do |kd_data|
-        begin
-          rd.add_key_descriptor(key_descriptor(kd_data))
-        rescue OpenSSL::X509::CertificateError => e
-          log_key_descriptor_error(kd_data, e)
-        end
+        rd.add_key_descriptor(key_descriptor(kd_data))
+      rescue OpenSSL::X509::CertificateError => e
+        log_key_descriptor_error(kd_data, e)
       end
     end
 

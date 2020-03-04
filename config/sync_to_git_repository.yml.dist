@@ -1,0 +1,17 @@
+---
+git_author_name: SAML Service
+git_author_email: noreply@aaf.edu.au
+git_auth:
+  # Supported auth types and their parameters:
+  #type: sshkey
+  #username: git
+  #publickey: "/home/saml/.ssh/id_rsa.pub"
+  #privatekey: "/home/saml/.ssh/id_rsa"
+  #passphrase: ""
+  #
+  #type: userpassword
+  #username: git
+  #password: "secretuserpassword"
+# whether to construct a new root node
+raw_entity_descriptor_root_node: True
+...

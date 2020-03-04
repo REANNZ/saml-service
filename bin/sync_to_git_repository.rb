@@ -9,13 +9,14 @@ class SyncToGitRepository
   include Metadata::SAMLNamespaces
 
   def initialize(args)
-    if args.length != 2
-      warn("usage: #{$PROGRAM_NAME} md_instance_identifier " \
-                   '/path/to/git/repository')
+    if args.length != 3
+      warn("usage: #{$PROGRAM_NAME} /path/to/config/file" \
+                   'md_instance_identifier /path/to/git/repository')
       exit 1
     end
 
-    instance_identifier, repository_path = args
+    config_file_path, instance_identifier, repository_path = args
+    @config = YAML.load_file(config_file_path)
     @md_instance = MetadataInstance[identifier: instance_identifier]
     @repository = Rugged::Repository.new(repository_path)
     @committed = false
@@ -30,6 +31,19 @@ class SyncToGitRepository
 
   private
 
+  def credential
+    git_auth_conf = @config['git_auth']
+    git_auth_type = git_auth_conf['type'] if git_auth_conf
+    if git_auth_type == 'sshkey'
+      Rugged::Credentials::SshKey.new(username: git_auth_conf['username'],
+                                      publickey: git_auth_conf['publickey'],
+                                      privatekey: git_auth_conf['privatekey'])
+    elsif git_auth_type == 'userpassword'
+      Rugged::Credentials::UserPassword.new(username: git_auth_conf['username'],
+                                            password: git_auth_conf['password'])
+    end
+  end
+
   def push
     branch = @repository.branches.find do |b|
       b.canonical_name == @repository.head.canonical_name
@@ -38,7 +52,8 @@ class SyncToGitRepository
     remote = @repository.config["branch.#{branch.name}.remote"]
     merge = @repository.config["branch.#{branch.name}.merge"]
 
-    @repository.push(remote, "#{branch.canonical_name}:#{merge}")
+    @repository.push(remote, "#{branch.canonical_name}:#{merge}",
+                     credentials: credential)
   end
 
   def sync(ke)
@@ -79,7 +94,8 @@ class SyncToGitRepository
     if ke.entity_descriptor.try(:functioning?)
       renderer.entity_descriptor(ke.entity_descriptor, NAMESPACES)
     elsif ke.raw_entity_descriptor.try(:functioning?)
-      renderer.raw_entity_descriptor(ke.raw_entity_descriptor, NAMESPACES, true)
+      renderer.raw_entity_descriptor(ke.raw_entity_descriptor, NAMESPACES,
+                                     @config['raw_entity_descriptor_root_node'])
     end
 
     doc = renderer.builder.doc
@@ -108,8 +124,8 @@ class SyncToGitRepository
   end
 
   def commit(tree, message)
-    author = { name: 'SAML Service', time: Time.now.getlocal,
-               email: 'noreply@aaf.edu.au' }
+    author = { name: @config['git_author_name'], time: Time.now.getlocal,
+               email: @config['git_author_email'] }
 
     Rugged::Commit.create(@repository,
                           tree: tree, message: message,

@@ -12,7 +12,7 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
   context 'destructuring the geo uri' do
     let(:latitude) { Faker::Address.latitude.to_s }
     let(:longitude) { Faker::Address.longitude.to_s }
-    let(:altitude) { Faker::Number.number(3) }
+    let(:altitude) { Faker::Number.number(digits: 3).to_s }
 
     subject do
       parts = [latitude, longitude, altitude].compact
@@ -47,9 +47,9 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
   end
 
   describe '#valid_uri?' do
-    let(:lat) { Faker::Number.decimal(5) }
-    let(:long) { Faker::Number.decimal(5) }
-    let(:alt) { Faker::Number.decimal(2) }
+    let(:lat) { Faker::Number.decimal(l_digits: 5) }
+    let(:long) { Faker::Number.decimal(l_digits: 5) }
+    let(:alt) { Faker::Number.decimal(l_digits: 2) }
 
     context 'valid uri values' do
       it 'minimal uri' do
@@ -92,9 +92,9 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
   end
 
   describe '#parse_uri_into_parts' do
-    let(:lat) { Faker::Number.decimal(5) }
-    let(:long) { Faker::Number.decimal(5) }
-    let(:alt) { Faker::Number.decimal(2) }
+    let(:lat) { Faker::Number.decimal(l_digits: 5).to_s }
+    let(:long) { Faker::Number.decimal(l_digits: 5).to_s }
+    let(:alt) { Faker::Number.decimal(l_digits: 2).to_s }
     let(:parsed_uri) { MDUI::GeolocationHint.parse_uri_into_parts(uri) }
 
     shared_examples 'provides minimal values correctly' do
@@ -118,7 +118,7 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
       include_examples 'provides minimal values correctly'
 
       context 'with additional parameters' do
-        let(:uri) { "geo:#{lat},#{long};u=#{Faker::Number.number(2)}" }
+        let(:uri) { "geo:#{lat},#{long};u=#{Faker::Number.number(digits: 2)}" }
         include_examples 'provides minimal values correctly'
       end
     end
@@ -128,7 +128,9 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
       include_examples 'provides extended values correctly'
 
       context 'with additional parameters' do
-        let(:uri) { "geo:#{lat},#{long},#{alt};u=#{Faker::Number.number(2)}" }
+        let(:uri) do
+          "geo:#{lat},#{long},#{alt};u=#{Faker::Number.number(digits: 2)}"
+        end
         include_examples 'provides extended values correctly'
       end
     end
