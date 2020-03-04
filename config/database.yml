@@ -24,3 +24,5 @@ production:
   database: <%= ENV['SAML_DB_NAME'] %>
   host: <%= ENV['SAML_DB_HOST'] %>
   port: <%= ENV['SAML_DB_PORT'] %>
+  sslverify: <%= ENV['SAML_DB_CA_CRT'] != nil %>
+  sslca: <%= ENV['SAML_DB_CA_CRT'] %>
