@@ -64,3 +64,6 @@ Lint/UriEscapeUnescape:
 
 Naming/MethodParameterName:
   Enabled: false
+
+Layout/LineLength:
+  Max: 100

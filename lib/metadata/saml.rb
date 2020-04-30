@@ -16,9 +16,7 @@ module Metadata
       scope.parent[:Name] = attr.name
       scope.parent[:NameFormat] = attr.name_format.uri if attr.name_format
 
-      if attr.friendly_name.present?
-        scope.parent[:FriendlyName] = attr.friendly_name
-      end
+      scope.parent[:FriendlyName] = attr.friendly_name if attr.friendly_name.present?
 
       attr.attribute_values { |ds| ds.order(:value) }.each do |attr_val|
         attribute_value(attr_val)
@@ -327,9 +325,7 @@ module Metadata
         root.Company(c.company) if c.company.present?
         root.GivenName(c.given_name) if c.given_name.present?
         root.SurName(c.surname) if c.surname.present?
-        if c.email_address.present?
-          root.EmailAddress("mailto:#{c.email_address}")
-        end
+        root.EmailAddress("mailto:#{c.email_address}") if c.email_address.present?
         root.TelephoneNumber(c.telephone_number) if c.telephone_number.present?
       end
     end
@@ -345,9 +341,7 @@ module Metadata
         root.Company(c.company) if c.company.present?
         root.GivenName(c.given_name) if c.given_name.present?
         root.SurName(c.surname) if c.surname.present?
-        if c.email_address.present?
-          root.EmailAddress("mailto:#{c.email_address}")
-        end
+        root.EmailAddress("mailto:#{c.email_address}") if c.email_address.present?
         root.TelephoneNumber(c.telephone_number) if c.telephone_number.present?
       end
     end

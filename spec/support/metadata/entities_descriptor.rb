@@ -19,15 +19,9 @@ RSpec.shared_examples 'EntitiesDescriptor xml' do
   end
 
   before :each do
-    if add_ca_keys
-      create_list(:ca_key_info, 2, metadata_instance: metadata_instance)
-    end
-    if add_registration_info
-      create(:mdrpi_registration_info, metadata_instance: metadata_instance)
-    end
-    if add_entity_attributes
-      create(:mdattr_entity_attribute, metadata_instance: metadata_instance)
-    end
+    create_list(:ca_key_info, 2, metadata_instance: metadata_instance) if add_ca_keys
+    create(:mdrpi_registration_info, metadata_instance: metadata_instance) if add_registration_info
+    create(:mdattr_entity_attribute, metadata_instance: metadata_instance) if add_entity_attributes
   end
 
   context 'Root EntitiesDescriptor' do

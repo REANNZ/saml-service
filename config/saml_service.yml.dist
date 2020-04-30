@@ -2,6 +2,7 @@ defaults: &defaults
   metadata:
     negative_cache_ttl: 600
   api:
+    authentication: :token
     edugain_export_tag_name: 'aaf-edugain-export'
 
 development:

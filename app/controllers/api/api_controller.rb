@@ -3,7 +3,7 @@
 require 'openssl'
 
 module API
-  class APIController < ApplicationController
+  class APIController < ActionController::API
     Forbidden = Class.new(StandardError)
     private_constant :Forbidden
     rescue_from Forbidden, with: :forbidden
@@ -18,7 +18,6 @@ module API
     BadRequest = Class.new(StandardError)
     rescue_from BadRequest, with: :bad_request
 
-    protect_from_forgery with: :null_session
     before_action :ensure_authenticated
     after_action :ensure_access_checked
 
@@ -27,8 +26,12 @@ module API
     protected
 
     def ensure_authenticated
-      # Ensure API subject exists and is functioning
-      @subject = APISubject[x509_cn: x509_cn]
+      if Rails.application.config.saml_service.api&.authentication.blank?
+        raise(Forbidden, 'API authentication method is not configured')
+      end
+
+      authenticate
+
       raise(Unauthorized, 'Subject invalid') unless @subject
       raise(Unauthorized, 'Subject not functional') unless @subject.functioning?
     end
@@ -40,9 +43,23 @@ module API
       raise("No access control performed by #{method}")
     end
 
-    def x509_cn
-      raise(Unauthorized, 'Subject DN') if x509_dn.nil?
+    def authenticate
+      if Rails.application.config.saml_service.api.authentication == :x509
+        try_x509_authentication
+      elsif Rails.application.config.saml_service.api.authentication == :token
+        try_token_authentication
+      else
+        raise(Forbidden, 'A valid API authentication method is not configured')
+      end
+    end
 
+    def try_x509_authentication
+      raise(Unauthorized, 'x509 API authentication method not provided') if x509_dn.blank?
+
+      @subject = APISubject[x509_cn: x509_cn]
+    end
+
+    def x509_cn
       x509_dn_parsed = OpenSSL::X509::Name.parse(x509_dn)
       x509_dn_hash = Hash[x509_dn_parsed.to_a
                                         .map { |components| components[0..1] }]
@@ -57,6 +74,20 @@ module API
       x509_dn == '(null)' ? nil : x509_dn
     end
 
+    def try_token_authentication
+      header = request.headers['Authorization'].try(:force_encoding, 'UTF-8')
+      raise(Unauthorized, 'Token API authentication method not provided') if header.blank?
+
+      @subject = APISubject[token: bearer_token(header)]
+    end
+
+    def bearer_token(header)
+      pattern = /^Bearer (?<token>\S+)/
+      return $LAST_MATCH_INFO[:token] if header =~ pattern
+
+      raise(Unauthorized, 'Invalid Authorization header value')
+    end
+
     def check_access!(action)
       raise(Forbidden) unless @subject.permits?(action)
 
@@ -68,7 +99,7 @@ module API
     end
 
     def unauthorized(exception)
-      message = 'SSL client failure.'
+      message = 'Client request failure.'
       error = exception.message
       render json: { message: message, error: error }, status: :unauthorized
     end

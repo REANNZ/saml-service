@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe API::DiscoveryEntitiesController, type: :controller do
-  let(:api_subject) { create(:api_subject, :authorized, permission: '*') }
+  let(:api_subject) { create(:api_subject, :x509_cn, :authorized, permission: '*') }
 
   let!(:entity_source) { create(:entity_source, rank: rand(1..10)) }
 
@@ -521,7 +521,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
     end
 
     context 'with no permissions' do
-      let(:api_subject) { create(:api_subject) }
+      let(:api_subject) { create(:api_subject, :x509_cn) }
 
       it { is_expected.to have_http_status(:ok) }
       it { is_expected.to render_template('api/discovery_entities/index') }
