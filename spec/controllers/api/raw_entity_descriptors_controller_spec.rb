@@ -186,7 +186,10 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
             context 'tags' do
               subject { record.tags.map(&:name) }
               let(:edugain_export_tag) do
-                edugain_enabled ? 'aaf-edugain-export' : nil
+                if edugain_enabled
+                  Rails.application.config.saml_service&.api&.edugain_export_tag_name ||
+                    'aaf-edugain-export'
+                end
               end
 
               let(:all_tags) do
@@ -399,7 +402,10 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
               let(:new_tags) { tags.append(source_tag) }
 
               let(:edugain_export_tag) do
-                edugain_enabled ? 'aaf-edugain-export' : nil
+                if edugain_enabled
+                  Rails.application.config.saml_service&.api&.edugain_export_tag_name ||
+                    'aaf-edugain-export'
+                end
               end
 
               let(:all_tags) do
