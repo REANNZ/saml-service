@@ -2,14 +2,16 @@ Sequel.migration do
   change do
     create_table(:api_subjects) do
       primary_key :id, :type=>"int(11)"
-      column :x509_cn, "varchar(255)", :null=>false
+      column :x509_cn, "varchar(255)"
       column :description, "varchar(255)", :null=>false
       column :contact_name, "varchar(255)", :null=>false
       column :contact_mail, "varchar(255)", :null=>false
       column :enabled, "tinyint(1)"
       column :created_at, "datetime"
       column :updated_at, "datetime"
+      column :token, "varchar(255)"
       
+      index [:token], :unique=>true
       index [:x509_cn], :name=>:x509_cn, :unique=>true
     end
     
@@ -895,5 +897,6 @@ self << "INSERT INTO `schema_migrations` (`filename`) VALUES ('20170803002700_cr
 self << "INSERT INTO `schema_migrations` (`filename`) VALUES ('20190225092700_alter_localized_names.rb')"
 self << "INSERT INTO `schema_migrations` (`filename`) VALUES ('20190320095000_alter_key_subject_issuer.rb')"
 self << "INSERT INTO `schema_migrations` (`filename`) VALUES ('20191203011131_add_fixed_boolean_to_shibmd_scope.rb')"
+self << "INSERT INTO `schema_migrations` (`filename`) VALUES ('20200324034550_add_token_to_api_subjects.rb')"
                 end
               end

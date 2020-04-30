@@ -50,9 +50,7 @@ class MetadataQueryController < ApplicationController
       return not_found if known_entities.blank?
 
       etag = generate_document_entities_etag(@metadata_instance, known_entities)
-      if known_entities_unmodified?(known_entities, etag)
-        return head :not_modified
-      end
+      return head :not_modified if known_entities_unmodified?(known_entities, etag)
 
       create_known_entities_response(known_entities, etag)
     end

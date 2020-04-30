@@ -17,9 +17,7 @@ class Keypair < Sequel::Model
 
     return if cert.nil? || key.nil?
 
-    if cert.public_key.params == key.public_key.params
-      return validate_fingerprint(cert)
-    end
+    return validate_fingerprint(cert) if cert.public_key.params == key.public_key.params
 
     errors.add(:certificate, 'does not match the private key')
   end

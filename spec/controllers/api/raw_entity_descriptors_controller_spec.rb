@@ -57,8 +57,14 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
       nil
     end
 
+    before do
+      allow(Rails.application.config)
+        .to receive_message_chain(:saml_service, :api, :authentication)
+        .and_return(:x509)
+    end
+
     context 'not permitted' do
-      let(:api_subject) { create(:api_subject) }
+      let(:api_subject) { create(:api_subject, :x509_cn) }
       before { run }
       subject { response }
       it { is_expected.to have_http_status(:forbidden) }
@@ -69,7 +75,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
     end
 
     context 'permitted' do
-      let(:api_subject) { create(:api_subject, :authorized, permission: '*') }
+      let(:api_subject) { create(:api_subject, :x509_cn, :authorized, permission: '*') }
 
       subject do
         run
