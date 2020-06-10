@@ -29,7 +29,7 @@ gem 'jbuilder'
 
 gem 'bcrypt', '~> 3.1'
 
-gem 'rugged', require: false
+gem 'rugged', '0.28.4.1', require: false
 
 gem 'puma', require: false
 
