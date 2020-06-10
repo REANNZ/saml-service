@@ -94,7 +94,7 @@ class UpdateEntitySource
     # within Nokogiri namespace manipulation functionality.
     prev_prefix = doc.root.namespace.prefix
     doc.root.default_namespace = saml_md_uri
-    new_doc_markup = doc.canonicalize.gsub(%r{([<|\/])(#{prev_prefix}:)}, '\1')
+    new_doc_markup = doc.canonicalize.gsub(%r{([<|/])(#{prev_prefix}:)}, '\1')
 
     Nokogiri::XML.parse(new_doc_markup)
   end

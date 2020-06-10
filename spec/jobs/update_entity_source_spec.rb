@@ -348,7 +348,7 @@ RSpec.describe UpdateEntitySource do
 
   context 'with invalid xml' do
     let(:xml) do
-      entities_descriptor(entities: 1) .gsub(/entityID="[^"]+"/, '')
+      entities_descriptor(entities: 1).gsub(/entityID="[^"]+"/, '')
     end
 
     it 'creates no records' do

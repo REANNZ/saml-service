@@ -16,7 +16,7 @@ class EntitySource < Sequel::Model
   def validate_url
     return if url.nil?
 
-    validates_format URI.regexp(%w[http https]), :url
+    validates_format URI::DEFAULT_PARSER.make_regexp(%w[http https]), :url
     URI.parse(url)
   rescue URI::InvalidURIError
     errors.add(:url, 'could not be parsed as a valid URI')
