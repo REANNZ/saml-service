@@ -237,7 +237,7 @@ module Metadata
       end
 
       parsed_xml.root.elements.each do |element|
-        builder.doc.root << element
+        builder.doc.root << element.clone
       end
     end
 
