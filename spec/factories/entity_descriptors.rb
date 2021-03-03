@@ -12,6 +12,10 @@ FactoryBot.define do
       ed.registration_info = create :mdrpi_registration_info
     end
 
+    trait :with_extensions do
+      extensions { "<some-node>#{Faker::Lorem.paragraph}</some-node>" }
+    end
+
     trait :with_technical_contact do
       after :create do |ed|
         ed.add_contact_person create :contact_person, entity_descriptor: ed

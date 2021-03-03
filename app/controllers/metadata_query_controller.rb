@@ -32,17 +32,21 @@ class MetadataQueryController < ApplicationController
   def specific_entity
     public_action
 
-    handle_entity_request(EntityId.first(uri: params[:identifier]))
+    handle_entity_request(select_entity_by_rank(EntityId.where(uri: params[:identifier]).all))
   end
 
   def specific_entity_sha1
     public_action
 
     sha1_identifier = params[:identifier].match(SHA1_REGEX)
-    handle_entity_request(EntityId.first(sha1: sha1_identifier[1]))
+    handle_entity_request(select_entity_by_rank(EntityId.where(sha1: sha1_identifier[1]).all))
   end
 
   private
+
+  def select_entity_by_rank(entity_ids)
+    entity_ids.min_by { |e| e.parent.known_entity.entity_source.rank }
+  end
 
   def handle_entities_request(tags)
     Sequel::Model.db.transaction(isolation: :repeatable) do
