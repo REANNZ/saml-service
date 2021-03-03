@@ -466,6 +466,60 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
     end
 
+    RSpec.shared_examples 'selects the correct entity' do
+      it 'selects the correct entity' do
+        expect_any_instance_of(MetadataQueryController).to receive(
+          :handle_entity_request
+        ).with(entity_descriptor.entity_id)
+        run
+
+        expect(entity_descriptor.entity_id.uri).to eq external_entity_descriptor.entity_id.uri
+        expect(entity_descriptor.known_entity.entity_source.rank)
+          .to be < external_entity_descriptor.known_entity.entity_source.rank
+      end
+    end
+
+    RSpec.shared_examples 'EntityDescriptors from multiple sources' do
+      before { request.accept = saml_content }
+
+      let(:entity_source) { create :basic_federation }
+      let(:sp) { create :basic_federation_entity, :sp, entity_source: entity_source }
+      let(:entity_descriptor) { sp.entity_descriptor }
+      let(:entity_id) { entity_descriptor.entity_id.uri }
+
+      let(:external_entity_source) { create :entity_source, rank: entity_source.rank + 1 }
+      let(:external_sp) do
+        create :basic_federation_entity, :sp, entity_source: external_entity_source
+      end
+
+      let(:external_entity_descriptor) { external_sp.entity_descriptor }
+
+      let(:set_external_ed_entity_id) do
+        eid = external_entity_descriptor.entity_id
+        eid.uri = entity_id
+        # mark this EntityId instance for easier recognition in test output
+        eid.description = 'External entity_source, higher rank'
+        eid.save
+      end
+
+      context 'EntityDescriptor with lower rank is defined last' do
+        before do
+          set_external_ed_entity_id
+        end
+        include_examples 'selects the correct entity'
+      end
+
+      context 'EntityDescriptor with lower rank is defined first' do
+        before do
+          #  define lower-rank ED first
+          entity_id
+
+          set_external_ed_entity_id
+        end
+        include_examples 'selects the correct entity'
+      end
+    end
+
     context 'With URI identifier' do
       def run
         get :specific_entity, params: {
@@ -487,6 +541,10 @@ RSpec.describe MetadataQueryController, type: :controller do
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
+      end
+
+      context 'EntityDescriptors from multiple sources' do
+        include_examples 'EntityDescriptors from multiple sources'
       end
     end
 
@@ -512,6 +570,10 @@ RSpec.describe MetadataQueryController, type: :controller do
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
+      end
+
+      context 'EntityDescriptors from multiple sources' do
+        include_examples 'EntityDescriptors from multiple sources'
       end
     end
   end

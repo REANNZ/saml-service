@@ -283,6 +283,7 @@ module Metadata
         publication_info(ed) if root_node
         registration_info(ed)
         entity_attribute(ed.entity_attribute) if ed.entity_attribute?
+        root << ed.extensions if ed.extensions.present?
       end
     end
 
