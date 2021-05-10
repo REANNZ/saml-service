@@ -5,6 +5,7 @@ require_relative '../config/environment'
 require 'rugged'
 require 'metadata/saml'
 
+# rubocop:disable Metrics/ClassLength
 class SyncToGitRepository
   include Metadata::SAMLNamespaces
 
@@ -102,11 +103,26 @@ class SyncToGitRepository
     doc.to_xml(indent: 2)
   end
 
+  def removed_entity_name(path)
+    # Assume no special characters in md_instance identifier
+    m = %r{^entities/#{@md_instance.identifier}-(?<encoded_entity_id>[-_A-Za-z0-9]*)\.xml$}
+        .match(path)
+    begin
+      decoded = m ? Base64.urlsafe_decode64(m['encoded_entity_id']) : nil
+    rescue ArgumentError
+      # Invalid Base64 data
+      decoded = nil
+    end
+
+    # Accept decoded value only if it consists of sane URI characters - avoid runaway Base64 ddata
+    decoded && %r{^[-+_.:/A-Za-z0-9$]+}.match(decoded) ? decoded : 'stale entity'
+  end
+
   def remove_stale(path)
     full_path = File.join(@repository.workdir, path)
     FileUtils.rm_f(full_path)
 
-    commit_changes('[sync] remove stale entity') do |index|
+    commit_changes("[sync] remove #{removed_entity_name(path)}") do |index|
       index.remove(path)
     end
   end
@@ -136,5 +152,6 @@ class SyncToGitRepository
     @committed = true
   end
 end
+# rubocop:enable Metrics/ClassLength
 
 SyncToGitRepository.new(ARGV).perform if $PROGRAM_NAME == __FILE__
