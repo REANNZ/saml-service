@@ -147,7 +147,7 @@ RSpec.describe SyncToGitRepository do
           expect(commit_spy).to have_received(:create)
             .with(repo,
                   author: author, committer: author, tree: new_tree,
-                  message: '[sync] remove stale entity', parents: [head_commit],
+                  message: "[sync] remove #{stale_entity_id}", parents: [head_commit],
                   update_ref: 'HEAD')
         end
       end
@@ -181,7 +181,9 @@ RSpec.describe SyncToGitRepository do
       end
 
       context 'for a removed entity' do
-        let(:stale) { "entities/#{md_instance.identifier}-stale-entity.xml" }
+        let(:stale_entity_id) { "#{Faker::Internet.url}/shibboleth" }
+        let(:stale_entity_id_encoded) { Base64.urlsafe_encode64(stale_entity_id).delete('=') }
+        let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
 
         before do
           allow(index).to receive(:map).and_return([stale])
