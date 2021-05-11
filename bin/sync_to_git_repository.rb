@@ -115,7 +115,7 @@ class SyncToGitRepository
     end
 
     # Accept decoded value only if it consists of sane URI characters - avoid runaway Base64 ddata
-    decoded && %r{^[-+_.:/A-Za-z0-9$]+}.match(decoded) ? decoded : 'stale entity'
+    decoded && %r{^[-+_.:/A-Za-z0-9]+$}.match(decoded) ? decoded : 'stale entity'
   end
 
   def remove_stale(path)
