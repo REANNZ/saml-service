@@ -114,8 +114,8 @@ class SyncToGitRepository
       decoded = nil
     end
 
-    # Accept decoded value only if it consists of sane URI characters - avoid runaway Base64 ddata
-    decoded && %r{^[-+_.:/A-Za-z0-9]+$}.match(decoded) ? decoded : 'stale entity'
+    # Accept decoded value only if it consists of sane URI characters - avoid runaway Base64 data - and limit length to 255 chars
+    decoded && %r{^[-+_.:/A-Za-z0-9]{1,255}$}.match(decoded) ? decoded : 'stale entity'
   end
 
   def remove_stale(path)
