@@ -71,10 +71,11 @@ module ETL
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def attribute_consuming_services(sp, acservices_data)
       sp.attribute_consuming_services.each(&:destroy)
       acservices_data.each_with_index do |ac_data, i|
-        next if ac_data[:attributes].empty?
+        next if ac_data[:attributes].select { |a| a[:approved] }.empty?
 
         service_name = ServiceName.new(value: ac_data[:names][0], lang: 'en')
         acs = AttributeConsumingService.create(index: i + 1,
@@ -84,6 +85,7 @@ module ETL
         acs_attributes(acs, ac_data)
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def acs_attributes(acs, ac_data)
       ac_data[:attributes].each do |attr_data|
