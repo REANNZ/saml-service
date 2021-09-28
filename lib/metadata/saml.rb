@@ -543,7 +543,8 @@ module Metadata
         end
 
         acs.requested_attributes { |ds| ds.order(:name) }.each do |ra|
-          requested_attribute(ra)
+          requested_attribute(ra) if ra.approved || ra.approved.nil?
+          # If approved status is unknown, release the attribute for backwards compatibility.
         end
       end
     end
