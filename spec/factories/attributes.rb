@@ -36,6 +36,7 @@ FactoryBot.define do
     factory :requested_attribute, class: 'RequestedAttribute' do
       reasoning { Faker::Lorem.sentence }
       required { false }
+      approved { true }
 
       association :attribute_consuming_service
 
@@ -47,6 +48,10 @@ FactoryBot.define do
 
       trait :is_required do
         required { true }
+      end
+
+      trait :is_not_approved do
+        approved { false }
       end
     end
   end

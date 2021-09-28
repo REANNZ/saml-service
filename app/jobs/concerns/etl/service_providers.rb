@@ -112,6 +112,7 @@ module ETL
                                      oid: base[:oid],
                                      required: attr_data[:is_required],
                                      reasoning: attr_data[:reason],
+                                     approved: attr_data[:approved],
                                      attribute_consuming_service: acs)
 
       add_values_to_requested_attribute(ra, attr_data)

@@ -68,6 +68,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
       name: Faker::Lorem.word,
       is_required: false,
       reason: Faker::Lorem.word,
+      approved: true,
       specification: ra[:specification] ||= false,
       values: ra[:values]
     }
