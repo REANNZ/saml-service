@@ -3,17 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe API::RawEntityDescriptorsController, type: :controller do
-  def unique_words(count)
-    words = []
-    words << Faker::Lorem.word until words.uniq.length == count
-    words.uniq
-  end
-
   describe 'patch :update' do
     let(:entity_source) { create(:entity_source) }
     let(:source_tag) { entity_source.source_tag }
 
-    let(:tags) { unique_words(2) }
+    let(:tags) { %w[uno dos] }
     let(:host_name) { Faker::Internet.domain_name }
     let(:entity_id_uri) { "https://#{host_name}/shibboleth" }
     let(:base64_urlsafe_entity_id) { Base64.urlsafe_encode64(entity_id_uri) }
@@ -251,7 +245,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
       end
 
       context 'when the raw entity descriptor exists' do
-        let(:original_tags) { unique_words(2) }
+        let(:original_tags) { %w[tres cuatro] }
         let(:original_host_name) { Faker::Internet.domain_name }
         let(:original_enabled) { [true, false].sample }
         let(:original_xml) do

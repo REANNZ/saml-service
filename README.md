@@ -1,6 +1,12 @@
 # SAML Service
 
-AAF service responsible for SAML data storage, metadata generation and inter-federation metadata processing.
+AAF service responsible for Security Assertion Markup Language (SAML) data storage, metadata generation and inter-federation metadata processing.
+
+## Local Development
+
+SAML Service requires ruby installed through rbenv and a running instance of mysql.
+If that's working, run `bin/setup` to prepare the application.
+Then you can run `bundle exec rspec` to test the application and `rails server` to boot it.
 
 ## AAF Production Concerns
 
@@ -8,7 +14,7 @@ AAF service responsible for SAML data storage, metadata generation and inter-fed
 
 #### Publishing an AAF registered IdP
 
-To export an AAF registered IdP to eduGAIN:
+To export an AAF registered Identity Provider (IdP) to eduGAIN:
 
 1. Get a session on `<SAML Service HOST>` 
 1. Become the `saml` user, `$> sudo -iu saml`
@@ -29,7 +35,7 @@ metadata aggregate in around 24 hours. Check https://technical.edugain.org/entit
 
 #### Publishing an AAF registered SP
 
-To export an AAF registered SP to eduGAIN:
+To export an AAF registered Service Provider (SP) to eduGAIN:
 
 1. Get a session on `<SAML Service Host>` 
 1. Become the `saml` user, `$> sudo -iu saml`
@@ -52,7 +58,7 @@ metadata aggregate in around 24 hours. Check https://technical.edugain.org/entit
 #### Approving R&S SP from another federation
 This is automatically handled by SAML Service.
 
-AAF IdP will automatically release the R&S bundle of attributes.
+AAF IdP will automatically release the [Research and Scholarship (R&S)](https://refeds.org/category/research-and-scholarship) bundle of attributes.
 
 Services marked as R&S are preferred within the AAF context.
 
