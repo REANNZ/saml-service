@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+APP_ROOT = File.expand_path('..', __dir__)
+
+def system!(*args)
+  system(*args) || abort("Command #{args} failed")
+end
+
+FileUtils.chdir APP_ROOT do
+  # Install ruby dependencies
+  system!('bundle install --frozen --quiet')
+
+  # Set app config
+  FileUtils.copy 'config/saml_service.yml.dist', 'config/saml_service.yml'
+  FileUtils.copy 'config/secrets.yml.codeship', 'config/secrets.yml'
+
+  # Prepare databases
+  system!("mysql -e \"grant all on *.* to 'saml_app'@'localhost' identified by 'password';\"")
+  system('bundle exec rails db:drop:all')
+  system!('bundle exec rails db:create:all')
+  system!('RAILS_ENV=development bundle exec rails db:migrate')
+  system!('RAILS_ENV=test bundle exec rails db:migrate')
+
+  # Download XML schemas
+  system!('bundle exec rake xsd:all')
+end
