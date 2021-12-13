@@ -40,6 +40,12 @@ Rails.application.routes.draw do
             ':base64_urlsafe_entity_id',
             to: 'raw_entity_descriptors#update',
             as: 'raw_entity_descriptors'
+
+      namespace :edugain do
+        resources :identity_provider_exports, only: :create
+        resources :non_research_and_scholarship_entity_approvals, only: :create
+        resources :service_provider_exports, only: :create
+      end
     end
   end
 end

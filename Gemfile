@@ -8,7 +8,6 @@ gem 'accession'
 gem 'mysql2'
 gem 'sequel', '>= 4.0.0', '< 5'
 gem 'sequel-rails'
-gem 'sprockets', '3.7.2'
 
 gem 'nokogiri', '>= 1.8.5'
 gem 'xmldsig'
@@ -21,9 +20,6 @@ gem 'resque-retry'
 gem 'implicit-schema'
 
 gem 'recursive-open-struct'
-
-gem 'therubyracer', platforms: :ruby
-gem 'uglifier', '>= 1.3.0'
 
 gem 'jbuilder'
 
