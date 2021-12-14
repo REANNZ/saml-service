@@ -4,6 +4,7 @@ defaults: &defaults
   api:
     authentication: :token
     edugain_export_tag_name: 'aaf-edugain-export'
+    edugain_verified_tag_name: 'aaf-edugain-verified'
 
 development:
   <<: *defaults
