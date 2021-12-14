@@ -11,7 +11,7 @@ module Edugain
     def save
       add_research_and_scholarship
       add_sirtfi
-      entity_descriptor.known_entity.tag_as 'aaf-edugain-export'
+      entity_descriptor.known_entity.tag_as EdugainHelper::edugain_export_tag
       entity_descriptor.known_entity.touch
       entity_descriptor.save raise_on_save_failure: true
     end

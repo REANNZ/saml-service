@@ -9,7 +9,7 @@ module Edugain
     end
 
     def approve
-      descriptor.known_entity.tag_as 'aaf-edugain-verified'
+      descriptor.known_entity.tag_as EdugainHelper::edugain_verified_tag
       descriptor.known_entity.touch
       descriptor.save(raise_on_save_failure: true)
     end
