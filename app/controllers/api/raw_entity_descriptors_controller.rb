@@ -71,9 +71,9 @@ module API
       known_entity.tag_as(params[:tag])
 
       if patch_params[:edugain_enabled]
-        known_entity.tag_as(EdugainHelper::edugain_export_tag)
+        known_entity.tag_as(EdugainHelper.edugain_export_tag)
       else
-        known_entity.untag_as(EdugainHelper::edugain_export_tag)
+        known_entity.untag_as(EdugainHelper.edugain_export_tag)
       end
     end
 
