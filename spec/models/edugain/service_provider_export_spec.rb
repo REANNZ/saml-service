@@ -100,8 +100,8 @@ describe Edugain::ServiceProviderExport do
     context 'with a nonexistent entity' do
       let(:entity_id) { 'foobar' }
 
-      it 'raises an ArgumentError' do
-        expect { save }.to raise_error ArgumentError
+      it 'raises Sequel::NoMatchingRow' do
+        expect { save }.to raise_error Sequel::NoMatchingRow
       end
     end
   end

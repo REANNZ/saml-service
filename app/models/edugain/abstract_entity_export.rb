@@ -47,9 +47,7 @@ module Edugain
     end
 
     def entity_id_record
-      @entity_id_record ||= EntityId[uri: entity_id].tap do |eid|
-        raise ArgumentError, 'Could not find an entry for supplied entity_id' if eid.nil?
-      end
+      @entity_id_record ||= EntityId.first!(uri: entity_id)
     end
   end
 end
