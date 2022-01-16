@@ -13,7 +13,7 @@ module API
     rescue_from Unauthorized, with: :unauthorized
 
     ResourceNotFound = Class.new(StandardError)
-    rescue_from ResourceNotFound, with: :resource_not_found
+    rescue_from ResourceNotFound, Sequel::NoMatchingRow, with: :resource_not_found
 
     BadRequest = Class.new(StandardError)
     rescue_from BadRequest, with: :bad_request
