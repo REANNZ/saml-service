@@ -9,8 +9,8 @@ module Edugain
     end
 
     def approve
-      descriptor.known_entity.tag_as EdugainHelper.edugain_verified_tag
-      descriptor.known_entity.touch
+      known_entity.tag_as EdugainHelper.edugain_verified_tag
+      known_entity.touch
     end
 
     private
