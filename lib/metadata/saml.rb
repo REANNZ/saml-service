@@ -3,8 +3,8 @@
 require 'metadata/saml_namespaces'
 
 module Metadata
-  class SAML
-    include SAMLNamespaces
+  class Saml
+    include SamlNamespaces
 
     attr_reader :builder, :created_at, :expires_at,
                 :instance_id, :metadata_instance

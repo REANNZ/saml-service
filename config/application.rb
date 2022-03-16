@@ -22,6 +22,9 @@ module Saml
     # Settings in config/environments/* take precedence over those
     # specified here.
 
+    config.load_defaults 6.0
+    config.autoloader = :zeitwerk
+
     config.sequel.after_connect = proc do
       Sequel::Model.db.extension :connection_validator
       Sequel::Model.db.pool.connection_validation_timeout = -1
@@ -33,5 +36,7 @@ module Saml
     config.autoload_paths << Rails.root.join('app', 'jobs', 'concerns')
 
     config.sequel.logger = Logger.new($stderr) if ENV['AAF_DEBUG']
+
+    config.force_ssl
   end
 end

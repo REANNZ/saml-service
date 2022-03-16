@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ETL
+module Etl
   module Organizations
     def organizations
       fr_organizations.each do |org_data|

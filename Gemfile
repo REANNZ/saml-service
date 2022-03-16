@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '>= 5', '< 6'
+gem 'rails', '<6.1'
 
 gem 'accession'
 gem 'mysql2'

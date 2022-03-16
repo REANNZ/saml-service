@@ -4,7 +4,7 @@ require 'metadata/schema'
 require 'net/http'
 
 class UpdateEntitySource
-  include SetSAMLTypeFromXML
+  include SetSamlTypeFromXml
   include Metadata::Schema
 
   def self.perform(id:)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ETL
+module Etl
   module Contacts
     def contacts
       fr_contacts.each do |contact_data|

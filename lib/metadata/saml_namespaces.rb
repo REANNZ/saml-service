@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Metadata
-  module SAMLNamespaces
+  module SamlNamespaces
     NAMESPACES = {
       'xmlns' => 'urn:oasis:names:tc:SAML:2.0:metadata',
       'xmlns:saml' => 'urn:oasis:names:tc:SAML:2.0:assertion',

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ETL
+module Etl
   module AttributeAuthorities
     include RoleDescriptors
 

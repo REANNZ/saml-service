@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.shared_examples 'SAML namespaces' do
   context 'SAML namespaces' do
-    it { is_expected.to be_a_kind_of Metadata::SAMLNamespaces }
+    it { is_expected.to be_a_kind_of Metadata::SamlNamespaces }
 
     it { is_expected.to respond_to(:root) }
     it { is_expected.to respond_to(:saml) }
@@ -18,7 +18,7 @@ RSpec.shared_examples 'SAML namespaces' do
 
     it 'has 12 namespaces defined' do
       expect(subject.ns.size).to eq(12)
-      expect(Metadata::SAMLNamespaces::NAMESPACES.size).to eq(12)
+      expect(Metadata::SamlNamespaces::NAMESPACES.size).to eq(12)
     end
 
     let(:ns) { subject.ns }

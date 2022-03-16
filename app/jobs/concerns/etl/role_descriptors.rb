@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ETL
+module Etl
   module RoleDescriptors
     def role_descriptor(rd, rd_data, scopes_data)
       scopes(rd, scopes_data) if scopes_data
@@ -13,7 +13,7 @@ module ETL
       # Any scopes which we've added locally i.e. no knowledge
       # from FR are not removed
       rd.scopes.select(&:unlocked?).each(&:destroy)
-      rd.add_scope(SHIBMD::Scope.new(value: scope_data,
+      rd.add_scope(Shibmd::Scope.new(value: scope_data,
                                      regexp: regexp_scope?(scope_data)))
     end
 

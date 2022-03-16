@@ -7,7 +7,7 @@ require 'metadata/saml'
 
 # rubocop:disable Metrics/ClassLength
 class SyncToGitRepository
-  include Metadata::SAMLNamespaces
+  include Metadata::SamlNamespaces
 
   def initialize(args)
     if args.length != 3
@@ -90,7 +90,7 @@ class SyncToGitRepository
   end
 
   def generate_metadata(ke)
-    renderer = Metadata::SAML.new(metadata_instance: @md_instance)
+    renderer = Metadata::Saml.new(metadata_instance: @md_instance)
 
     if ke.entity_descriptor.try(:functioning?)
       renderer.entity_descriptor(ke.entity_descriptor, NAMESPACES)

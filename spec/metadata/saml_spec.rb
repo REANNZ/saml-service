@@ -4,9 +4,9 @@ require 'rails_helper'
 
 require 'metadata/saml'
 
-RSpec.describe Metadata::SAML do
+RSpec.describe Metadata::Saml do
   subject do
-    Metadata::SAML.new(metadata_instance: metadata_instance)
+    Metadata::Saml.new(metadata_instance: metadata_instance)
   end
 
   let(:federation_identifier) { Faker::Internet.domain_word }
