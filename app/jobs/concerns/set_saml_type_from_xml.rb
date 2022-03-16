@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SetSAMLTypeFromXML
+module SetSamlTypeFromXml
   def self.xpath_for_metadata_element(name)
     "//*[local-name() = \"#{name}\" and " \
     'namespace-uri() = "urn:oasis:names:tc:SAML:2.0:metadata"]'
@@ -84,7 +84,7 @@ module SetSAMLTypeFromXML
   end
 
   def matches_entity_attribute_value?(ed_node, name, value)
-    xpath = SetSAMLTypeFromXML.xpath_for_entity_attribute_values(name)
+    xpath = SetSamlTypeFromXml.xpath_for_entity_attribute_values(name)
     ed_node.xpath(xpath).any? { |n| n.text == value }
   end
 

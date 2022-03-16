@@ -2,11 +2,11 @@
 
 require 'rails_helper'
 
-RSpec.describe SetSAMLTypeFromXML do
+RSpec.describe SetSamlTypeFromXml do
   let(:known_entity) { spy(KnownEntity) }
   let(:red) { spy(RawEntityDescriptor, known_entity: known_entity) }
   let(:ed_node) { double(Nokogiri::XML::Node) }
-  let(:klass) { Class.new { include SetSAMLTypeFromXML } }
+  let(:klass) { Class.new { include SetSamlTypeFromXml } }
   let(:absent_role_descriptor) { nil }
   let(:present_role_descriptor) { double(present?: true) }
   let(:idp_sso_descriptor) { absent_role_descriptor }

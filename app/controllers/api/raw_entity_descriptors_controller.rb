@@ -2,7 +2,7 @@
 
 module API
   class RawEntityDescriptorsController < APIController
-    include SetSAMLTypeFromXML
+    include SetSamlTypeFromXml
 
     before_action do
       @entity_source = EntitySource[source_tag: params[:tag]]

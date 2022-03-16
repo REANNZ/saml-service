@@ -30,7 +30,7 @@ RSpec.shared_examples 'EntitiesDescriptor xml' do
     include_examples 'md:EntitiesDescriptor xml'
 
     it 'defines namespaces' do
-      expect(namespaces).to eq(Metadata::SAML::NAMESPACES)
+      expect(namespaces).to eq(Metadata::Saml::NAMESPACES)
     end
 
     context 'attributes' do

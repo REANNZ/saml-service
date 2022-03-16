@@ -97,7 +97,7 @@ class MetadataQueryController < ApplicationController
     @metadata_instance = MetadataInstance[identifier: params[:instance]]
 
     if @metadata_instance
-      @saml_renderer = Metadata::SAML.new(metadata_instance: @metadata_instance)
+      @saml_renderer = Metadata::Saml.new(metadata_instance: @metadata_instance)
       return
     end
 

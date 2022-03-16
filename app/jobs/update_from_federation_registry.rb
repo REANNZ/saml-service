@@ -1,20 +1,17 @@
 # frozen_string_literal: true
 
-require 'implicit_schema'
-require 'sequel'
-
 class UpdateFromFederationRegistry
   include QueryFederationRegistry
   include StoreFederationRegistryData
 
-  include ETL::Contacts
-  include ETL::Organizations
-  include ETL::EntityDescriptors
-  include ETL::IdentityProviders
-  include ETL::AttributeAuthorities
-  include ETL::ServiceProviders
-
   attr_reader :fr_source, :source
+
+  include Etl::Contacts
+  include Etl::Organizations
+  include Etl::EntityDescriptors
+  include Etl::IdentityProviders
+  include Etl::AttributeAuthorities
+  include Etl::ServiceProviders
 
   def self.perform(id:)
     new(id: id).perform
@@ -31,7 +28,6 @@ class UpdateFromFederationRegistry
       contacts
       organizations
     end
-
     true
   end
 end

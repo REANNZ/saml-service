@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ETL
+module Etl
   module EntityDescriptors
     def entity_descriptors(o, org_data)
       org_data[:saml][:entity_descriptors].each do |ed_ref|

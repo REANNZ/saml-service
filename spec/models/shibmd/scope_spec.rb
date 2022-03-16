@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe SHIBMD::Scope, type: :model do
+RSpec.describe Shibmd::Scope, type: :model do
   it { is_expected.to validate_presence :role_descriptor }
   it { is_expected.to validate_presence :value }
   it { is_expected.to validate_presence :regexp }
