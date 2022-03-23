@@ -34,7 +34,7 @@ class KnownEntity < Sequel::Model
 
   def self.with_all_tags(tags, include_blacklisted: false)
     join_tags(tags, include_blacklisted: include_blacklisted)
-      .having { "count(*) = #{[tags].flatten.length}" }.all
+      .having { Sequel.lit("count(*) = #{[tags].flatten.length}") }.all
   end
 
   def self.join_tags(tags, include_blacklisted: false)
