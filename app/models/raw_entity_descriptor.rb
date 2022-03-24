@@ -48,9 +48,7 @@ class RawEntityDescriptor < Sequel::Model
   end
 
   def validate_document_contents(doc)
-    unless doc.root.name == 'EntityDescriptor'
-      errors.add(:xml, 'must have <EntityDescriptor> as the root')
-    end
+    errors.add(:xml, 'must have <EntityDescriptor> as the root') unless doc.root.name == 'EntityDescriptor'
 
     ns = doc.root.namespace.try(:href)
     return if ns == 'urn:oasis:names:tc:SAML:2.0:metadata'

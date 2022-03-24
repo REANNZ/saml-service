@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '<6.1'
+gem 'rails', '<7'
 
 gem 'accession'
 gem 'mysql2'
@@ -39,7 +39,7 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 4.11' # TODO: Upgrade to v5 in the furture.
   gem 'faker'
   gem 'rails-controller-testing'
-  gem 'rspec_sequel_matchers', git: 'https://github.com/bradleybeddoes/rspec_sequel_matchers.git'
+  gem 'rspec_sequel_matchers', '~> 0.5.0'
   gem 'shoulda-matchers'
 
   gem 'codeclimate-test-reporter', require: false

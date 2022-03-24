@@ -6,24 +6,36 @@ require 'fileutils'
 APP_ROOT = File.expand_path('..', __dir__)
 
 def system!(*args)
-  system(*args) || abort("Command #{args} failed")
+  system(*args) || abort("\n== Command #{args} failed ==")
 end
 
 FileUtils.chdir APP_ROOT do
-  # Install ruby dependencies
-  system!('bundle install --frozen --quiet')
+  puts '== Installing dependencies =='
+  system! 'gem install bundler --conservative'
+  system('bundle check') || system!('bundle install')
 
-  # Set app config
+  puts("\n== Configuring Application ==")
   FileUtils.copy 'config/saml_service.yml.dist', 'config/saml_service.yml'
   FileUtils.copy 'config/secrets.yml.codeship', 'config/secrets.yml'
+  FileUtils.copy 'config/deploy.yml.dist', 'config/deploy.yml'
 
-  # Prepare databases
-  system!("mysql -e \"grant all on *.* to 'saml_app'@'localhost' identified by 'password';\"")
-  system('bundle exec rails db:drop:all')
-  system!('bundle exec rails db:create:all')
-  system!('RAILS_ENV=development bundle exec rails db:migrate')
-  system!('RAILS_ENV=test bundle exec rails db:migrate')
-
+  puts "\n== Download XML schemas =="
   # Download XML schemas
   system!('bundle exec rake xsd:all')
+
+  puts("\n== Creating database user ==")
+  system!("mysql -e \"grant all on *.* to 'saml_app'@'localhost' identified by 'password';\"")
+
+  puts("\n== Preparing database ==")
+  if ENV['CI']
+    system!({ 'RAILS_ENV' => 'test' }, 'bundle exec rails db:create:all')
+  else
+    system!('bundle exec rails db:create:all')
+  end
+
+  puts "\n== Removing old logs and tempfiles =="
+  system! 'bin/rails log:clear tmp:clear'
+
+  puts "\n== Restarting application server =="
+  system! 'bin/rails restart'
 end
