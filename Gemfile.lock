@@ -118,10 +118,13 @@ GEM
       thor (>= 0.18.1)
     guard-brakeman (0.8.6)
       brakeman (>= 2.1.1)
+      bundler (>= 1.3.0, < 3)
       guard (>= 2.0.0)
+      guard (~> 2.2)
       guard-compat (~> 1.0)
-    guard-bundler (3.0.0)
-      bundler (>= 2.1, < 3)
+      guard-compat (~> 1.1)
+    guard-bundler (2.2.1)
+      bundler (>= 1.3.0, < 3)
       guard (~> 2.2)
       guard-compat (~> 1.1)
     guard-compat (1.2.1)
@@ -162,6 +165,8 @@ GEM
     nenv (0.3.0)
     nio4r (2.5.8)
     nokogiri (1.13.3-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.3-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -353,7 +358,11 @@ GEM
     zeitwerk (2.5.4)
 
 PLATFORMS
+  ruby
+  x86_64-darwin-19
   x86_64-darwin-20
+  x86_64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
   aaf-gumboot
@@ -400,4 +409,4 @@ DEPENDENCIES
   xmldsig
 
 BUNDLED WITH
-   2.3.9
+   1.17.2
