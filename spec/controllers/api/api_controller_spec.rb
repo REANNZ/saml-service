@@ -4,9 +4,7 @@ require 'gumboot/shared_examples/api_controller'
 
 RSpec.describe API::APIController, type: :controller do
   def auth_type(type)
-    allow(Rails.application)
-      .to receive_message_chain(:config, :saml_service, :api, :authentication)
-      .and_return(type)
+    allow(Rails.application.config.saml_service.api).to receive(:authentication).and_return(type)
   end
 
   context 'requesting resource that does not exist' do

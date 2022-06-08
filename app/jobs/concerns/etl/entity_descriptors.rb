@@ -24,6 +24,7 @@ module Etl
       rescue Sequel::ValidationFailed => e
         Rails.logger.error "Evicted FR entity #{ed_data[:entity_id]}"
         Rails.logger.error e
+        raise e
       end
     end
 
