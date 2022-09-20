@@ -21,7 +21,7 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    WebMock.disable_net_connect!(allow: 'codeclimate.com')
+    WebMock.disable_net_connect!
   end
 
   config.alias_it_should_behave_like_to :has_behavior, 'has behavior:'

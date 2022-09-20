@@ -14,6 +14,7 @@ end
 Timecop.safe_mode = true
 
 RSpec.configure do |config|
+  config.raise_errors_for_deprecations!
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
   config.include FactoryBot::Syntax::Methods
   config.include Rails.application.routes.url_helpers

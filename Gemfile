@@ -42,7 +42,6 @@ group :development, :test do
   gem 'rspec_sequel_matchers', '~> 0.5.0'
   gem 'shoulda-matchers'
 
-  gem 'codeclimate-test-reporter', require: false
   gem 'fakeredis', require: false
   gem 'simplecov', require: false
   gem 'timecop'

@@ -14,7 +14,7 @@ puma_config = config['puma']
 threads 1, 1
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-bind ENV.fetch('PORT', puma_config['bind'])
+bind ENV.fetch('BIND', puma_config['bind'])
 
 # Specifies the `environment` that Puma will run in.
 environment ENV.fetch('RAILS_ENV', 'development')
