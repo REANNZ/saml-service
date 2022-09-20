@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: 'json' } do
     scope constraints: APIConstraints.new(version: 1, default: true) do
       scope 'discovery' do
-        resources :discovery_entities, path: 'entities'
+        resources :discovery_entities, path: 'entities', only: :index
       end
       patch 'entity_sources/:tag/raw_entity_descriptors/'\
             ':base64_urlsafe_entity_id',
