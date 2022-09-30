@@ -21,6 +21,24 @@ module Saml
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those
     # specified here.
+    redis_user = ''
+    redis_user = ":#{CGI.escape(ENV.fetch('REDIS_AUTH_TOKEN', nil))}@" if ENV.fetch('REDIS_AUTH_TOKEN', nil).present?
+    config.saml_service =
+      RecursiveOpenStruct.new({
+        metadata: {
+          negative_cache_ttl: 600
+        },
+        api: {
+          authentication: :token
+        },
+        url_options: {
+          base_url: ENV.fetch('BASE_URL', nil)
+        },
+        redis: {
+          url: "#{ENV.fetch('REDIS_SCHEME', 'redis')}://#{redis_user}#{ENV.fetch('REDIS_HOST', 'localhost')}:6379/0"
+        },
+        version: "#{ENV.fetch('RELEASE_VERSION', 'OWO')}-#{ENV.fetch('SERIAL_NUMBER', 1)}"
+      }.deep_symbolize_keys)
 
     config.load_defaults 6.0
     config.autoloader = :zeitwerk
@@ -32,7 +50,6 @@ module Saml
       Sequel::Model.plugin :validation_helpers
     end
 
-    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache'
     config.autoload_paths << Rails.root.join('app', 'jobs', 'concerns')
 
     config.sequel.logger = Logger.new($stderr) if ENV['AAF_DEBUG']

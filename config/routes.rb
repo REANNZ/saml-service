@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   SHA1_REGEXP = /{sha1}(.*)?/.freeze
   URN_REGEXP = /(http|https|urn)(.*)?/.freeze
 
+  get 'health' => 'health#show'
+
   scope '/mdq' do
     match '/:instance/entities',
           to: 'metadata_query#all_entities', via: :all
@@ -32,7 +34,7 @@ Rails.application.routes.draw do
       scope 'discovery' do
         resources :discovery_entities, path: 'entities', only: :index
       end
-      patch 'entity_sources/:tag/raw_entity_descriptors/'\
+      patch 'entity_sources/:tag/raw_entity_descriptors/' \
             ':base64_urlsafe_entity_id',
             to: 'raw_entity_descriptors#update',
             as: 'raw_entity_descriptors'

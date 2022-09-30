@@ -14,17 +14,17 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
     let(:enabled) { [true, false].sample }
     let(:edugain_enabled) { [true, false].sample }
     let(:xml) do
-      <<-ENTITY.strip_heredoc
-          <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
-            xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
-            entityID="#{entity_id_uri}">
-            <IDPSSODescriptor
-              protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-              <SingleSignOnService
-                Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
-                Location="https://#{host_name}/idp/profile/SAML2/Redirect/SSO"/>
-            </IDPSSODescriptor>
-          </EntityDescriptor>
+      <<~ENTITY
+        <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+          xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+          entityID="#{entity_id_uri}">
+          <IDPSSODescriptor
+            protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+            <SingleSignOnService
+              Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+              Location="https://#{host_name}/idp/profile/SAML2/Redirect/SSO"/>
+          </IDPSSODescriptor>
+        </EntityDescriptor>
       ENTITY
     end
 
@@ -249,17 +249,17 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
         let(:original_host_name) { Faker::Internet.domain_name }
         let(:original_enabled) { [true, false].sample }
         let(:original_xml) do
-          <<-ENTITY.strip_heredoc
-            <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
-              xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
-              entityID="#{entity_id_uri}">
-              <IDPSSODescriptor
-             protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-                <SingleSignOnService
-                  Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
-       Location="https://#{original_host_name}/idp/profile/SAML2/Redirect/SSO"/>
-              </IDPSSODescriptor>
-            </EntityDescriptor>
+          <<~ENTITY
+                 <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+                   xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+                   entityID="#{entity_id_uri}">
+                   <IDPSSODescriptor
+                  protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                     <SingleSignOnService
+                       Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+            Location="https://#{original_host_name}/idp/profile/SAML2/Redirect/SSO"/>
+                   </IDPSSODescriptor>
+                 </EntityDescriptor>
           ENTITY
         end
 
@@ -560,7 +560,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
       context 'with invalid xml' do
         subject { -> { run } }
         let(:xml) do
-          <<-ENTITY.strip_heredoc
+          <<~ENTITY
             <IDPSSODescriptor
               protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
               <SingleSignOnService

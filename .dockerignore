@@ -1,0 +1,8 @@
+.git
+.github
+coverage
+log
+public/assets
+tmp
+storage
+.vscode

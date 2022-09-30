@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'RawEntityDescriptor xml' do
   let(:ed_xml) do
-    <<-ENTITY.strip_heredoc
+    <<~ENTITY
       <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
           entityID="https://test.example.com/idp/shibboleth">
         <AttributeAuthorityDescriptor

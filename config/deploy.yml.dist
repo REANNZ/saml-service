@@ -1,5 +1,0 @@
----
-puma:
-  bind: tcp://0.0.0.0:8080
-  stdout: tmp/logs/stdout.log
-  stderr: tmp/logs/stderr.log

@@ -67,21 +67,21 @@ RSpec.describe SetSamlTypeFromXml do
     allow(ed_node).to receive(:xpath) do |path|
       if path.match?(/EntityAttributes/)
         prefix = './/*[local-name() = "EntityAttributes" ' \
-          'and namespace-uri() = "urn:oasis:names:tc:SAML:metadata:attribute"]'\
-          '/*[local-name() = "Attribute" ' \
-          'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion" ' \
-          'and @Name = "'
+                 'and namespace-uri() = "urn:oasis:names:tc:SAML:metadata:attribute"]' \
+                 '/*[local-name() = "Attribute" ' \
+                 'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion" ' \
+                 'and @Name = "'
 
         suffix = '"]' \
-          '/*[local-name() = "AttributeValue" ' \
-          'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion"]'
+                 '/*[local-name() = "AttributeValue" ' \
+                 'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion"]'
 
         getter = ->(v) { entity_attributes.fetch(v, []) }
       else
         prefix = '//*[local-name() = "'
 
         suffix = '" and namespace-uri() = ' \
-          '"urn:oasis:names:tc:SAML:2.0:metadata"]'
+                 '"urn:oasis:names:tc:SAML:2.0:metadata"]'
 
         getter = lambda do |v|
           expect(xpath_results).to have_key(v)

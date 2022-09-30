@@ -2,6 +2,13 @@
 
 AAF service responsible for Security Assertion Markup Language (SAML) data storage, metadata generation and inter-federation metadata processing.
 
+
+ ![dev](https://argocd.services.aaf.edu.au/api/badge?name=saml-service-development) dev
+
+ ![test](https://argocd.services.aaf.edu.au/api/badge?name=saml-service-test) test
+
+ ![production](https://argocd.services.aaf.edu.au/api/badge?name=saml-service-production) production
+
 ## Local Development
 
 SAML Service requires ruby installed through rbenv and a running instance of mysql.

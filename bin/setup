@@ -14,11 +14,6 @@ FileUtils.chdir APP_ROOT do
   system! 'gem install bundler --conservative'
   system('bundle check') || system!('bundle install')
 
-  puts("\n== Configuring Application ==")
-  FileUtils.copy 'config/saml_service.yml.dist', 'config/saml_service.yml'
-  FileUtils.copy 'config/secrets.yml.codeship', 'config/secrets.yml'
-  FileUtils.copy 'config/deploy.yml.dist', 'config/deploy.yml'
-
   puts "\n== Download XML schemas =="
   # Download XML schemas
   system!('bundle exec rake xsd:all')

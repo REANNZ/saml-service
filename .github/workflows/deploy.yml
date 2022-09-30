@@ -1,0 +1,123 @@
+name: Build Docker Image
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+
+jobs:
+  push:
+    name: Test, build and push image
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      ECR_REPOSITORY: saml-service
+      IMAGE_TAG: ${{ github.sha }}
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - "3306:3306"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ secrets.ROLE }}
+          role-session-name: GithubActions-saml-service-ci
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: "Calculate Image ID & Version"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          IMAGE_ID=$(echo "$ECR_REGISTRY/$ECR_REPOSITORY" | tr '[A-Z]' '[a-z]')
+          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build Test OCI Image
+        run: |
+          docker pull $IMAGE_ID:latest || true
+          docker build --target development \
+          --build-arg DOCKER_ECR=${{ secrets.DOCKER_ECR }} \
+          --cache-from $IMAGE_ID:latest -t $IMAGE_ID:$IMAGE_TAG .
+
+      - name: Rubocop
+        run: |
+          docker run \
+            $IMAGE_ID:$IMAGE_TAG \
+            "rubocop -P"
+
+      - name: Brakeman
+        run: |
+          docker run \
+            $IMAGE_ID:$IMAGE_TAG \
+            brakeman
+
+      - name: Ensure MySQL is ready
+        timeout-minutes: 5
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" --silent; do
+            sleep 1
+          done
+
+      - name: RSpec
+        env:
+          SAML_DB_USERNAME: root
+          SAML_DB_PASSWORD: password
+          SAML_DB_HOST: host.docker.internal
+          PREPARE_DB: true
+          RAILS_ENV: test
+        run: |
+          docker run \
+            --env-file=.env.test.dist \
+            --add-host=$SAML_DB_HOST:host-gateway \
+            -e SAML_DB_HOST \
+            -e PREPARE_DB \
+            -e SAML_DB_USERNAME \
+            -e SAML_DB_PASSWORD \
+            $IMAGE_ID:$IMAGE_TAG \
+            rspec
+
+      - name: Build Production OCI Image
+        run: |
+          docker pull $IMAGE_ID:latest || true
+          docker build --cache-from $IMAGE_ID:latest \
+          --build-arg DOCKER_ECR=${{ secrets.DOCKER_ECR }} \
+          --build-arg RELEASE_VERSION=${IMAGE_TAG} \
+          -t $IMAGE_ID:$IMAGE_TAG .
+
+      - name: Push to ECR
+        if: (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') && github.event_name == 'push'
+        run: |
+          docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:$VERSION
+          docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
+          docker push --all-tags $IMAGE_ID
+
+      - name: Update GitOps Repo to trigger deploys
+        if: env.BRANCH_NAME == 'master' && github.event_name == 'push'
+        uses: ausaccessfed/publish_app@v1.0.11
+        with:
+          environments: test,production
+          projects: saml-service
+
+      - name: Update GitOps Repo to trigger deploys
+        if: env.BRANCH_NAME == 'develop' && github.event_name == 'push'
+        uses: ausaccessfed/publish_app@v1.0.11
+        with:
+          environments: development
+          projects: saml-service

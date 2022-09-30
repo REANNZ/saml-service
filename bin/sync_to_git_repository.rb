@@ -12,7 +12,7 @@ class SyncToGitRepository
   def initialize(args)
     if args.length != 3
       warn("usage: #{$PROGRAM_NAME} /path/to/config/file" \
-                   'md_instance_identifier /path/to/git/repository')
+           'md_instance_identifier /path/to/git/repository')
       exit 1
     end
 
@@ -70,7 +70,6 @@ class SyncToGitRepository
 
   def sweep(touched)
     prefix = "entities/#{@md_instance.identifier}-"
-
     all = @repository.index.map { |e| e[:path] }
                      .select { |p| p.start_with?(prefix) }
 
@@ -155,4 +154,11 @@ class SyncToGitRepository
 end
 # rubocop:enable Metrics/ClassLength
 
-SyncToGitRepository.new(ARGV).perform if $PROGRAM_NAME == __FILE__
+if $PROGRAM_NAME == __FILE__
+  begin
+    SyncToGitRepository.new(ARGV).perform
+  rescue StandardError => e
+    Sentry.capture_exception(e)
+    raise e
+  end
+end

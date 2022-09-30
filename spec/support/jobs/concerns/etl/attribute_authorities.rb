@@ -139,7 +139,7 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
       {
         id: i,
         description: Faker::Lorem.sentence,
-        oid: "#{Faker::Number.number(digits: 4)}:"\
+        oid: "#{Faker::Number.number(digits: 4)}:" \
              "#{Faker::Number.number(digits: 4)}"
       }
     end

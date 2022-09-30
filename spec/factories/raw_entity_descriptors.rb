@@ -12,7 +12,7 @@ FactoryBot.define do
     association :known_entity
 
     xml do
-      <<-ENTITY.strip_heredoc.strip
+      <<~ENTITY.strip
         <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
           xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
           entityID="#{entity_id_uri}">
@@ -58,7 +58,7 @@ FactoryBot.define do
     factory :raw_entity_descriptor_idp do
       idp { true }
       xml do
-        <<-ENTITY.strip_heredoc.strip
+        <<~ENTITY.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">
@@ -102,7 +102,7 @@ FactoryBot.define do
     factory :raw_entity_descriptor_sp do
       sp { true }
       xml do
-        <<-ENTITY.strip_heredoc.strip
+        <<~ENTITY.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:idpdisc=
               "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
@@ -156,7 +156,7 @@ FactoryBot.define do
       association :known_entity
 
       xml do
-        <<-ENTITY.strip_heredoc.strip
+        <<~ENTITY.strip
           <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">
@@ -211,7 +211,7 @@ FactoryBot.define do
       association :known_entity
 
       xml do
-        <<-ENTITY.strip_heredoc.strip
+        <<~ENTITY.strip
           <xyz:EntityDescriptor xmlns:xyz="urn:oasis:names:tc:SAML:2.0:metadata"
             xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
             entityID="#{entity_id_uri}">
