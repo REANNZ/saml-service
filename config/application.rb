@@ -29,7 +29,9 @@ module Saml
           negative_cache_ttl: 600
         },
         api: {
-          authentication: :token
+          authentication: :token,
+          edugain_export_tag_name: ENV.fetch('API_EDUGAIN_EXPORT_TAG_NAME', 'aaf-edugain-export'),
+          edugain_verified_tag_name: ENV.fetch('API_EDUGAIN_VERIFIED_TAG_NAME', 'aaf-edugain-verified')
         },
         url_options: {
           base_url: ENV.fetch('BASE_URL', nil)
