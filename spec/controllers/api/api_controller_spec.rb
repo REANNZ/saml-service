@@ -190,7 +190,7 @@ RSpec.describe API::APIController, type: :controller do
       context 'with a CN that does not represent an APISubject' do
         before do
           request.headers['HTTP_X509_DN'] = "/CN=#{Faker::Lorem.word}/" \
-                                        "O=#{Faker::Lorem.word}"
+                                            "O=#{Faker::Lorem.word}"
           get :an_action
         end
 
@@ -252,7 +252,7 @@ RSpec.describe API::APIController, type: :controller do
       before do
         auth_type(:x509)
         request.headers['HTTP_X509_DN'] = "/CN=#{api_subject.x509_cn}/" \
-                                      "O=#{Faker::Lorem.word}"
+                                          "O=#{Faker::Lorem.word}"
         get :an_action
       end
 

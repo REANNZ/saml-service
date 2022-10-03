@@ -9,15 +9,16 @@ gem 'mysql2'
 gem 'sequel', '>= 4.0.0', '< 5'
 gem 'sequel-rails'
 
+gem 'crawler_detect'
 gem 'nokogiri', '>= 1.8.5'
 gem 'xmldsig'
 
+gem 'implicit-schema'
+gem 'lograge'
 gem 'redis'
 gem 'redis-rails'
 gem 'resque'
 gem 'resque-retry'
-
-gem 'implicit-schema'
 
 gem 'recursive-open-struct'
 
@@ -28,6 +29,9 @@ gem 'bcrypt', '~> 3.1'
 gem 'rugged', '0.28.4.1', require: false
 
 gem 'puma', require: false
+
+gem 'sentry-rails'
+gem 'sentry-ruby'
 
 group :development, :test do
   gem 'capybara'

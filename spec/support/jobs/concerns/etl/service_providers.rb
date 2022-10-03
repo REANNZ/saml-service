@@ -135,7 +135,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
       {
         id: i,
         description: Faker::Lorem.sentence,
-        oid: "#{Faker::Number.number(digits: 4)}:"\
+        oid: "#{Faker::Number.number(digits: 4)}:" \
              "#{Faker::Number.number(digits: 4)}",
         approved: true,
         values: []
@@ -143,7 +143,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
     end.push(
       id: attribute_count,
       description: Faker::Lorem.sentence,
-      oid: "#{Faker::Number.number(digits: 4)}:"\
+      oid: "#{Faker::Number.number(digits: 4)}:" \
            "#{Faker::Number.number(digits: 4)}",
       approved: true,
       values: [],
@@ -151,7 +151,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
     ).push(
       id: attribute_count + 1,
       description: Faker::Lorem.sentence,
-      oid: "#{Faker::Number.number(digits: 4)}:"\
+      oid: "#{Faker::Number.number(digits: 4)}:" \
            "#{Faker::Number.number(digits: 4)}",
       approved: true,
       values: [{ approved: true, value: Faker::Number.number(digits: 4) },
@@ -160,7 +160,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
     ).push(
       id: attribute_count + 2,
       description: Faker::Lorem.sentence,
-      oid: "#{Faker::Number.number(digits: 4)}:"\
+      oid: "#{Faker::Number.number(digits: 4)}:" \
            "#{Faker::Number.number(digits: 4)}",
       approved: false,
       values: []
@@ -210,7 +210,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
         [
           id: 0,
           description: Faker::Lorem.sentence,
-          oid: "#{Faker::Number.number(digits: 4)}:"\
+          oid: "#{Faker::Number.number(digits: 4)}:" \
                "#{Faker::Number.number(digits: 4)}",
           approved: true,
           values: [],

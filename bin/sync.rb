@@ -17,4 +17,11 @@ class SyncCLI
   end
 end
 
-SyncCLI.perform(*ARGV) if $PROGRAM_NAME == __FILE__
+if $PROGRAM_NAME == __FILE__
+  begin
+    SyncCLI.perform(*ARGV)
+  rescue StandardError => e
+    Sentry.capture_exception(e)
+    raise e
+  end
+end

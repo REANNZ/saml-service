@@ -3,7 +3,7 @@
 module SetSamlTypeFromXml
   def self.xpath_for_metadata_element(name)
     "//*[local-name() = \"#{name}\" and " \
-    'namespace-uri() = "urn:oasis:names:tc:SAML:2.0:metadata"]'
+      'namespace-uri() = "urn:oasis:names:tc:SAML:2.0:metadata"]'
   end
 
   ENTITY_DESCRIPTOR_XPATH = xpath_for_metadata_element('EntityDescriptor')
@@ -18,12 +18,12 @@ module SetSamlTypeFromXml
 
   def self.xpath_for_entity_attribute_values(name)
     './/*[local-name() = "EntityAttributes" ' \
-    'and namespace-uri() = "urn:oasis:names:tc:SAML:metadata:attribute"]' \
-    '/*[local-name() = "Attribute" ' \
-    'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion" ' \
-    "and @Name = \"#{name}\"]" \
-    '/*[local-name() = "AttributeValue" ' \
-    'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion"]'
+      'and namespace-uri() = "urn:oasis:names:tc:SAML:metadata:attribute"]' \
+      '/*[local-name() = "Attribute" ' \
+      'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion" ' \
+      "and @Name = \"#{name}\"]" \
+      '/*[local-name() = "AttributeValue" ' \
+      'and namespace-uri() = "urn:oasis:names:tc:SAML:2.0:assertion"]'
   end
 
   private_constant :ENTITY_DESCRIPTOR_XPATH, :IDP_SSO_DESCRIPTOR_XPATH,

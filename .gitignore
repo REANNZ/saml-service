@@ -26,3 +26,6 @@ config/unicorn.dev.rb
 saml-service.iml
 
 .rubocop-https---raw-githubusercontent-com-ausaccessfed-aaf-gumboot-develop-aaf-rubocop-yml
+.vscode
+.env*
+!.env*.dist

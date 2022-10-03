@@ -146,7 +146,7 @@ module RawEntityDescriptorDeconstructor
     OpenStruct.new(hash)
   end
 
-  class <<self
+  class << self
     private
 
     def element_xpath(uri, name)

@@ -84,6 +84,8 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    crawler_detect (1.2.1)
+      qonfig (~> 0.24)
     diff-lcs (1.5.0)
     docile (1.1.5)
     erubi (1.11.0)
@@ -144,6 +146,11 @@ GEM
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
+    lograge (0.12.0)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      railties (>= 4)
+      request_store (~> 1.0)
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -187,6 +194,7 @@ GEM
     public_suffix (4.0.6)
     puma (5.6.4)
       nio4r (~> 2.0)
+    qonfig (0.28.0)
     raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.4)
@@ -250,6 +258,8 @@ GEM
     redis-store (1.9.1)
       redis (>= 4, < 5)
     regexp_parser (2.2.1)
+    request_store (1.5.1)
+      rack (>= 1.4)
     resque (2.2.0)
       mono_logger (~> 1.0)
       multi_json (~> 1.0)
@@ -312,6 +322,11 @@ GEM
     rufus-scheduler (3.6.0)
       fugit (~> 1.1, >= 1.1.6)
     rugged (0.28.4.1)
+    sentry-rails (5.4.2)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.4.2)
+    sentry-ruby (5.4.2)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sequel (4.49.0)
     sequel-rails (1.1.1)
       actionpack (>= 4.0.0)
@@ -371,6 +386,7 @@ DEPENDENCIES
   accession
   bcrypt (~> 3.1)
   capybara
+  crawler_detect
   factory_bot_rails (~> 4.11)
   faker
   fakeredis
@@ -381,6 +397,7 @@ DEPENDENCIES
   guard-rubocop (= 1.3.0)
   implicit-schema
   jbuilder
+  lograge
   mysql2
   nokogiri (>= 1.8.5)
   pry-byebug
@@ -401,6 +418,8 @@ DEPENDENCIES
   rubocop-faker (= 1.0.0)
   rubocop-rails (= 2.6.0)
   rugged (= 0.28.4.1)
+  sentry-rails
+  sentry-ruby
   sequel (>= 4.0.0, < 5)
   sequel-rails
   shoulda-matchers
@@ -410,4 +429,4 @@ DEPENDENCIES
   xmldsig
 
 BUNDLED WITH
-   1.17.2
+   2.3.19

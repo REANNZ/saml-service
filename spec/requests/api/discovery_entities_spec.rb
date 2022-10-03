@@ -9,7 +9,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
   shared_examples 'a discovery entity' do
     it 'includes the entity id' do
-      expect(subject.map { |obj| obj[:entity_id] })
+      expect(subject.pluck(:entity_id))
         .to include(entity.entity_id.uri)
     end
 

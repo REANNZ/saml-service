@@ -78,10 +78,27 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   if ENV['RAILS_LOG_TO_STDOUT'].present?
-    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger           = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
-    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+    config.lograge.enabled = true
+    config.lograge.ignore_actions = ['HealthController#show']
+    config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
+
+  config.cache_store = if ENV['REDIS_HOST'].present?
+                         [:redis_cache_store, {
+                           url: config.saml_service[:redis][:url],
+                           ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE },
+                           namespace: 'val'
+                         }]
+                       ## this is the legacy config can be removed once nnwo is used for live
+                       else
+                         [:redis_cache_store, {
+                           url: config.saml_service[:redis][:url]
+                         }]
+                       end
+
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector

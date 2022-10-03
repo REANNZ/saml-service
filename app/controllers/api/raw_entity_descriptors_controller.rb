@@ -92,8 +92,8 @@ module API
     end
 
     def access_path
-      "entity_sources:#{@entity_source.source_tag}:raw_entity_descriptors:"\
-      'create'
+      "entity_sources:#{@entity_source.source_tag}:raw_entity_descriptors:" \
+        'create'
     end
 
     def xml_node

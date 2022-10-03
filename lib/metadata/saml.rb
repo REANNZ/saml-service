@@ -374,9 +374,7 @@ module Metadata
         end
 
         # IDPSSODescriptor specific
-        if rd.is_a? IDPSSODescriptor
-          disco_hints(rd.disco_hints) if rd.disco_hints.present?
-        end
+        disco_hints(rd.disco_hints) if rd.is_a?(IDPSSODescriptor) && rd.disco_hints.present?
 
         # SPSSODescriptor specific
         if rd.is_a? SPSSODescriptor

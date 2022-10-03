@@ -1,0 +1,174 @@
+name: Build Docker Image
+on:
+  schedule:
+    - cron: "0 0 * * SUN"
+  push:
+    branches:
+      - master
+  pull_request:
+  issue_comment:
+    types: [created]
+
+jobs:
+  push:
+    if: github.event_name != 'issue_comment' || (contains(github.event.comment.body, '/deploy')  && contains('phyzical,ArthurZheng,ritchiey,matthew-puku,rianniello,Kfoster14,waldofouche', github.event.author.login))
+    name: Test, build and push image
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      statuses: write
+      pull-requests: read
+    env:
+      ECR_REPOSITORY: saml-service
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - "3306:3306"
+
+    steps:
+      - uses: xt0rted/pull-request-comment-branch@v1
+        if: github.event_name == 'issue_comment'
+        id: comment-branch
+
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        if: github.event_name == 'issue_comment'
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          description: "testing, building and pushing image"
+          context: "Dev federation deploy"
+
+      - name: set envs
+        run: |
+          ## PR comment branch || pr branch || default branch
+          if [ "${{ steps.comment-branch.outputs.head_ref }}" != "" ]; then
+            branch_name="${{ steps.comment-branch.outputs.head_ref }}"
+          elif [ "${{ github.head_ref }}" != "" ]; then
+            branch_name="${{ github.head_ref }}"
+          else
+            branch_name="${{ github.ref_name }}"
+          fi
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+
+          if [ "${{github.event_name}}" == "issue_comment" ]; then
+            image_tag=${{steps.comment-branch.outputs.head_ref}}
+          else
+            image_tag=${{github.sha}}
+          fi
+          image_tag=$(echo "$image_tag" | tr / _)
+          echo "IMAGE_TAG=$image_tag" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ secrets.ROLE }}
+          role-session-name: GithubActions-saml-service-ci
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: "Calculate Image ID & Version"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          IMAGE_ID=$(echo "$ECR_REGISTRY/$ECR_REPOSITORY" | tr '[A-Z]' '[a-z]')
+          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build Test OCI Image
+        run: |
+          docker pull $IMAGE_ID:latest || true
+          docker build --target development \
+          --build-arg DOCKER_ECR=${{ secrets.DOCKER_ECR }} \
+          --cache-from $IMAGE_ID:latest -t $IMAGE_ID:$IMAGE_TAG .
+
+      - name: Rubocop
+        run: |
+          docker run \
+            $IMAGE_ID:$IMAGE_TAG \
+            "rubocop -P"
+
+      - name: Brakeman
+        run: |
+          docker run \
+            $IMAGE_ID:$IMAGE_TAG \
+            brakeman
+
+      - name: Ensure MySQL is ready
+        timeout-minutes: 5
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" --silent; do
+            sleep 1
+          done
+
+      - name: RSpec
+        env:
+          SAML_DB_USERNAME: root
+          SAML_DB_PASSWORD: password
+          SAML_DB_HOST: host.docker.internal
+          PREPARE_DB: true
+          RAILS_ENV: test
+        run: |
+          docker run \
+            --env-file=.env.test.dist \
+            --add-host=$SAML_DB_HOST:host-gateway \
+            -e SAML_DB_HOST \
+            -e PREPARE_DB \
+            -e SAML_DB_USERNAME \
+            -e SAML_DB_PASSWORD \
+            $IMAGE_ID:$IMAGE_TAG \
+            rspec
+
+      - name: Build Production OCI Image
+        run: |
+          docker pull $IMAGE_ID:latest || true
+          docker build --cache-from $IMAGE_ID:latest \
+          --build-arg DOCKER_ECR=${{ secrets.DOCKER_ECR }} \
+          --build-arg RELEASE_VERSION=${IMAGE_TAG} \
+          -t $IMAGE_ID:$IMAGE_TAG .
+
+      - name: Push to ECR
+        if: github.event_name == 'push' || github.event_name == 'issue_comment'
+        run: |
+          docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:$VERSION
+          [ "$VERSION" == "master" ]  && [ "${{github.event_name}}" == "push" ] && docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
+          docker push --all-tags $IMAGE_ID
+
+      - name: Update GitOps Repo to trigger deploys
+        if: env.BRANCH_NAME == 'master' && github.event_name == 'push'
+        uses: ausaccessfed/publish_app@v1.0.11
+        with:
+          environments: test,production
+          projects: saml-service
+
+      - name: Update GitOps Repo to trigger deploys
+        if: github.event_name == 'issue_comment' || github.event_name == 'schedule'
+        uses: ausaccessfed/publish_app@v1.0.11
+        with:
+          environments: development
+          projects: saml-service
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        if: always() && github.event_name == 'issue_comment'
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          targetUrl: https://saml.dev.aaf.edu.au
+          description: "Manifest updated, Deploying to saml.dev.aaf.edu.au (may take up to 5 minutes)"
+          context: "Dev federation deploy"
