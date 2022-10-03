@@ -58,7 +58,7 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rubocop', '0.85.1', require: false
-  gem 'rubocop-ast', '0.0.3', require: false
+  gem 'rubocop-ast', '1.21.0', require: false
   gem 'rubocop-faker', '1.0.0', require: false
   gem 'rubocop-rails', '2.6.0', require: false
 end
