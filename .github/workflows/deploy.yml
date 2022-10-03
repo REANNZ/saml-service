@@ -1,22 +1,26 @@
 name: Build Docker Image
 on:
+  schedule:
+    - cron: "0 0 * * SUN"
   push:
     branches:
-      - develop
       - master
   pull_request:
+  issue_comment:
+    types: [created]
 
 jobs:
   push:
+    if: github.event_name != 'issue_comment' || (contains(github.event.comment.body, '/deploy')  && contains('phyzical,ArthurZheng,ritchiey,matthew-puku,rianniello,Kfoster14,waldofouche', github.event.author.login))
     name: Test, build and push image
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+      statuses: write
+      pull-requests: read
     env:
       ECR_REPOSITORY: saml-service
-      IMAGE_TAG: ${{ github.sha }}
-      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     services:
       mysql:
         image: mysql:5.7
@@ -26,7 +30,43 @@ jobs:
           - "3306:3306"
 
     steps:
+      - uses: xt0rted/pull-request-comment-branch@v1
+        if: github.event_name == 'issue_comment'
+        id: comment-branch
+
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        if: github.event_name == 'issue_comment'
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          description: "testing, building and pushing image"
+          context: "Dev federation deploy"
+
+      - name: set envs
+        run: |
+          ## PR comment branch || pr branch || default branch
+          if [ "${{ steps.comment-branch.outputs.head_ref }}" != "" ]; then
+            branch_name="${{ steps.comment-branch.outputs.head_ref }}"
+          elif [ "${{ github.head_ref }}" != "" ]; then
+            branch_name="${{ github.head_ref }}"
+          else
+            branch_name="${{ github.ref_name }}"
+          fi
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+
+          if [ "${{github.event_name}}" == "issue_comment" ]; then
+            image_tag=${{steps.comment-branch.outputs.head_ref}}
+          else
+            image_tag=${{github.sha}}
+          fi
+          image_tag=$(echo "$image_tag" | tr / _)
+          echo "IMAGE_TAG=$image_tag" >> $GITHUB_ENV
+
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH_NAME }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@master
@@ -102,10 +142,10 @@ jobs:
           -t $IMAGE_ID:$IMAGE_TAG .
 
       - name: Push to ECR
-        if: (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') && github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'issue_comment'
         run: |
           docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:$VERSION
-          docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
+          [ "$VERSION" == "master" ]  && [ "${{github.event_name}}" == "push" ] && docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
           docker push --all-tags $IMAGE_ID
 
       - name: Update GitOps Repo to trigger deploys
@@ -116,8 +156,19 @@ jobs:
           projects: saml-service
 
       - name: Update GitOps Repo to trigger deploys
-        if: env.BRANCH_NAME == 'develop' && github.event_name == 'push'
+        if: github.event_name == 'issue_comment' || github.event_name == 'schedule'
         uses: ausaccessfed/publish_app@v1.0.11
         with:
           environments: development
           projects: saml-service
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        if: always() && github.event_name == 'issue_comment'
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          targetUrl: https://saml.dev.aaf.edu.au
+          description: "Manifest updated, Deploying to saml.dev.aaf.edu.au (may take up to 5 minutes)"
+          context: "Dev federation deploy"

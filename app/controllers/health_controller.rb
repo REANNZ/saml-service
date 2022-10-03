@@ -5,10 +5,19 @@ class HealthController < ApplicationController
   skip_after_action :ensure_access_checked
 
   def show
-    redis_url = Rails.application.config.saml_service[:redis][:url]
+    render json: {
+      version: Rails.application.config.saml_service[:version],
+      redis_active: redis_active?,
+      db_active: Sequel::Model.db.test_connection
+    }
+  end
+
+  private
+
+  def redis_active?
     (Rails.env.production? && Redis.new(
-      url: redis_url,
+      url: Rails.application.config.saml_service[:redis][:url],
       ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
-    ).ping) && Sequel::Model.db.test_connection
+    ).ping)
   end
 end
