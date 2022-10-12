@@ -17,6 +17,7 @@ class SyncCLI
   end
 end
 
+# :nocov:
 if $PROGRAM_NAME == __FILE__
   begin
     SyncCLI.perform(*ARGV)
@@ -25,3 +26,4 @@ if $PROGRAM_NAME == __FILE__
     raise e
   end
 end
+# :nocov:

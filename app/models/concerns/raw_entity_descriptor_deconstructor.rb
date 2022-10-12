@@ -112,10 +112,6 @@ module RawEntityDescriptorDeconstructor
     end
   end
 
-  def geolocation_parts(uri)
-    URI.parse(uri).opaque.split(',', 3)
-  end
-
   def valid_geolocation_uri?(uri)
     MDUI::GeolocationHint.valid_uri?(uri)
   end

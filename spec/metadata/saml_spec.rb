@@ -478,7 +478,10 @@ RSpec.describe Metadata::Saml do
 
   context 'ds:Signature Root EntityDescriptor' do
     let(:entity) { create(:idp_sso_descriptor).entity_descriptor }
-    before { subject.root_entity_descriptor(entity.known_entity) }
+    before do
+      entity.add_sirtfi_contact_person create :sirtfi_contact_person, entity_descriptor: entity
+      subject.root_entity_descriptor(entity.known_entity)
+    end
     include_examples 'ds:Signature xml' do
       let(:root_node) { 'EntityDescriptor' }
     end

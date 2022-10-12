@@ -53,7 +53,7 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
     }
   end
 
-  def create_aa_json(idp, aa)
+  def create_aa_json(idp, aa, extract)
     {
       id: aa.id,
       display_name: Faker::Lorem.sentence,
@@ -61,7 +61,7 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
       functioning: aa.functioning?,
       created_at: idp_created_at,
       saml: {
-        extract_metadata_from_idp_sso_descriptor: true,
+        extract_metadata_from_idp_sso_descriptor: extract,
         attribute_services:
           aa.attribute_services.map { |as| endpoint_json(as) },
         idp_sso_descriptor: idp.id
@@ -126,7 +126,7 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
 
   let(:attribute_authorities_list) do
     attribute_authorities_instances.map do |aa|
-      create_aa_json(identity_provider_instances.first, aa)
+      create_aa_json(identity_provider_instances.first, aa, true)
     end
   end
 
@@ -206,6 +206,18 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
         .to change { Tag.count }.by(1)
     end
 
+    context 'without a scope' do
+      let(:attribute_authorities_list) do
+        attribute_authorities_instances.map do |aa|
+          create_aa_json(identity_provider_instances.first, aa, false)
+        end
+      end
+
+      it 'works' do
+        expect { run }.to raise_error(StandardError, 'Does not support AA (even standalone) who do not derive from IdP')
+      end
+    end
+
     context 'created instance' do
       before { run }
 
@@ -214,6 +226,15 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
                updated_at: -> { truncated_now },
                error_url: -> { source_idp.error_url })
       end
+
+      context 'with idp_sso_descriptors' do
+        let(:entity_descriptor) { create :entity_descriptor, :with_idp }
+
+        it 'works' do
+          expect(subject.scopes.size).to eq(1)
+        end
+      end
+
       context 'scopes' do
         it 'sets a scope' do
           expect(subject.scopes.size).to eq(1)

@@ -82,12 +82,10 @@ RSpec.describe SyncToGitRepository do
              config: config, branches: [branch])
     end
 
-    subject do
-      described_class.new([sync_config_path, md_instance.identifier, path])
-    end
+    let(:argv) { [sync_config_path, md_instance.identifier, path] }
 
-    def run
-      subject.perform
+    subject(:run) do
+      described_class.new(argv).perform
     end
 
     def author
@@ -218,6 +216,16 @@ RSpec.describe SyncToGitRepository do
 
       it 'runs without error' do
         run
+      end
+    end
+
+    context 'when wrong number of args' do
+      let!(:entity) { create(:known_entity) }
+
+      let(:argv) { [] }
+
+      it 'raises' do
+        expect { run }.to raise_error(StandardError)
       end
     end
   end
