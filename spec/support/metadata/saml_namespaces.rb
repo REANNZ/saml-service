@@ -16,6 +16,16 @@ RSpec.shared_examples 'SAML namespaces' do
     it { is_expected.to respond_to(:ds) }
     it { is_expected.to respond_to(:ns) }
 
+    it {
+      is_expected.to respond_to(:fed)
+      subject.fed
+    }
+
+    it {
+      is_expected.to respond_to(:privacy)
+      subject.privacy
+    }
+
     it 'has 12 namespaces defined' do
       expect(subject.ns.size).to eq(12)
       expect(Metadata::SamlNamespaces::NAMESPACES.size).to eq(12)

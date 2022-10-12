@@ -9,13 +9,10 @@ class MetadataQueryController < ApplicationController
 
   include MetadataQueryCaching
 
-  skip_before_action :ensure_authenticated
   before_action :ensure_get_request, :ensure_content_type,
                 :ensure_accept_charset, :ensure_metadata_instance
 
   def all_entities
-    public_action
-
     return not_found unless @metadata_instance.all_entities
 
     tags = [@metadata_instance.primary_tag]
@@ -23,21 +20,15 @@ class MetadataQueryController < ApplicationController
   end
 
   def tagged_entities
-    public_action
-
     tags = [@metadata_instance.primary_tag, params[:identifier]]
     handle_entities_request(tags)
   end
 
   def specific_entity
-    public_action
-
     handle_entity_request(select_entity_by_rank(EntityId.where(uri: params[:identifier]).all))
   end
 
   def specific_entity_sha1
-    public_action
-
     sha1_identifier = params[:identifier].match(SHA1_REGEX)
     handle_entity_request(select_entity_by_rank(EntityId.where(sha1: sha1_identifier[1]).all))
   end

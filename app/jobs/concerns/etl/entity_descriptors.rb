@@ -21,11 +21,13 @@ module Etl
         ed = create_or_update_ed_from_fr(o, ds, ed_data)
         ed_saml_core(ed, ed_data)
         indicate_content_updated(ed.known_entity)
+        # :nocov:
       rescue Sequel::ValidationFailed => e
         Rails.logger.error "Evicted FR entity #{ed_data[:entity_id]}"
         Rails.logger.error e
         raise e
       end
+      # :nocov:
     end
 
     def create_or_update_ed_from_fr(o, ds, ed_data)

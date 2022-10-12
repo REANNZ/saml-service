@@ -11,9 +11,8 @@ class SyncToGitRepository
 
   def initialize(args)
     if args.length != 3
-      warn("usage: #{$PROGRAM_NAME} /path/to/config/file" \
-           'md_instance_identifier /path/to/git/repository')
-      exit 1
+      raise("usage: #{$PROGRAM_NAME} /path/to/config/file" \
+            'md_instance_identifier /path/to/git/repository')
     end
 
     config_file_path, instance_identifier, repository_path = args
@@ -35,6 +34,7 @@ class SyncToGitRepository
   def credential
     git_auth_conf = @config['git_auth']
     git_auth_type = git_auth_conf['type'] if git_auth_conf
+    # :nocov:
     if git_auth_type == 'sshkey'
       Rugged::Credentials::SshKey.new(username: git_auth_conf['username'],
                                       publickey: git_auth_conf['publickey'],
@@ -43,6 +43,7 @@ class SyncToGitRepository
       Rugged::Credentials::UserPassword.new(username: git_auth_conf['username'],
                                             password: git_auth_conf['password'])
     end
+    # :nocov:
   end
 
   def push
@@ -154,6 +155,7 @@ class SyncToGitRepository
 end
 # rubocop:enable Metrics/ClassLength
 
+# :nocov:
 if $PROGRAM_NAME == __FILE__
   begin
     SyncToGitRepository.new(ARGV).perform
@@ -162,3 +164,4 @@ if $PROGRAM_NAME == __FILE__
     raise e
   end
 end
+# :nocov:

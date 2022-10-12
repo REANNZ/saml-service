@@ -48,6 +48,7 @@ run-image-tests:
 	docker run -it --rm --env-file=.env.test \
 	-v ${PWD}/app:/app/app \
 	-v ${PWD}/config:/app/config \
+	-v ${PWD}/coverage:/app/coverage \
 	-v ${PWD}/tmp/capybara:/app/tmp/capybara \
 	-v ${PWD}/lib:/app/lib \
 	-v ${PWD}/spec:/app/spec \
