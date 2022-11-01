@@ -15,11 +15,8 @@ RSpec.describe EntityId, type: :model do
   context 'validation' do
     subject { build :entity_id }
 
-    it 'has no sha1 value before validation' do
+    it 'has no sha1 and entity_source_id value before validation' do
       expect(subject.sha1).to be_nil
-    end
-
-    it 'has no entity_source_id before validation' do
       expect(subject.entity_source_id).to be_nil
     end
 
@@ -34,11 +31,8 @@ RSpec.describe EntityId, type: :model do
     context 'post validation' do
       before { subject.valid? }
 
-      it 'has sha1 value' do
-        expect(subject.sha1).not_to be_nil
-      end
-
       it 'calculates sha1 from uri' do
+        expect(subject.sha1).not_to be_nil
         expect(subject.sha1).to eq(Digest::SHA1.hexdigest(subject.uri))
       end
 

@@ -11,19 +11,13 @@ RSpec.shared_examples 'shibmd:Scope xml' do
   context 'shibmd:Scope' do
     it 'sets node value' do
       expect(node.text).to eq(scope.value)
+      expect(node[:regexp]).to eq('false')
     end
 
-    context 'regexp' do
-      context 'without' do
-        it 'is false' do
-          expect(node[:regexp]).to eq('false')
-        end
-      end
-      context 'with' do
-        let(:regexp) { true }
-        it 'is true' do
-          expect(node[:regexp]).to eq('true')
-        end
+    context 'regexp with' do
+      let(:regexp) { true }
+      it 'is true' do
+        expect(node[:regexp]).to eq('true')
       end
     end
   end

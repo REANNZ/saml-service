@@ -39,8 +39,8 @@ RSpec.describe MetadataQueryController, type: :controller do
         query
       end
 
-      it { is_expected.to have_http_status(:not_found) }
       it 'has relevant MUST/SHOULD headers per specification' do
+        is_expected.to have_http_status(:not_found)
         expect(subject.headers['Cache-Control']).to eq('max-age=600, private')
       end
     end
@@ -81,11 +81,8 @@ RSpec.describe MetadataQueryController, type: :controller do
     context 'response body' do
       subject { Capybara::Node::Simple.new(Nokogiri::XML.parse(response.body)) }
 
-      it 'Has a root EntityDescriptor element' do
+      it 'Has a root EntityDescriptor element and signature' do
         expect(subject).to have_xpath('/xmlns:EntityDescriptor')
-      end
-
-      it 'Has a signature element' do
         expect(subject
           .first(:xpath,
                  '/xmlns:EntityDescriptor/ds:Signature/ds:SignatureValue')
@@ -99,11 +96,8 @@ RSpec.describe MetadataQueryController, type: :controller do
     context 'response body' do
       subject { Capybara::Node::Simple.new(Nokogiri::XML.parse(response.body)) }
 
-      it 'Has a root EntityDescriptor element' do
+      it 'Has a root EntityDescriptor element and signature' do
         expect(subject).to have_xpath('/xmlns:EntitiesDescriptor')
-      end
-
-      it 'Has a signature element' do
         expect(subject
           .first(:xpath,
                  '/xmlns:EntitiesDescriptor/ds:Signature/ds:SignatureValue')
@@ -141,8 +135,8 @@ RSpec.describe MetadataQueryController, type: :controller do
 
           context 'response' do
             subject { response }
-            it { is_expected.to have_http_status(:not_found) }
             it 'has relevant MUST/SHOULD headers per specification' do
+              is_expected.to have_http_status(:not_found)
               expect(subject.headers['Cache-Control'])
                 .to eq('max-age=600, private')
             end
@@ -435,8 +429,8 @@ RSpec.describe MetadataQueryController, type: :controller do
 
             context 'response' do
               subject { response }
-              it { is_expected.to have_http_status(:not_found) }
               it 'has relevant MUST/SHOULD headers per specification' do
+                is_expected.to have_http_status(:not_found)
                 expect(subject.headers['Cache-Control'])
                   .to eq('max-age=600, private')
               end
@@ -595,8 +589,8 @@ RSpec.describe MetadataQueryController, type: :controller do
 
           context 'response' do
             subject { response }
-            it { is_expected.to have_http_status(:not_found) }
             it 'has relevant MUST/SHOULD headers per specification' do
+              is_expected.to have_http_status(:not_found)
               expect(subject.headers['Cache-Control'])
                 .to eq('max-age=600, private')
             end
@@ -665,16 +659,10 @@ RSpec.describe MetadataQueryController, type: :controller do
               context 'supplied entities' do
                 before { run }
 
-                it 'has 4 known entities in metadata_instance' do
+                it 'has 4 known entities in metadata_instance, secondary tag and 2 matching entitites' do
                   expect(KnownEntity.with_all_tags(primary_tag).count).to eq(6)
-                end
-
-                it 'has 4 known entities with secondary tag' do
                   expect(KnownEntity.with_all_tags(secondary_tag).count)
                     .to eq(6)
-                end
-
-                it 'renders only the 2 matching entities in metadata xml' do
                   xml = Capybara::Node::Simple.new(
                     Nokogiri::XML.parse(response.body)
                   )

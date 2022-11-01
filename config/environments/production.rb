@@ -89,7 +89,7 @@ Rails.application.configure do
                          [:redis_cache_store, {
                            url: config.saml_service[:redis][:url],
                            ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE },
-                           namespace: 'val'
+                           namespace: config.saml_service[:redis][:namespace]
                          }]
                        ## this is the legacy config can be removed once nnwo is used for live
                        else

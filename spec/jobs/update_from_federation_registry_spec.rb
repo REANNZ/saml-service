@@ -38,7 +38,6 @@ RSpec.describe UpdateFromFederationRegistry do
   def stub_fr_request(kind)
     url = "https://#{fr_source.hostname}/federationregistry/export/" \
           "#{kind.to_s.sub('_', '')}"
-
     stub_request(:get, url).with(headers: request_headers)
                            .to_return(status: 200,
                                       body: JSON.generate(kind => send(kind)))

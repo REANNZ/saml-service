@@ -37,6 +37,7 @@ module Saml
           base_url: ENV.fetch('BASE_URL', nil)
         },
         redis: {
+          namespace: ENV.fetch('REDIS_NAMESPACE', '_saml'),
           url: "#{ENV.fetch('REDIS_SCHEME', 'redis')}://#{redis_user}#{ENV.fetch('REDIS_HOST', 'localhost')}:6379/0"
         },
         version: "#{ENV.fetch('RELEASE_VERSION', 'OWO')}-#{ENV.fetch('SERIAL_NUMBER', 1)}"

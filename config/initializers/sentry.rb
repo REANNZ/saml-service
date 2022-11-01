@@ -2,10 +2,12 @@
 
 Sentry.init do |config|
   config.send_default_pii = true
-
   config.enabled_environments = [Rails.application.config.saml_service[:url_options][:base_url]]
   config.environment = Rails.application.config.saml_service[:url_options][:base_url]
   config.release = Rails.application.config.saml_service[:version]
+  config.logger = Logger.new(ENV.fetch('STDOUT', $stdout))
+  config.logger.level = Logger::WARN
+  config.capture_exception_frame_locals = true
 
   config.traces_sampler = lambda do |sampling_context|
     transaction_context = sampling_context[:transaction_context]

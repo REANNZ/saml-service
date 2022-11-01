@@ -12,25 +12,15 @@ RSpec.shared_examples 'AttributeConsumingService xml' do
   end
   it 'is created' do
     expect(xml).to have_xpath(attribute_consuming_service_path)
+    expect(xml).to have_xpath(requested_attribute_path)
   end
 
   context 'attributes' do
     let(:node) { xml.first(:xpath, attribute_consuming_service_path) }
 
     context 'index' do
-      it 'is rendered' do
-        expect(node['index']).to be_truthy
-      end
-      it 'has expected value' do
+      it 'is rendered and has expected value' do
         expect(node['index']).to eq(attribute_consuming_service.index.to_s)
-      end
-    end
-
-    context 'isDefault' do
-      it 'is rendered' do
-        expect(node['isDefault']).to be_truthy
-      end
-      it 'has expected value' do
         expect(node['isDefault'])
           .to eq(attribute_consuming_service.default.to_s)
       end
@@ -43,15 +33,10 @@ RSpec.shared_examples 'AttributeConsumingService xml' do
       expect(xml).to have_xpath(service_name_path)
     end
 
-    context 'attributes' do
-      context 'lang' do
-        it 'is rendered' do
-          expect(node['xml:lang']).not_to be_nil
-        end
-        it 'has expected value' do
-          expect(node['xml:lang'])
-            .to eq(attribute_consuming_service.service_names.first.lang)
-        end
+    context 'attributes lang' do
+      it 'is rendered' do
+        expect(node['xml:lang'])
+          .to eq(attribute_consuming_service.service_names.first.lang)
       end
     end
 
@@ -76,15 +61,10 @@ RSpec.shared_examples 'AttributeConsumingService xml' do
       expect(xml).to have_xpath(service_description_path)
     end
 
-    context 'attributes' do
-      context 'lang' do
-        it 'is rendered' do
-          expect(node['xml:lang']).not_to be_nil
-        end
-        it 'has expected value' do
-          expect(node['xml:lang'])
-            .to eq(attribute_consuming_service.service_descriptions.first.lang)
-        end
+    context 'attributes lang' do
+      it 'is rendered' do
+        expect(node['xml:lang'])
+          .to eq(attribute_consuming_service.service_descriptions.first.lang)
       end
     end
 
@@ -104,10 +84,6 @@ RSpec.shared_examples 'AttributeConsumingService xml' do
   end
 
   context 'RequestedAttributes' do
-    it 'is created' do
-      expect(xml).to have_xpath(requested_attribute_path)
-    end
-
     context 'multiple attributes' do
       let(:attribute_consuming_service) do
         create :attribute_consuming_service, :with_multiple_requested_attributes

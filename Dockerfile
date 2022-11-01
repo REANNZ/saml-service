@@ -12,19 +12,21 @@ RUN mkdir -p ./public/assets \
 	&& mkdir tmp/pids \
 	&& gem install bundler
 
-# Copy only the files required to run bundle install.
-# The bundle install layer below will be cached unless these files change
-COPY Gemfile Gemfile.lock ./
-
 # Install development tools so that the gems can be built
 # Once the gems are installed, the tools are purged as they are no longer required
 RUN apt-get install -y --no-install-recommends \
 	build-essential \
+	mariadb-client \
 	apt-utils \
 	unzip \
 	cmake \
-	pkg-config \
-	&& bundle install \
+	pkg-config
+
+# Copy only the files required to run bundle install.
+# The bundle install layer below will be cached unless these files change
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle install \
 	&& apt-get purge -y --auto-remove \
 	build-essential \
 	apt-utils \
@@ -32,16 +34,10 @@ RUN apt-get install -y --no-install-recommends \
 	libpq-dev \
 	gnupg \
 	cmake \
-	pkg-config
-
-RUN apt-get install -y mariadb-client
+	pkg-config \ 
+	unzip && apt-get clean
 
 COPY . .
-COPY .docker/bin ./bin
-RUN rm -rf .docker
-
-RUN apt-get purge -y --auto-remove unzip \
-	&& apt-get clean
 
 RUN bundle exec rake xsd:all
 

@@ -17,4 +17,12 @@ RSpec.describe 'bin/sync' do
     expect(UpdateEntitySource).to receive(:perform).with(id: entity_source.id)
     SyncCLI.perform(entity_source.source_tag)
   end
+
+  context 'with invalid id' do
+    let(:tag) { 'blah' }
+
+    it 'should raise' do
+      expect { SyncCLI.perform(tag) }.to raise_error(StandardError, "The source_tag #{tag} is invalid")
+    end
+  end
 end

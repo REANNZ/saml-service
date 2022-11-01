@@ -178,6 +178,11 @@ RSpec.describe SyncToGitRepository do
         it_behaves_like 'an up-to-date entity'
       end
 
+      context 'for non functioning entity' do
+        let(:raw_entity_descriptor) { create(:raw_entity_descriptor, enabled: false) }
+        it_behaves_like 'an up-to-date entity'
+      end
+
       context 'for a removed entity' do
         let(:stale_entity_id) { "#{Faker::Internet.url}/shibboleth" }
         let(:stale_entity_id_encoded) { Base64.urlsafe_encode64(stale_entity_id).delete('=') }

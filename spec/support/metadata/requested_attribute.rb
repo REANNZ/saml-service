@@ -3,6 +3,9 @@
 RSpec.shared_examples 'RequestedAttribute xml' do
   it 'is created' do
     expect(xml).to have_xpath(requested_attribute_path)
+    expect(xml).to have_xpath(requested_attribute_path, count: 1)
+    expect(node['Name']).to eq(requested_attribute.name)
+    expect(node['NameFormat']).to be_falsey
   end
 
   let(:attribute_value_path) do
@@ -12,29 +15,14 @@ RSpec.shared_examples 'RequestedAttribute xml' do
   let(:node) { xml.find(:xpath, requested_attribute_path) }
 
   context 'RequestedAttribute' do
-    it 'is created' do
-      expect(xml).to have_xpath(requested_attribute_path, count: 1)
-    end
-
     context 'attributes' do
-      it 'sets Name' do
-        expect(node['Name']).to eq(requested_attribute.name)
-      end
-
-      context 'NameFormat' do
-        context 'without value' do
-          it 'is not included' do
-            expect(node['NameFormat']).to be_falsey
-          end
+      context 'NameFormat with value' do
+        let(:requested_attribute) do
+          create :requested_attribute, :with_name_format
         end
-        context 'with value' do
-          let(:requested_attribute) do
-            create :requested_attribute, :with_name_format
-          end
-          it 'is included' do
-            expect(node['NameFormat'])
-              .to eq(requested_attribute.name_format.uri)
-          end
+        it 'is included' do
+          expect(node['NameFormat'])
+            .to eq(requested_attribute.name_format.uri)
         end
       end
 
@@ -60,8 +48,6 @@ RSpec.shared_examples 'RequestedAttribute xml' do
         let(:requested_attribute) { create :requested_attribute, :is_required }
         it 'is rendered' do
           expect(node['isRequired']).to be_truthy
-        end
-        it 'has correct value' do
           expect(node['isRequired']).to eq(requested_attribute.required.to_s)
         end
       end
@@ -79,9 +65,6 @@ RSpec.shared_examples 'RequestedAttribute xml' do
         let(:requested_attribute) { create :requested_attribute, :with_values }
         it 'is created' do
           expect(xml).to have_xpath(attribute_value_path, count: 3)
-        end
-
-        it 'renders expected values' do
           nodes.each_with_index do |node, i|
             expect(node.text)
               .to eq(requested_attribute.attribute_values[i].value)

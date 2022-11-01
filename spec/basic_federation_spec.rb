@@ -7,24 +7,17 @@ RSpec.describe 'BasicFederation' do
     create :basic_federation
   end
 
-  it 'creates a single EntitySource' do
-    expect { run }.to change(EntitySource, :count).by(1)
-  end
-
-  it 'creates five EntityDescriptors' do
-    expect { run }.to change(EntityDescriptor, :count).by(5)
-  end
-
-  it 'creates two IDPSSODescriptors' do
-    expect { run }.to change(IDPSSODescriptor, :count).by(2)
-  end
-
-  it 'creates three AttributeAuthorityDescriptors' do
-    expect { run }.to change(AttributeAuthorityDescriptor, :count).by(3)
-  end
-
-  it 'creates two SPSSODescriptors' do
-    expect { run }.to change(SPSSODescriptor, :count).by(2)
+  it 'creates 5 EntityDescriptor, 2 IDPSSODescriptor, 3 AttributeAuthorityDescriptor,' \
+     ' 2 SPSSODescriptor and 1 EntitySource' do
+    expect { run }.to change(EntitySource, :count).by(1).and(
+      change(EntityDescriptor, :count).by(5)
+    ).and(
+      change(IDPSSODescriptor, :count).by(2)
+    ).and(
+      change(AttributeAuthorityDescriptor, :count).by(3)
+    ).and(
+      change(SPSSODescriptor, :count).by(2)
+    )
   end
 
   before :all do
@@ -37,12 +30,9 @@ RSpec.describe 'BasicFederation' do
                     .map(&:entity_descriptor).flat_map(&:role_descriptors)
     end
 
-    it 'has protocol supports' do
-      subject.each { |rd| expect(rd.protocol_supports).not_to be_empty }
-    end
-
-    it 'provides cryptographic keys' do
+    it 'has protocol supports and key descriptors' do
       subject.each do |rd|
+        expect(rd.protocol_supports).not_to be_empty
         rd.key_descriptors.each do |kd|
           expect(kd.key_info.data).not_to be_empty
         end
@@ -94,9 +84,6 @@ RSpec.describe 'BasicFederation' do
     context 'Research and Scholarship' do
       it 'is created for each SPSSODescriptor' do
         expect(subject.size).to eq(2)
-      end
-
-      it 'specifies entity category attribute' do
         subject.each do |ed|
           ed.entity_attribute.attributes.each do |a|
             expect(a.name).to eq('http://macedir.org/entity-category')
@@ -122,16 +109,12 @@ RSpec.describe 'BasicFederation' do
                       .map(&:entity_descriptor).map(&:registration_info)
       end
 
-      it 'is created for each EntityDescriptor' do
-        subject.each { |ri| expect(ri).to be_valid }
-      end
-
-      it 'has a registration authority' do
-        subject.each { |ri| expect(ri.registration_authority).not_to be_nil }
-      end
-
-      it 'has a registration policy' do
-        subject.each { |ri| expect(ri.registration_policies).not_to be_nil }
+      it 'is created for each EntityDescriptor with authority and policies' do
+        subject.each do |ri|
+          expect(ri).to be_valid
+          expect(ri.registration_authority).not_to be_nil
+          expect(ri.registration_policies).not_to be_nil
+        end
       end
     end
 
@@ -141,20 +124,13 @@ RSpec.describe 'BasicFederation' do
                       .map(&:entity_descriptor).map(&:organization)
       end
 
-      it 'is created for each EntityDescriptor' do
-        subject.each { |o| expect(o).to be_valid }
-      end
-
-      it 'has organization name' do
-        subject.each { |o| expect(o.organization_names).not_to be_nil }
-      end
-
-      it 'has organization display_name' do
-        subject.each { |o| expect(o.organization_display_names).not_to be_nil }
-      end
-
-      it 'has organization urls' do
-        subject.each { |o| expect(o.organization_urls).not_to be_nil }
+      it 'is created for each EntityDescriptor with names and urls' do
+        subject.each do |o|
+          expect(o).to be_valid
+          expect(o.organization_names).not_to be_nil
+          expect(o.organization_display_names).not_to be_nil
+          expect(o.organization_urls).not_to be_nil
+        end
       end
     end
 
@@ -164,12 +140,11 @@ RSpec.describe 'BasicFederation' do
                       .map(&:entity_descriptor).flat_map(&:contact_people)
       end
 
-      it 'has contact_person' do
-        subject.each { |cp| expect(cp.contact_type).to eq(:technical) }
-      end
-
-      it 'has email' do
-        subject.each { |cp| expect(cp.contact.email_address).not_to be nil }
+      it 'has contact_person with email' do
+        subject.each do |cp|
+          expect(cp.contact_type).to eq(:technical)
+          expect(cp.contact.email_address).not_to be nil
+        end
       end
     end
 
@@ -180,11 +155,11 @@ RSpec.describe 'BasicFederation' do
       end
 
       context 'mdui' do
-        it 'has mdui:display_name' do
-          subject.each { |sp| expect(sp.ui_info.display_names).not_to be_empty }
-        end
-        it 'has mdui:description' do
-          subject.each { |sp| expect(sp.ui_info.descriptions).not_to be_empty }
+        it 'has mdui:display_name and description' do
+          subject.each do |sp|
+            expect(sp.ui_info.display_names).not_to be_empty
+            expect(sp.ui_info.descriptions).not_to be_empty
+          end
         end
       end
 
@@ -192,11 +167,6 @@ RSpec.describe 'BasicFederation' do
         it 'has attribute_consuming_service' do
           subject.each do |sp|
             expect(sp.attribute_consuming_services).not_to be_empty
-          end
-        end
-
-        it 'has requested_attributes' do
-          subject.each do |sp|
             expect(sp.attribute_consuming_services[0].requested_attributes)
               .not_to be_empty
           end

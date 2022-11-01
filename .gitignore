@@ -29,3 +29,4 @@ saml-service.iml
 .vscode
 .env*
 !.env*.dist
+.DS_Store

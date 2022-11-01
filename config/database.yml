@@ -4,8 +4,8 @@ default: &default
   password: "<%= ENV['SAML_DB_PASSWORD'] || 'password' %>"
   host: <%= ENV['SAML_DB_HOST'] || '127.0.0.1' %>
   port: <%= ENV['SAML_DB_PORT'] || 3306 %>
-  pool: 5
-  timeout: 5000
+  pool: <%= ENV['SAML_DB_POOL_SIZE'] || 5 %>
+  timeout: <%= ENV['SAML_DB_TIMEOUT'] || 5000 %>
   encoding: utf8
   collation: utf8_bin
   sql_mode: TRADITIONAL

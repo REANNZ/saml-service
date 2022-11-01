@@ -12,15 +12,12 @@ describe SPSSODescriptor do
     it { is_expected.to have_one_to_many :attribute_consuming_services }
 
     let(:subject) { create :sp_sso_descriptor }
-    it 'has at least 1 assertion consumer service' do
+    it 'works' do
       expect(subject).to validate_presence :assertion_consumer_services
-    end
-    it 'is invalid without assertion consumer services' do
+      expect(subject).to have_one_to_many :attribute_consuming_services
+      expect(subject.extensions?).to be_falsey
       subject.assertion_consumer_services.clear
       expect(subject).not_to be_valid
-    end
-    it 'can store attribute consumer services' do
-      expect(subject).to have_one_to_many :attribute_consuming_services
     end
 
     describe '#attribute_consuming_services?' do
@@ -41,11 +38,6 @@ describe SPSSODescriptor do
     end
 
     describe '#extensions?' do
-      context 'without extensions, ui_info or discovery_response_services' do
-        it 'is false' do
-          expect(subject.extensions?).to be_falsey
-        end
-      end
       context 'with extensions' do
         subject { create :sp_sso_descriptor, :with_extensions }
         it 'is true' do

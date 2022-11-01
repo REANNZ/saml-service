@@ -31,11 +31,9 @@ describe MetadataInstance do
   context 'ca_verify_depth' do
     subject { create :metadata_instance }
 
-    it 'is expected to be present if ca_key_infos is populated' do
+    it 'is expected to be present only if ca_key_infos is populated' do
       subject.add_ca_key_info create :ca_key_info
       expect(subject).to validate_presence :ca_verify_depth
-    end
-    it 'is not expected to be present if ca_key_infos is empty' do
       subject.ca_key_infos.clear
       expect(subject).not_to validate_presence :ca_verify_depth
     end
@@ -49,9 +47,8 @@ describe MetadataInstance do
   context 'PublicationInfo' do
     subject { create(:metadata_instance).publication_info }
 
-    it { is_expected.to be_valid }
-
     it 'has a publisher' do
+      is_expected.to be_valid
       expect(subject.publisher).not_to be_nil
     end
   end

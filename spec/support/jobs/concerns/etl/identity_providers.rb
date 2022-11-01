@@ -2,8 +2,7 @@
 
 RSpec.shared_examples 'ETL::IdentityProviders' do
   include_examples 'ETL::Common'
-
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
   def create_json(idp)
     contact_people =
       contact_instances.map { |cp| contact_person_json(cp) } +
@@ -20,11 +19,11 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
         scope: scope,
         authnrequests_signed: idp.want_authn_requests_signed,
         single_sign_on_services:
-          idp.single_sign_on_services.map { |s| endpoint_json(s) },
+          idp.single_sign_on_services.map { |s| endpoint_json(s, functioning: services_functioning) },
         name_id_mapping_services:
-          idp.name_id_mapping_services.map { |s| endpoint_json(s) },
+          idp.name_id_mapping_services.map { |s| endpoint_json(s, functioning: services_functioning) },
         assertion_id_request_services:
-          idp.assertion_id_request_services.map { |s| endpoint_json(s) },
+          idp.assertion_id_request_services.map { |s| endpoint_json(s, functioning: services_functioning) },
         attribute_profiles:
           idp.attribute_profiles.map { |ap| saml_uri_json(ap) },
         attributes: attribute_instances.map { |a| attribute_json(a) },
@@ -42,17 +41,17 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
             idp.name_id_formats.map { |nidf| saml_uri_json(nidf) },
           artifact_resolution_services:
             idp.artifact_resolution_services.map do |ars|
-              indexed_endpoint_json(ars)
+              indexed_endpoint_json(ars, functioning: services_functioning)
             end,
           single_logout_services:
-            idp.single_logout_services.map { |slo| endpoint_json(slo) },
+            idp.single_logout_services.map { |slo| endpoint_json(slo, functioning: services_functioning) },
           manage_nameid_services:
-            idp.manage_name_id_services.map { |mnids| endpoint_json(mnids) }
+            idp.manage_name_id_services.map { |mnids| endpoint_json(mnids, functioning: services_functioning) }
         }
       }
     }
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength,Metrics/AbcSize
 
   def attribute_json(a)
     {
@@ -97,6 +96,8 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
                 :with_artifact_resolution_services,
                 :with_disco_hints)
   end
+
+  let(:services_functioning) { true }
 
   let(:identity_providers_list) do
     identity_provider_instances.map { |idp| create_json(idp) }
@@ -164,6 +165,34 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
         .to change { Tag.count }.by(1)
     end
 
+    context 'when process_idp? is false' do
+      let(:identity_providers_list) do
+        identity_provider_instances.map do |idp|
+          data = create_json(idp)
+          data[:attribute_authority_only] = true
+          data
+        end
+      end
+
+      it 'doesnt create a new instance' do
+        expect { run }.not_to(change { IDPSSODescriptor })
+      end
+    end
+
+    context 'when functioning is false' do
+      let(:services_functioning) { false }
+
+      it 'doesnt create a new SingleSignOnService' do
+        expect { run }.not_to(change do
+                                [
+                                  SingleSignOnService.count,
+                                  NameIdMappingService.count,
+                                  AssertionIdRequestService.count
+                                ]
+                              end)
+      end
+    end
+
     context 'created instance' do
       before { run }
 
@@ -176,18 +205,10 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
       end
 
       context 'scopes' do
-        it 'sets a scope' do
+        it 'sets a scope with regexp: false' do
           expect(subject.scopes.size).to eq(1)
-        end
-
-        it 'sets expected scope' do
           expect(subject.scopes.first.value).to eq(scope)
-        end
-
-        context 'normal scope' do
-          it 'sets regex to false' do
-            expect(subject.scopes.first.regexp).not_to be
-          end
+          expect(subject.scopes.first.regexp).not_to be
         end
 
         context 'regex scope' do
@@ -302,41 +323,32 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
     include_examples 'updating an SSODescriptor'
     include_examples 'updating MDUI content'
 
-    it 'uses the existing instance' do
-      expect { run }.not_to(change { IDPSSODescriptor.count })
-    end
-
-    it 'sets a scope' do
+    it 'works as expected, sets scope, doesnt make tags, updates sso, assertion id, attribute profile and attributes' do
+      expect { run }.to(not_change { IDPSSODescriptor.count }.and(
+        not_change { Tag.count }
+      ).and(
+        change { subject.reload.single_sign_on_services }
+      ).and(
+        change { subject.reload.name_id_mapping_services }
+      ).and(
+        change { subject.reload.assertion_id_request_services }
+      ).and(
+        change { subject.reload.attribute_profiles }
+      ).and(
+        change { subject.reload.attributes }
+      ))
       expect(subject.scopes.size).to eq(1)
-    end
-
-    it 'sets expected scope' do
       expect(subject.scopes.first.value).to eq(scope)
     end
 
-    it 'does not create more tags' do
-      expect { run }.not_to(change { Tag.count })
-    end
+    context 'when no name format' do
+      before do
+        IDPSSODescriptor.last.attributes.each { |x| x.name_format.destroy }
+      end
 
-    it 'updates single sign on services' do
-      expect { run }.to(change { subject.reload.single_sign_on_services })
-    end
-
-    it 'updates name id mapping services' do
-      expect { run }.to(change { subject.reload.name_id_mapping_services })
-    end
-
-    it 'updates assertion id request services' do
-      expect { run }
-        .to(change { subject.reload.assertion_id_request_services })
-    end
-
-    it 'updates attribute profiles' do
-      expect { run }.to(change { subject.reload.attribute_profiles })
-    end
-
-    it 'updates attributes' do
-      expect { run }.to(change { subject.reload.attributes })
+      it 'doesnt create a new SingleSignOnService' do
+        expect { run }.to(change { NameFormat.count })
+      end
     end
   end
 

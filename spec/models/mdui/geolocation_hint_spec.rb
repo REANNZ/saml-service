@@ -19,29 +19,17 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
       build(:mdui_geolocation_hint, uri: "geo:#{parts.join(',')}")
     end
 
-    describe '#latitude' do
-      it 'returns the latitude portion of the uri' do
-        expect(subject.latitude).to eq(latitude)
-      end
+    it 'returns the portions of the uri' do
+      expect(subject.latitude).to eq(latitude)
+      expect(subject.longitude).to eq(longitude)
+      expect(subject.altitude).to eq(altitude)
     end
 
-    describe '#longitude' do
-      it 'returns the longitude portion of the uri' do
-        expect(subject.longitude).to eq(longitude)
-      end
-    end
+    context 'for a 2-part geo URI' do
+      let(:altitude) { nil }
 
-    describe '#altitude' do
-      it 'returns the altitude portion of the uri' do
-        expect(subject.altitude).to eq(altitude)
-      end
-
-      context 'for a 2-part geo URI' do
-        let(:altitude) { nil }
-
-        it 'returns nil for altitude' do
-          expect(subject.altitude).to be_nil
-        end
+      it 'returns nil for altitude' do
+        expect(subject.altitude).to be_nil
       end
     end
   end
@@ -52,39 +40,27 @@ RSpec.describe MDUI::GeolocationHint, type: :model do
     let(:alt) { Faker::Number.decimal(l_digits: 2) }
 
     context 'valid uri values' do
-      it 'minimal uri' do
+      it 'works' do
         uri = "geo:#{lat},#{long}"
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_truthy
-      end
-
-      it 'extended uri' do
         uri = "geo:#{lat},#{long},#{alt}"
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_truthy
-      end
-
-      it 'with parameters' do
         uri = "geo:#{lat},#{long},#{alt};u=35"
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_truthy
       end
     end
 
     context 'invalid uri' do
-      it 'not a URI' do
+      it 'returns false' do
         uri = "xyz:#{lat}, #{long}" # space is invalid
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_falsey
-      end
-
-      it 'no geo scheme' do
+        # no geo scheme
         uri = "xyz:#{lat},#{long}"
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_falsey
-      end
-
-      it 'no opaque component' do
+        # no opaque component
         uri = 'geo:'
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_falsey
-      end
-
-      it 'values are not comma seperated' do
+        # values are not comma separated
         uri = "geo:#{lat}:#{long}"
         expect(MDUI::GeolocationHint.valid_uri?(uri)).to be_falsey
       end

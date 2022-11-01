@@ -34,48 +34,28 @@ describe EntityDescriptor do
     context 'with a valid descriptor' do
       before { subject.add_role_descriptor create :role_descriptor }
 
-      it 'is invalid without an organization' do
-        subject.organization = nil
-        expect(subject).not_to be_valid
-      end
-
-      it 'is valid without contacts' do
+      it 'is invalid without org, valid without contacts or srtifi contacts' do
         expect(subject.contact_people).not_to be_present
         expect(subject).to be_valid
-      end
-
-      it 'is valid without srtifi contacts' do
         expect(subject.sirtfi_contact_people).not_to be_present
         expect(subject).to be_valid
-      end
-
-      context '#entity_attribute?' do
-        it 'is true when an entity_attribute is set' do
-          subject.entity_attribute = create :mdattr_entity_attribute
-          expect(subject.entity_attribute?).to be_truthy
-        end
-        it 'is false when an entity_attribute is not set' do
-          expect(subject.entity_attribute?).to be_falsey
-        end
+        subject.organization = nil
+        expect(subject).not_to be_valid
+        expect(subject.entity_attribute?).to be_falsey
+        subject.entity_attribute = create :mdattr_entity_attribute
+        expect(subject.entity_attribute?).to be_truthy
       end
     end
 
-    it 'is invalid when no descriptors' do
+    it 'is invalid without descriptors, valid with role_descriptor,' \
+       'idp_sso_descriptor, attribute_authority_descriptor' do
       expect(subject).not_to be_valid
-    end
-    it 'is valid with role_descriptor' do
       subject.add_role_descriptor create :role_descriptor
       expect(subject).to be_valid
-    end
-    it 'is valid with idp_sso_descriptor' do
       subject.add_role_descriptor create :idp_sso_descriptor
       expect(subject).to be_valid
-    end
-    it 'is valid with attribute_authority_descriptor' do
       subject.add_role_descriptor create :attribute_authority_descriptor
       expect(subject).to be_valid
-    end
-    it 'is valid with sp_sso_descriptor' do
       subject.add_role_descriptor create :sp_sso_descriptor
       expect(subject).to be_valid
     end
@@ -90,13 +70,7 @@ describe EntityDescriptor do
 
       it 'is valid' do
         expect(subject).to be_valid
-      end
-
-      it 'is functioning when enabled' do
         expect(subject).to be_functioning
-      end
-
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end
@@ -121,11 +95,7 @@ describe EntityDescriptor do
 
       it 'is not valid' do
         expect(subject).not_to be_valid
-      end
-      it 'is not functioning when enabled' do
         expect(subject).not_to be_functioning
-      end
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end
@@ -186,45 +156,66 @@ describe EntityDescriptor do
     end
 
     context 'when referencing an IdP' do
-      let(:idp) { create :idp_sso_descriptor, :with_ui_info }
       subject { idp.entity_descriptor }
 
+      let(:idp) { create :idp_sso_descriptor, :with_ui_info }
+
       include_examples 'edugain compliance'
+      context 'with active idps and contacts' do
+        let(:another_idp) { create :idp_sso_descriptor, :with_ui_info }
 
-      context 'without functioning IdP' do
-        it 'is not edugain compliant' do
-          subject.idp_sso_descriptors.first.update(enabled: false)
-          expect(subject).not_to be_edugain_compliant
+        before do
+          another_idp
+          cp = create :contact_person, contact_type: :technical
+          subject.add_contact_person(cp)
         end
-      end
 
-      context 'without IdP MDUI' do
-        let(:idp) { create :idp_sso_descriptor }
+        context 'without functioning IdP' do
+          it 'is not edugain compliant' do
+            subject.idp_sso_descriptors.first.update(enabled: false)
+            expect(subject).not_to be_edugain_compliant
+          end
+        end
 
-        it 'is not edugain compliant' do
-          expect(subject).not_to be_edugain_compliant
+        context 'without IdP MDUI' do
+          let(:idp) { create :idp_sso_descriptor }
+
+          it 'is not edugain compliant' do
+            expect(subject).not_to be_edugain_compliant
+          end
         end
       end
     end
 
     context 'when referencing an SP' do
-      let(:sp) { create :sp_sso_descriptor, :with_ui_info }
       subject { sp.entity_descriptor }
+
+      let(:sp) { create :sp_sso_descriptor, :with_ui_info }
 
       include_examples 'edugain compliance'
 
-      context 'without functioning SP' do
-        it 'is not edugain compliant' do
-          subject.sp_sso_descriptors.first.update(enabled: false)
-          expect(subject).not_to be_edugain_compliant
+      context 'with active idps and contacts' do
+        let(:another_sp) { create :sp_sso_descriptor, :with_ui_info }
+
+        before do
+          another_sp
+          cp = create :contact_person, contact_type: :technical
+          subject.add_contact_person(cp)
         end
-      end
 
-      context 'without SP MDUI' do
-        let(:sp) { create :sp_sso_descriptor }
+        context 'without functioning SP' do
+          it 'is not edugain compliant' do
+            subject.sp_sso_descriptors.first.update(enabled: false)
+            expect(subject).not_to be_edugain_compliant
+          end
+        end
 
-        it 'is not edugain compliant' do
-          expect(subject).not_to be_edugain_compliant
+        context 'without SP MDUI' do
+          let(:sp) { create :sp_sso_descriptor }
+
+          it 'is not edugain compliant' do
+            expect(subject).not_to be_edugain_compliant
+          end
         end
       end
     end

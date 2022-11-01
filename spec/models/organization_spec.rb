@@ -12,15 +12,11 @@ describe Organization do
   context 'validation' do
     subject { create(:organization) }
 
-    it 'has at least 1 organization_name' do
+    it 'has at least 1 organization_name and url' do
       expect(subject).to validate_presence :organization_names,
                                            allow_missing: false
-    end
-    it 'has at least 1 organization_display_name' do
       expect(subject).to validate_presence :organization_display_names,
                                            allow_missing: false
-    end
-    it 'has at least 1 organization_url' do
       expect(subject).to validate_presence :organization_urls,
                                            allow_missing: false
     end

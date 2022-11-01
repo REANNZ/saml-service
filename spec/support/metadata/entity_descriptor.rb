@@ -48,8 +48,14 @@ RSpec.shared_examples 'EntityDescriptor xml' do
 
   RSpec.shared_examples 'md:EntityDescriptor xml' do
     let(:create_idp) { true } # Ensure ED is valid to pass #functioning?
-    it 'is created' do
+    it 'is created, RegistrationInfo node, no EntityAttributes node, IDPSSODescriptor node,' \
+       'AttributeAuthorityDescriptor node, creates Organization, creates technical contact' do
       expect(xml).to have_xpath(entity_descriptor_path)
+      expect(xml).to have_xpath(registration_info_path, count: 1)
+      expect(xml).to have_xpath(entity_attributes_path, count: 0)
+      expect(xml).to have_xpath(organization_path, count: 1)
+      expect(xml).to have_xpath(technical_contact_path, count: 1)
+      expect(xml).to have_xpath(idp_path, count: 1)
     end
 
     context 'attributes' do
@@ -60,19 +66,10 @@ RSpec.shared_examples 'EntityDescriptor xml' do
     end
 
     context 'Extensions' do
-      it 'creates RegistrationInfo node' do
-        expect(xml).to have_xpath(registration_info_path, count: 1)
-      end
-
       context 'with EntityAttributes' do
         let(:add_entity_attributes) { true }
         it 'creates EntityAttributes node' do
           expect(xml).to have_xpath(entity_attributes_path, count: 1)
-        end
-      end
-      context 'without EntityAttributes' do
-        it 'does not create EntityAttributes node' do
-          expect(xml).to have_xpath(entity_attributes_path, count: 0)
         end
       end
       context 'when populated' do
@@ -84,12 +81,6 @@ RSpec.shared_examples 'EntityDescriptor xml' do
     end
 
     context 'RoleDescriptors' do
-      context 'IDPSSODescriptor' do
-        it 'creates IDPSSODescriptor node' do
-          expect(xml).to have_xpath(idp_path, count: 1)
-        end
-      end
-
       context 'SPSSODescriptor' do
         let(:create_idp) { false }
         let(:create_sp) { true }
@@ -111,8 +102,6 @@ RSpec.shared_examples 'EntityDescriptor xml' do
         let(:create_aa) { true }
         it 'creates IDPSSODescriptor node' do
           expect(xml).to have_xpath(idp_path, count: 1)
-        end
-        it 'creates AttributeAuthorityDescriptor node' do
           expect(xml).to have_xpath(aad_path, count: 1)
         end
       end
@@ -148,13 +137,6 @@ RSpec.shared_examples 'EntityDescriptor xml' do
         end
       end
     end
-
-    it 'creates an Organization' do
-      expect(xml).to have_xpath(organization_path, count: 1)
-    end
-    it 'creates a technical contact' do
-      expect(xml).to have_xpath(technical_contact_path, count: 1)
-    end
   end
 
   context 'Root EntityDescriptor' do
@@ -169,8 +151,6 @@ RSpec.shared_examples 'EntityDescriptor xml' do
       it 'sets ID' do
         expect(node['ID']).to eq(subject.instance_id)
           .and start_with(federation_identifier)
-      end
-      it 'sets validUntil' do
         expect(node['validUntil'])
           .to eq((Time.now.utc + metadata_validity_period).xmlschema)
       end
@@ -201,10 +181,8 @@ RSpec.shared_examples 'EntityDescriptor xml' do
     context 'attributes' do
       let(:node) { xml.find(:xpath, entity_descriptor_path) }
 
-      it 'sets ID' do
+      it 'sets ID, validuntil' do
         expect(node['ID']).to be_falsey
-      end
-      it 'sets validUntil' do
         expect(node['validUntil']).to be_falsey
       end
     end
