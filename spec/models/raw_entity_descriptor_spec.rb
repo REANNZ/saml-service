@@ -20,11 +20,9 @@ RSpec.describe RawEntityDescriptor do
   context 'xml validation' do
     subject { build(:raw_entity_descriptor) }
 
-    it 'accepts a valid EntityDescriptor payload' do
+    it 'accepts valid EntityDescriptor and rejects EntitiesDescriptor,' \
+       'EntityDescriptor without namespace and invalid EntityDescriptor' do
       expect(subject).to be_valid
-    end
-
-    it 'rejects an EntitiesDescriptor payload' do
       subject.xml =
         '<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata">' \
         "\n#{subject.xml}\n</EntitiesDescriptor>"
@@ -32,17 +30,11 @@ RSpec.describe RawEntityDescriptor do
       expect(subject).not_to be_valid
       expect(subject.errors[:xml])
         .to contain_exactly('must have <EntityDescriptor> as the root')
-    end
-
-    it 'rejects an EntityDescriptor payload with no namespace' do
       subject.xml = subject.xml.sub(/xmlns=".*"/, '')
 
       expect(subject).not_to be_valid
       expect(subject.errors[:xml])
         .to include(match(/must have SAML 2\.0 metadata namespace/))
-    end
-
-    it 'rejects a schema-invalid EntityDescriptor' do
       subject.xml =
         '<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"/>'
 
@@ -60,11 +52,7 @@ RSpec.describe RawEntityDescriptor do
 
       it 'valid' do
         expect(subject).to be_valid
-      end
-      it 'is functioning when enabled' do
         expect(subject).to be_functioning
-      end
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end
@@ -78,11 +66,7 @@ RSpec.describe RawEntityDescriptor do
 
       it 'is not valid' do
         expect(subject).not_to be_valid
-      end
-      it 'is not functioning when enabled' do
         expect(subject).not_to be_functioning
-      end
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end
@@ -100,66 +84,48 @@ RSpec.describe RawEntityDescriptor do
   describe '#ui_info' do
     subject { create :raw_entity_descriptor }
 
-    it 'populates a hash when ui_info xml content present' do
+    it 'populates ui_info, DisplayNames, Description, logo, information url, privacy url' do
       expect(subject.ui_info).not_to be_nil
-    end
-
-    it 'populates MDUI DisplayNames' do
       expect(subject.ui_info.display_names).to be_present
       expect(subject.ui_info.display_names).to all(respond_to(:lang))
         .and all(respond_to(:value))
-    end
-
-    it 'populates MDUI Description' do
       expect(subject.ui_info.descriptions).to be_present
       expect(subject.ui_info.descriptions).to all(respond_to(:lang))
         .and all(respond_to(:value))
-    end
-
-    it 'populates MDUI Logo' do
       expect(subject.ui_info.logos).to be_present
       expect(subject.ui_info.logos)
         .to all(respond_to(:width))
         .and all(respond_to(:height))
         .and all(respond_to(:uri))
-    end
-
-    it 'populates MDUI Information URL' do
       expect(subject.ui_info.information_urls).to be_present
       expect(subject.ui_info.information_urls).to all(respond_to(:lang))
         .and all(respond_to(:uri))
-    end
-
-    it 'populates MDUI Privacy Statement URL' do
       expect(subject.ui_info.privacy_statement_urls).to be_present
       expect(subject.ui_info.privacy_statement_urls).to all(respond_to(:lang))
         .and all(respond_to(:uri))
+    end
+
+    context 'without ui info' do
+      subject { create :raw_entity_descriptor, :without_ui_info }
+
+      it 'is nil' do
+        expect(subject.ui_info).to be_nil
+      end
     end
   end
 
   describe '#disco_hints' do
     subject { create :raw_entity_descriptor }
 
-    it 'populates a hash when disco_hints xml content present' do
+    it 'populates disco_hints, ip hints, domain hints and geolocation hints' do
       expect(subject.disco_hints).not_to be_nil
-    end
-
-    it 'populates IPHints' do
       expect(subject.disco_hints.ip_hints).to be_present
       expect(subject.disco_hints.ip_hints).to all(respond_to(:block))
-    end
-
-    it 'populates DomainHints' do
       expect(subject.disco_hints.domain_hints).to be_present
       expect(subject.disco_hints.domain_hints).to all(respond_to(:domain))
-    end
-
-    it 'populates GelocationHints' do
       expect(subject.disco_hints.geolocation_hints).to be_present
       expect(subject.disco_hints.geolocation_hints)
         .to all(respond_to(:latitude))
-        .and all(respond_to(:longitude))
-        .and all(respond_to(:altitude))
     end
 
     context 'with invalid geolocation uri' do
@@ -169,12 +135,20 @@ RSpec.describe RawEntityDescriptor do
         expect(subject.disco_hints.geolocation_hints.size).to eq(1)
       end
     end
+
+    context 'without disco hints' do
+      subject { create :raw_entity_descriptor, :without_disco_hints }
+
+      it 'is nil' do
+        expect(subject.disco_hints).to be_nil
+      end
+    end
   end
 
   describe '#discovery_response_services' do
     subject { create :raw_entity_descriptor_sp }
 
-    it 'populates an array when discovery_response xml content present' do
+    it 'populates discovery_response, location, binding, index and is_default' do
       expect(subject.discovery_response_services).to be_present
       expect(subject.discovery_response_services)
         .to all(respond_to(:location))
@@ -196,6 +170,14 @@ RSpec.describe RawEntityDescriptor do
           .to all(have_attributes(is_default: nil))
       end
     end
+
+    context 'without discovery_response' do
+      subject { create :raw_entity_descriptor_sp, :without_discovery_response }
+
+      it 'is nil' do
+        expect(subject.discovery_response_services).to be_nil
+      end
+    end
   end
 
   describe '#single_sign_on_services' do
@@ -206,6 +188,14 @@ RSpec.describe RawEntityDescriptor do
       expect(subject.single_sign_on_services)
         .to all(respond_to(:location))
         .and all(respond_to(:binding))
+    end
+
+    context 'without sso services' do
+      subject { create :raw_entity_descriptor_sp }
+
+      it 'is nil' do
+        expect(subject.single_sign_on_services).to be_nil
+      end
     end
   end
 end

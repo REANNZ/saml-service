@@ -3,9 +3,6 @@ on:
   schedule:
     - cron: "0 0 * * SUN"
   push:
-    branches:
-      - master
-  pull_request:
   issue_comment:
     types: [created]
 
@@ -142,10 +139,10 @@ jobs:
           -t $IMAGE_ID:$IMAGE_TAG .
 
       - name: Push to ECR
-        if: github.event_name == 'push' || github.event_name == 'issue_comment'
+        if: (github.event_name == 'push' && env.BRANCH_NAME == 'master') || github.event_name == 'issue_comment'
         run: |
           docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:$VERSION
-          [ "$VERSION" == "master" ]  && [ "${{github.event_name}}" == "push" ] && docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
+          [ "${{ env.BRANCH_NAME }}" == "master" ]  && [ "${{github.event_name}}" == "push" ] && docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
           docker push --all-tags $IMAGE_ID
 
       - name: Update GitOps Repo to trigger deploys

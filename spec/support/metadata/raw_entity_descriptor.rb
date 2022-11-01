@@ -20,22 +20,18 @@ RSpec.shared_examples 'RawEntityDescriptor xml' do
   let(:entity_source) { known_entity.entity_source }
   let(:entity_descriptor_path) { '/EntityDescriptor' }
 
-  context 'Root EntityDescriptor' do
+  context 'Root EntityDescriptor attributes' do
     before { subject.root_entity_descriptor(known_entity) }
 
-    context 'attributes' do
-      let(:node) { xml.find(:xpath, entity_descriptor_path) }
+    let(:node) { xml.find(:xpath, entity_descriptor_path) }
 
-      around { |example| Timecop.freeze { example.run } }
+    around { |example| Timecop.freeze { example.run } }
 
-      it 'sets ID' do
-        expect(node['ID']).to eq(subject.instance_id)
-          .and start_with(federation_identifier)
-      end
-      it 'sets validUntil' do
-        expect(node['validUntil'])
-          .to eq((Time.now.utc + metadata_validity_period).xmlschema)
-      end
+    it 'sets ID and validUntil' do
+      expect(node['ID']).to eq(subject.instance_id)
+        .and start_with(federation_identifier)
+      expect(node['validUntil'])
+        .to eq((Time.now.utc + metadata_validity_period).xmlschema)
     end
   end
 

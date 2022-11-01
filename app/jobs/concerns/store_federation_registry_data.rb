@@ -10,7 +10,9 @@ module StoreFederationRegistryData
 
   def create_by_fr_id(dataset, fr_id, attrs)
     obj = dataset.model.new(attrs)
+    # :nocov:
     yield obj if block_given?
+    # :nocov:
     obj.save
     record_fr_id(obj, fr_id)
     obj

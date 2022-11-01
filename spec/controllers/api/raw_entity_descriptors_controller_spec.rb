@@ -64,11 +64,11 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
       let(:api_subject) { create(:api_subject, :x509_cn) }
       before { run }
       subject { response }
-      it { is_expected.to have_http_status(:forbidden) }
-      it 'responds with a message' do
+      it {
+        is_expected.to have_http_status(:forbidden)
         data = JSON.parse(response.body)
         expect(data['message']).to match(/explicitly denied/)
-      end
+      }
     end
 
     context 'permitted' do

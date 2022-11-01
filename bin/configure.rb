@@ -161,4 +161,6 @@ class ConfigureCLI < Thor
 end
 # rubocop:enable Metrics/ClassLength
 
+# :nocov:
 ConfigureCLI.start(ARGV) if $PROGRAM_NAME == __FILE__
+# :nocov:

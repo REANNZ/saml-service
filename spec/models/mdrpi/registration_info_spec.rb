@@ -7,12 +7,8 @@ RSpec.describe MDRPI::RegistrationInfo, type: :model do
 
   it { is_expected.to have_many_to_one :metadata_instance }
   it { is_expected.to have_many_to_one :entity_descriptor }
-
   it { is_expected.to validate_presence :registration_authority }
-
-  context 'optional attributes' do
-    it { is_expected.to respond_to :registration_instant }
-  end
+  it { is_expected.to respond_to :registration_instant }
 
   context 'instance validations' do
     let(:subject) { create :mdrpi_registration_info }

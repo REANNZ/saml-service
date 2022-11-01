@@ -8,15 +8,10 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
   let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
   shared_examples 'a discovery entity' do
-    it 'includes the entity id' do
+    it 'includes the entity id and no tags' do
       expect(subject.pluck(:entity_id))
         .to include(entity.entity_id.uri)
-    end
-
-    context 'with no tags' do
-      it 'returns an empty tag list' do
-        expect(entry[:tags]).to eq([])
-      end
+      expect(entry[:tags]).to eq([])
     end
 
     context 'with tags on the known entity' do
@@ -33,15 +28,9 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
     end
 
     context 'with no mdui info' do
-      it 'includes an empty list of display names' do
+      it 'includes an empty list of display names, logos and descriptions' do
         expect(entry[:names]).to eq([])
-      end
-
-      it 'includes an empty list of logos' do
         expect(entry[:logos]).to eq([])
-      end
-
-      it 'includes an empty list of descriptions' do
         expect(entry[:descriptions]).to eq([])
       end
     end
@@ -51,19 +40,13 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
         create(:mdui_ui_info, :with_content, role_descriptor: role_descriptor)
       end
 
-      it 'includes the display names' do
+      it 'includes the display names, logo uri, descriptions' do
         display_name = role_descriptor.ui_info.display_names.first
         expect(entry[:names])
           .to include(value: display_name.value, lang: display_name.lang)
-      end
-
-      it 'includes the logo uri' do
         logo = role_descriptor.ui_info.logos.first
         expect(entry[:logos]).to include(url: logo.uri, lang: logo.lang,
                                          width: logo.width, height: logo.height)
-      end
-
-      it 'includes the descriptions' do
         description = role_descriptor.ui_info.descriptions.first
         expect(entry[:descriptions])
           .to include(value: description.value, lang: description.lang)
@@ -166,11 +149,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
       end
 
       context 'with no disco hints' do
-        it 'includes an empty list of geolocation data' do
+        it 'includes an empty list of geolocation data and domains' do
           expect(entry[:geolocations]).to eq([])
-        end
-
-        it 'includes an empty list of domain hints' do
           expect(entry[:domains]).to eq([])
         end
       end
@@ -329,9 +309,6 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
             it 'includes the "first" default' do
               expect(entry[:discovery_response]).to eq(default.location)
-            end
-
-            it 'lists all the endpoints' do
               endpoints = [non_default, default, second_default].map(&:location)
               expect(entry[:all_discovery_response_endpoints])
                 .to contain_exactly(*endpoints)
@@ -357,9 +334,6 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
           it 'includes the preferred endpoint' do
             expect(entry[:discovery_response]).to eq(preferred.location)
-          end
-
-          it 'lists all the endpoints' do
             endpoints = [preferred, non_preferred].map(&:location)
             expect(entry[:all_discovery_response_endpoints])
               .to contain_exactly(*endpoints)
@@ -370,9 +344,6 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
       context 'with no mdui info' do
         it 'includes an empty list of information urls' do
           expect(entry[:information_urls]).to eq([])
-        end
-
-        it 'includes an empty list of privacy statement urls' do
           expect(entry[:privacy_statement_urls]).to eq([])
         end
       end
@@ -382,13 +353,10 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
           create(:mdui_ui_info, :with_content, role_descriptor: role_descriptor)
         end
 
-        it 'includes the information urls' do
+        it 'includes the information urls and privacy urls' do
           info_url = role_descriptor.ui_info.information_urls.first
           expect(entry[:information_urls])
             .to include(url: info_url.uri, lang: info_url.lang)
-        end
-
-        it 'includes the information urls' do
           privacy_url = role_descriptor.ui_info.privacy_statement_urls.first
           expect(entry[:privacy_statement_urls])
             .to include(url: privacy_url.uri, lang: privacy_url.lang)

@@ -4,71 +4,49 @@ require 'rails_helper'
 
 RSpec.shared_examples 'SAML namespaces' do
   context 'SAML namespaces' do
-    it { is_expected.to be_a_kind_of Metadata::SamlNamespaces }
+    let(:ns) { subject.ns }
 
-    it { is_expected.to respond_to(:root) }
-    it { is_expected.to respond_to(:saml) }
-    it { is_expected.to respond_to(:idpdisc) }
-    it { is_expected.to respond_to(:mdrpi) }
-    it { is_expected.to respond_to(:mdui) }
-    it { is_expected.to respond_to(:mdattr) }
-    it { is_expected.to respond_to(:shibmd) }
-    it { is_expected.to respond_to(:ds) }
-    it { is_expected.to respond_to(:ns) }
-
-    it {
-      is_expected.to respond_to(:fed)
+    it 'works as expected' do
+      is_expected.to be_a_kind_of Metadata::SamlNamespaces
+      is_expected.to respond_to(:root).and(
+        respond_to(:saml)
+      ).and(
+        respond_to(:idpdisc)
+      ).and(
+        respond_to(:mdrpi)
+      ).and(
+        respond_to(:mdui)
+      ).and(
+        respond_to(:mdattr)
+      ).and(
+        respond_to(:shibmd)
+      ).and(
+        respond_to(:ds)
+      ).and(
+        respond_to(:ns)
+      ).and(
+        respond_to(:fed)
+      ).and(
+        respond_to(:privacy)
+      )
       subject.fed
-    }
-
-    it {
-      is_expected.to respond_to(:privacy)
       subject.privacy
-    }
-
-    it 'has 12 namespaces defined' do
       expect(subject.ns.size).to eq(12)
       expect(Metadata::SamlNamespaces::NAMESPACES.size).to eq(12)
-    end
-
-    let(:ns) { subject.ns }
-    it 'supports SAML 2.0 metadata' do
-      expect(ns['xmlns']).to eq('urn:oasis:names:tc:SAML:2.0:metadata')
-    end
-    it 'supports SAML 2.0 assertion' do
-      expect(ns['xmlns:saml']).to eq('urn:oasis:names:tc:SAML:2.0:assertion')
-    end
-    it 'supports SAML SSO IdP discovery profile' do
-      expect(ns['xmlns:idpdisc'])
-        .to eq('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol')
-    end
-    it 'supports SAML Metadata RPI' do
-      expect(ns['xmlns:mdrpi']).to eq('urn:oasis:names:tc:SAML:metadata:rpi')
-    end
-    it 'supports SAML Metadata UI' do
-      expect(ns['xmlns:mdui']).to eq('urn:oasis:names:tc:SAML:metadata:ui')
-    end
-    it 'supports SAML Metadata Attributes' do
-      expect(ns['xmlns:mdattr'])
-        .to eq('urn:oasis:names:tc:SAML:metadata:attribute')
-    end
-    it 'supports Shibboleth 1.0 Metadata' do
-      expect(ns['xmlns:shibmd']).to eq('urn:mace:shibboleth:metadata:1.0')
-    end
-    it 'supports XML DSig' do
-      expect(ns['xmlns:ds']).to eq('http://www.w3.org/2000/09/xmldsig#')
-    end
-    it 'supports SAML 2.0 assertion' do
-      expect(ns['xmlns:saml']).to eq('urn:oasis:names:tc:SAML:2.0:assertion')
-    end
-    it 'supports SAML 2.0 assertion' do
-      expect(ns['xmlns:fed']).to eq('http://docs.oasis-open.org/wsfed/federation/200706')
-    end
-    it 'supports SAML 2.0 assertion' do
-      expect(ns['xmlns:privacy']).to eq('http://docs.oasis-open.org/wsfed/privacy/200706')
-    end
-    it 'supports REFEDS metadata extension schema' do
-      expect(ns['xmlns:remd']).to eq('http://refeds.org/metadata')
+      expect(ns).to match({
+                            'xmlns' => 'urn:oasis:names:tc:SAML:2.0:metadata',
+                            'xmlns:saml' => 'urn:oasis:names:tc:SAML:2.0:assertion',
+                            'xmlns:idpdisc' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol',
+                            'xmlns:mdrpi' => 'urn:oasis:names:tc:SAML:metadata:rpi',
+                            'xmlns:mdui' => 'urn:oasis:names:tc:SAML:metadata:ui',
+                            'xmlns:mdattr' => 'urn:oasis:names:tc:SAML:metadata:attribute',
+                            'xmlns:shibmd' => 'urn:mace:shibboleth:metadata:1.0',
+                            'xmlns:ds' => 'http://www.w3.org/2000/09/xmldsig#',
+                            'xmlns:fed' => 'http://docs.oasis-open.org/wsfed/federation/200706',
+                            'xmlns:privacy' => 'http://docs.oasis-open.org/wsfed/privacy/200706',
+                            'xmlns:remd' => 'http://refeds.org/metadata',
+                            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance'
+                          })
     end
   end
 end

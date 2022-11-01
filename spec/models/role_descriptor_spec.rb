@@ -30,16 +30,18 @@ describe RoleDescriptor do
     it { is_expected.to have_one_to_one :ui_info }
   end
 
+  it 'doesnt have extentions, key_descriptors, contact people and scopes' do
+    expect(subject.extensions?).to be_falsey
+    expect(subject.key_descriptors?).to be_falsey
+    expect(subject.contact_people?).to be_falsey
+    expect(subject.scopes?).to be_falsey
+  end
+
   describe '#extensions?' do
     context 'with extensions' do
       subject { create :role_descriptor, :with_extensions }
       it 'is true' do
         expect(subject.extensions?).to be_truthy
-      end
-    end
-    context 'without extensions or ui_info' do
-      it 'is false' do
-        expect(subject.extensions?).to be_falsey
       end
     end
     context 'with ui_info' do
@@ -71,11 +73,6 @@ describe RoleDescriptor do
         expect(subject.key_descriptors?).to be_truthy
       end
     end
-    context 'without key descriptors' do
-      it 'is false' do
-        expect(subject.key_descriptors?).to be_falsey
-      end
-    end
   end
 
   describe '#contact_people?' do
@@ -85,11 +82,6 @@ describe RoleDescriptor do
         expect(subject.contact_people?).to be_truthy
       end
     end
-    context 'without contacts' do
-      it 'is false' do
-        expect(subject.contact_people?).to be_falsey
-      end
-    end
   end
 
   describe '#scopes?' do
@@ -97,11 +89,6 @@ describe RoleDescriptor do
       subject { create :role_descriptor, :with_scope }
       it 'is true' do
         expect(subject.scopes?).to be_truthy
-      end
-    end
-    context 'without scope' do
-      it 'is false' do
-        expect(subject.scopes?).to be_falsey
       end
     end
   end
@@ -114,11 +101,7 @@ describe RoleDescriptor do
 
       it 'valid' do
         expect(subject).to be_valid
-      end
-      it 'is functioning when enabled' do
         expect(subject).to be_functioning
-      end
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end
@@ -134,11 +117,7 @@ describe RoleDescriptor do
 
       it 'is not valid' do
         expect(subject).not_to be_valid
-      end
-      it 'is not functioning when enabled' do
         expect(subject).not_to be_functioning
-      end
-      it 'is not functioning when not enabled' do
         subject.enabled = false
         expect(subject).not_to be_functioning
       end

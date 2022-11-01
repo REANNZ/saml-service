@@ -22,7 +22,9 @@ class HealthController < ApplicationController
   private
 
   def redis_active?
+    # :nocov:
     HealthController.redis&.ping && true
+    # :nocov:
   rescue StandardError
     false
   end

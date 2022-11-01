@@ -33,8 +33,8 @@ class SyncToGitRepository
 
   def credential
     git_auth_conf = @config['git_auth']
-    git_auth_type = git_auth_conf['type'] if git_auth_conf
     # :nocov:
+    git_auth_type = git_auth_conf['type'] if git_auth_conf
     if git_auth_type == 'sshkey'
       Rugged::Credentials::SshKey.new(username: git_auth_conf['username'],
                                       publickey: git_auth_conf['publickey'],

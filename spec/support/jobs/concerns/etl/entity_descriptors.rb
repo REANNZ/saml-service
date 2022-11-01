@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'ETL::EntityDescriptors' do
   # rubocop:disable Metrics/MethodLength
-  def create_json(id, functioning = true, empty = false)
+  def create_json(id, functioning: true, services_functioning: true, empty: false)
     {
       id: id,
       entity_id: Faker::Internet.url,
@@ -36,19 +36,19 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
         identity_providers: [
           {
             id: 3000 + id,
-            functioning: true
+            functioning: services_functioning
           }
         ],
         service_providers: [
           {
             id: 4000 + id,
-            functioning: true
+            functioning: services_functioning
           }
         ],
         attribute_authorities: [
           {
             id: 5000 + id,
-            functioning: true
+            functioning: services_functioning
           }
         ]
       }
@@ -92,7 +92,7 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
     let(:entity_descriptor_count) { 1 }
     let(:entity_descriptor_list) do
       (0...entity_descriptor_count)
-        .reduce([]) { |a, e| a << create_json(1000 + e, false) }
+        .reduce([]) { |a, e| a << create_json(1000 + e, functioning: false) }
     end
 
     it 'does not create an EntityDescriptor' do
@@ -122,7 +122,7 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
     let(:entity_descriptor_count) { 1 }
     let(:entity_descriptor_list) do
       (0...entity_descriptor_count)
-        .reduce([]) { |a, e| a << create_json(1000 + e, true, true) }
+        .reduce([]) { |a, e| a << create_json(1000 + e, functioning: true, empty: true) }
     end
 
     it 'does not create an EntityDescriptor' do
@@ -168,26 +168,37 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
     verify(created_at: -> { ed_created_at },
            updated_at: -> { truncated_now })
 
-    it 'has entity_id' do
-      expect(subject.entity_id.uri)
-        .to eq(entity_descriptors.last[:entity_id])
+    it 'has entity_id, registration_authority, registration_policy and known_entity with tag' do
+      expect({
+               entity_id: subject.entity_id.uri,
+               registration_authority: subject.registration_info.registration_authority,
+               registration_policy_uri: subject.registration_info.registration_policies.first.uri,
+               registration_policy_uri_lang: subject.registration_info.registration_policies.first.lang,
+               source_tag: subject.known_entity.tags.first.name
+             }).to match({
+                           entity_id: entity_descriptors.last[:entity_id],
+                           registration_authority: fr_source.registration_authority,
+                           registration_policy_uri: fr_source.registration_policy_uri,
+                           registration_policy_uri_lang: fr_source.registration_policy_uri_lang,
+                           source_tag: subject.known_entity.entity_source.source_tag
+                         })
     end
 
-    it 'has registration_authority' do
-      expect(subject.registration_info.registration_authority)
-        .to eq(fr_source.registration_authority)
-    end
+    context 'when services functioning is false' do
+      let(:entity_descriptor_list) do
+        (0...entity_descriptor_count)
+          .reduce([]) { |a, e| a << create_json(1000 + e, services_functioning: false) }
+      end
 
-    it 'has registration_policy' do
-      expect(subject.registration_info.registration_policies.first.uri)
-        .to eq(fr_source.registration_policy_uri)
-      expect(subject.registration_info.registration_policies.first.lang)
-        .to eq(fr_source.registration_policy_uri_lang)
-    end
-
-    it 'has known_entity with federation tag' do
-      expect(subject.known_entity.tags.first.name)
-        .to eq(subject.known_entity.entity_source.source_tag)
+      it 'doesnt create a new SingleSignOnService' do
+        expect { run }.not_to(change do
+                                [
+                                  ArtifactResolutionService.count,
+                                  SingleLogoutService.count,
+                                  ManageNameIdService.count
+                                ]
+                              end)
+      end
     end
   end
 
@@ -203,18 +214,12 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
         stub_fr_request(:entity_descriptors)
       end
 
-      it 'updates the EntityID uri' do
+      it 'updates the EntityID uri, KnownEntity and federation tag' do
         expect { run }.to change { subject.reload.entity_id.uri }
           .to eq(updated_entityid)
-      end
-
-      it 'modifies KnownEntity updated_at' do
         Timecop.travel(1.second) do
           expect { run }.to(change { subject.reload.known_entity.updated_at })
         end
-      end
-
-      it 'has known_entity with federation tag' do
         expect(subject.known_entity.tags.first.name)
           .to eq(subject.known_entity.entity_source.source_tag)
       end

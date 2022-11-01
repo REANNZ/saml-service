@@ -13,38 +13,26 @@ RSpec.describe MDUI::Logo, type: :model do
 
   subject { create :mdui_logo }
   describe '#width' do
-    it 'rejects negative integers' do
+    it 'is validated' do
       subject.width = -1
       expect(subject).not_to be_valid
-    end
-    it 'rejects zero integers' do
       subject.width = 0
       expect(subject).not_to be_valid
-    end
-    it 'rejects nil integers' do
       subject.width = nil
       expect(subject).not_to be_valid
-    end
-    it 'accepts positive integers' do
       subject.width = 100
       expect(subject).to be_valid
     end
   end
 
   describe '#height' do
-    it 'rejects negative integers' do
+    it 'is validated' do
       subject.height = -1
       expect(subject).not_to be_valid
-    end
-    it 'rejects zero integers' do
       subject.height = 0
       expect(subject).not_to be_valid
-    end
-    it 'rejects nil integers' do
       subject.height = nil
       expect(subject).not_to be_valid
-    end
-    it 'accepts positive integers' do
       subject.height = 100
       expect(subject).to be_valid
     end
@@ -58,19 +46,13 @@ RSpec.describe MDUI::Logo, type: :model do
     end
 
     context 'valid URL formats' do
-      it 'supports http' do
+      it 'works for http, https and port' do
         subject.lang = 'en'
         subject.uri = 'http://example.org'
         expect(subject).to be_valid
-      end
-
-      it 'supports https' do
         subject.lang = 'en'
         subject.uri = 'https://example.org'
         expect(subject).to be_valid
-      end
-
-      it 'allows port number' do
         subject.lang = 'en'
         subject.uri = 'https://example.org:8080'
         expect(subject).to be_valid

@@ -17,21 +17,13 @@ RSpec.describe Endpoint, type: :model do
           expect(subject).not_to be_valid
         end
 
-        context 'valid URL formats' do
-          it 'http' do
-            subject.location = 'http://example.org'
-            expect(subject).to be_valid
-          end
-
-          it 'https' do
-            subject.location = 'https://example.org'
-            expect(subject).to be_valid
-          end
-
-          it 'with port number' do
-            subject.location = 'https://example.org:8080'
-            expect(subject).to be_valid
-          end
+        it 'is valid with http, https and/or port' do
+          subject.location = 'http://example.org'
+          expect(subject).to be_valid
+          subject.location = 'https://example.org'
+          expect(subject).to be_valid
+          subject.location = 'https://example.org:8080'
+          expect(subject).to be_valid
         end
       end
 
@@ -43,21 +35,13 @@ RSpec.describe Endpoint, type: :model do
           expect(subject).not_to be_valid
         end
 
-        context 'valid URL formats' do
-          it 'http' do
-            subject.response_location = 'http://example.org'
-            expect(subject).to be_valid
-          end
-
-          it 'https' do
-            subject.response_location = 'https://example.org'
-            expect(subject).to be_valid
-          end
-
-          it 'with port number' do
-            subject.response_location = 'https://example.org:8080'
-            expect(subject).to be_valid
-          end
+        it 'is valid with http, https and/or port' do
+          subject.response_location = 'http://example.org'
+          expect(subject).to be_valid
+          subject.response_location = 'https://example.org'
+          expect(subject).to be_valid
+          subject.response_location = 'https://example.org:8080'
+          expect(subject).to be_valid
         end
       end
     end

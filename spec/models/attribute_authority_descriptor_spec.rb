@@ -9,12 +9,7 @@ RSpec.describe AttributeAuthorityDescriptor, type: :model do
     it { is_expected.to have_one_to_many :name_id_formats }
     it { is_expected.to have_one_to_many :attribute_profiles }
     it { is_expected.to have_one_to_many :attributes }
-
-    context 'validations' do
-      context 'instance validations' do
-        it { is_expected.to validate_presence :attribute_services }
-      end
-    end
+    it { is_expected.to validate_presence :attribute_services }
 
     describe '#assertion_id_request_services?' do
       context 'when populated' do
