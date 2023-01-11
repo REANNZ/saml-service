@@ -8,6 +8,9 @@ on:
 
 jobs:
   push:
+    concurrency:
+      group: ${{ github.event_name }}-${{ github.ref_name == 'master' && github.sha || github.ref_name }}-build
+      cancel-in-progress: true
     if: github.event_name != 'issue_comment' || (contains(github.event.comment.body, '/deploy')  && contains('phyzical,ArthurZheng,ritchiey,matthew-puku,rianniello,Kfoster14,waldofouche', github.event.author.login))
     name: Test, build and push image
     runs-on: ubuntu-latest
@@ -54,7 +57,7 @@ jobs:
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
           if [ "${{github.event_name}}" == "issue_comment" ]; then
-            image_tag=${{steps.comment-branch.outputs.head_ref}}
+            image_tag=${{steps.comment-branch.outputs.head_ref}}-${{steps.comment-branch.outputs.head_sha}}
           else
             image_tag=${{github.sha}}
           fi
@@ -83,6 +86,7 @@ jobs:
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           IMAGE_ID=$(echo "$ECR_REGISTRY/$ECR_REPOSITORY" | tr '[A-Z]' '[a-z]')
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -147,17 +151,21 @@ jobs:
 
       - name: Update GitOps Repo to trigger deploys
         if: env.BRANCH_NAME == 'master' && github.event_name == 'push'
-        uses: ausaccessfed/publish_app@v1.0.11
-        with:
-          environments: test,production
-          projects: saml-service
+        run: |
+          printenv > .envs
+          docker run --env-file .envs \
+          -e PROJECTS="saml-service" \
+          -e ENVIRONMENTS="test,production" \
+          $ECR_REGISTRY/publish_app:latest
 
       - name: Update GitOps Repo to trigger deploys
         if: github.event_name == 'issue_comment' || github.event_name == 'schedule'
-        uses: ausaccessfed/publish_app@v1.0.11
-        with:
-          environments: development
-          projects: saml-service
+        run: |
+          printenv > .envs
+          docker run --env-file .envs \
+          -e PROJECTS="saml-service" \
+          -e ENVIRONMENTS="development" \
+          $ECR_REGISTRY/publish_app:latest
 
       - name: Set final commit status
         uses: myrotvorets/set-commit-status-action@master

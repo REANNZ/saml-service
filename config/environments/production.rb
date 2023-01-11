@@ -80,8 +80,6 @@ Rails.application.configure do
   if ENV['RAILS_LOG_TO_STDOUT'].present?
     logger           = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
-    config.lograge.enabled = true
-    config.lograge.ignore_actions = ['HealthController#show']
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
 

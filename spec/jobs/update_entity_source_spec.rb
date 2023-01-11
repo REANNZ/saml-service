@@ -408,6 +408,14 @@ RSpec.describe UpdateEntitySource do
         .to match("Signature invalid on EntitySource(id=#{subject.id} " \
                   "url=#{subject.url}).")
     end
+
+    context "when the entity source doesn't have a certificate configured" do
+      before { subject.update(certificate: nil) }
+
+      it "doesn't raise an error" do
+        run
+      end
+    end
   end
 
   context 'with a non xmlns namespace for metadata' do

@@ -46,6 +46,11 @@ module Saml
     config.load_defaults 6.0
     config.autoloader = :zeitwerk
 
+    config.lograge.enabled = true
+    config.lograge.custom_options =
+      ->(event) { { params: event.payload[:params].except('controller', 'action', 'format', 'id') } }
+    config.lograge.ignore_actions = ['HealthController#show']
+
     config.sequel.after_connect = proc do
       Sequel::Model.db.extension :connection_validator
       Sequel::Model.db.pool.connection_validation_timeout = -1
