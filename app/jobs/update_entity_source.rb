@@ -73,7 +73,7 @@ class UpdateEntitySource
 
     errors = metadata_schema.validate(doc)
     if errors.empty?
-      verify_signature(source, doc)
+      verify_signature(source, doc) if source.x509_certificate
       return doc_using_saml_metadata_as_default_ns(doc)
     end
 
