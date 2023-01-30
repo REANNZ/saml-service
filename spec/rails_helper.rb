@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 ENV['RAILS_ENV'] ||= 'test'
+ENV['RELEASE_VERSION'] ||= 'VERSION_PROVIDED_ON_BUILD'
 require 'spec_helper'
 require 'factory_bot_rails'
 require File.expand_path('../config/environment', __dir__)

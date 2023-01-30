@@ -57,9 +57,9 @@ jobs:
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
           if [ "${{github.event_name}}" == "issue_comment" ]; then
-            image_tag=${{steps.comment-branch.outputs.head_ref}}-${{steps.comment-branch.outputs.head_sha}}
+            image_tag=adhoc-${{steps.comment-branch.outputs.head_ref}}-${{steps.comment-branch.outputs.head_sha}}
           else
-            image_tag=${{github.sha}}
+            image_tag=stable-${{github.sha}}
           fi
           image_tag=$(echo "$image_tag" | tr / _)
           echo "IMAGE_TAG=$image_tag" >> $GITHUB_ENV
@@ -84,11 +84,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           IMAGE_ID=$(echo "$ECR_REGISTRY/$ECR_REPOSITORY" | tr '[A-Z]' '[a-z]')
           echo "ECR_REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build Test OCI Image
         run: |
@@ -143,9 +141,8 @@ jobs:
           -t $IMAGE_ID:$IMAGE_TAG .
 
       - name: Push to ECR
-        if: (github.event_name == 'push' && env.BRANCH_NAME == 'master') || github.event_name == 'issue_comment'
+        if: (github.event_name == 'push' && env.BRANCH_NAME == 'master') || github.event_name == 'issue_comment' || github.event_name == 'schedule'
         run: |
-          docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:$VERSION
           [ "${{ env.BRANCH_NAME }}" == "master" ]  && [ "${{github.event_name}}" == "push" ] && docker tag $IMAGE_ID:$IMAGE_TAG $IMAGE_ID:latest
           docker push --all-tags $IMAGE_ID
 
