@@ -194,6 +194,46 @@ RSpec.describe SyncToGitRepository do
 
         it_behaves_like 'a removed entity'
       end
+
+      shared_examples 'a removed entity without known entityId' do
+        it 'commits to remove the file with a generic message' do
+          Timecop.freeze do
+            run
+
+            expect(index).to have_received(:remove).with(stale)
+
+            expect(commit_spy).to have_received(:create)
+              .with(repo,
+                    author: author, committer: author, tree: new_tree,
+                    message: '[sync] remove stale entity', parents: [head_commit],
+                    update_ref: 'HEAD')
+          end
+        end
+      end
+
+      context 'for a removed entity with invalid filename' do
+        let(:stale_entity_id) { "#{Faker::Internet.url}/shibboleth" }
+        let(:stale_entity_id_encoded) { '::' }
+        let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
+
+        before do
+          allow(index).to receive(:map).and_return([stale])
+        end
+
+        it_behaves_like 'a removed entity without known entityId'
+      end
+
+      context 'for a removed entity with unparsable filename' do
+        let(:stale_entity_id) { "#{Faker::Internet.url}/shibboleth" }
+        let(:stale_entity_id_encoded) { '__' }
+        let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
+
+        before do
+          allow(index).to receive(:map).and_return([stale])
+        end
+
+        it_behaves_like 'a removed entity without known entityId'
+      end
     end
 
     context 'for an entity descriptor' do
