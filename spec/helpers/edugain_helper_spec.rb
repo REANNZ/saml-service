@@ -5,7 +5,8 @@ require 'rails_helper'
 RSpec.describe EdugainHelper, type: :helper do
   context 'with no config provided' do
     before do
-      allow(Rails.application.config.saml_service).to receive(:api).and_return(nil)
+      allow(Rails.application.config.saml_service.api).to receive(:edugain_export_tag_name).and_return(nil)
+      allow(Rails.application.config.saml_service.api).to receive(:edugain_verified_tag_name).and_return(nil)
     end
 
     describe '#edugain_export_tag' do
