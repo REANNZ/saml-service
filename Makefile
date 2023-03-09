@@ -6,16 +6,19 @@ docker-login:
 	@if [ "${DOCKER_ECR}" != "" ]; then \
 		aws-vault exec shared_services -- aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${DOCKER_ECR}; \
 	fi
-BUILD_TARGET=--target development
+BUILD_TARGET=development
+version := $(shell cat .ruby-version)
+BASE_IMAGE="${DOCKER_ECR}ruby-base:${version}"
 
-build-image:
-	make docker-login
-	docker build .  -t  saml-service \
-	${BUILD_TARGET} --build-arg DOCKER_ECR=${DOCKER_ECR}
+build-image: docker-login
+	docker build .  -t  saml-service:${BUILD_TARGET} \
+	--build-arg LOCAL_BUILD=true \
+	--build-arg BASE_IMAGE=${BASE_IMAGE} \
+	--target ${BUILD_TARGET}
 
 ## use this to connect to a running container
 connect-image:
-	docker container exec -it  saml-service /bin/bash
+	docker container exec -it  saml-service:${BUILD_TARGET} /bin/bash
 #curl 127.0.0.1:3000 > html.test
 COMMAND=/bin/bash
 run-image-bash:
@@ -28,9 +31,9 @@ run-image-bash:
 	-v ${PWD}/lib:/app/lib \
 	-v ${PWD}/log:/app/log \
 	-v ${PWD}/db:/app/db \
-	saml-service 
+	saml-service:${BUILD_TARGET}
 
-remove-all-containers:	
+remove-all-containers:
 	docker rm $(docker ps -a -q)
 
 run-image:
@@ -41,8 +44,8 @@ run-image:
 	-v ${PWD}/log:/app/log \
 	-v ${PWD}/db:/app/db \
 	-e SAML_DB_HOST=${LOCAL_IP} \
-	 saml-service
-	 
+	 saml-service:${BUILD_TARGET}
+
 FILE=
 run-image-tests:
 	docker run -it --rm --env-file=.env.test \
@@ -55,4 +58,4 @@ run-image-tests:
 	-v ${PWD}/log:/app/log \
 	-v ${PWD}/db:/app/db \
 	-e SAML_DB_HOST=${LOCAL_IP} \
-	--name  saml-service  saml-service "rspec -fd ${FILE}"
+	--name  saml-service:${BUILD_TARGET}  saml-service "rspec -fd ${FILE}"

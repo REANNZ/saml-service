@@ -194,11 +194,11 @@ RSpec.describe KnownEntity do
     end
 
     def tag_names
-      Tag.where(known_entity_id: known_entity.id).all.map(&:name)
+      known_entity.reload.tags.map(&:name)
     end
 
     def create_derived_tag
-      known_entity.add_tag(name: derived_tag_name, derived: true)
+      known_entity.reload.add_tag(name: derived_tag_name, derived: true)
     end
 
     context 'when the tags are present' do

@@ -117,7 +117,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
 
   let(:sp_created_at) { Time.zone.at(rand(Time.now.utc.to_i)) }
 
-  let(:entity_descriptor) { create :entity_descriptor }
+  let!(:entity_descriptor) { create :entity_descriptor }
 
   let(:ed_data) do
     {

@@ -12,7 +12,7 @@ RSpec.describe HealthController, type: :controller do
         expect(response).to have_http_status(:success)
         expect(JSON.parse(response.body).symbolize_keys).to match(
           hash_including({
-                           version: 'VERSION_PROVIDED_ON_BUILD-1',
+                           version: 'VERSION_PROVIDED_ON_BUILD',
                            redis_active: true,
                            db_active: true
                          })

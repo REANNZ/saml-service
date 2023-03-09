@@ -21,12 +21,12 @@ describe Edugain::ServiceProviderExport do
         end
 
         it 'tags the KnownEntity as aaf-edugain-verified' do
-          expect(entity_descriptor.known_entity.tags).to be_empty
+          expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-export'
 
           save
           entity_descriptor.reload
 
-          expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-export'
+          expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-export'
         end
 
         it 'adds attributes for Edugain' do

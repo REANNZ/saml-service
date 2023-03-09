@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
+
 module SetSamlTypeFromXml
   def self.xpath_for_metadata_element(name)
     "//*[local-name() = \"#{name}\" and " \
@@ -13,6 +15,7 @@ module SetSamlTypeFromXml
     xpath_for_metadata_element('AttributeAuthorityDescriptor')
   RESEARCH_AND_SCHOLARSHIP_CATEGORY = 'http://refeds.org/category/research-and-scholarship'
   DP_COCO_CATEGORY = 'http://www.geant.net/uri/dataprotection-code-of-conduct/v1'
+  REFEDS_COCO_V2_CATEGORY = 'https://refeds.org/category/code-of-conduct/v2'
   ENTITY_CATEGORY_ATTR = 'http://macedir.org/entity-category'
   ENTITY_CATEGORY_SUPPORT_ATTR = 'http://macedir.org/entity-category-support'
 
@@ -62,13 +65,15 @@ module SetSamlTypeFromXml
     tags = []
     tags << Tag::RESEARCH_SCHOLARSHIP if research_scholarship_entity?(ed_node)
     tags << Tag::DP_COCO if dp_coco_entity?(ed_node)
+    tags << Tag::REFEDS_COCO_V2 if refeds_coco_v2_entity?(ed_node)
     tags << Tag::SIRTFI if sirtfi_entity?(ed_node)
+    tags << Tag::SIRTFI_V2 if sirtfi_v2_entity?(ed_node)
     tags
   end
 
   def all_entity_tags
     [Tag::IDP, Tag::AA, Tag::STANDALONE_AA, Tag::SP,
-     Tag::RESEARCH_SCHOLARSHIP, Tag::DP_COCO, Tag::SIRTFI]
+     Tag::RESEARCH_SCHOLARSHIP, Tag::DP_COCO, Tag::REFEDS_COCO_V2, Tag::SIRTFI, Tag::SIRTFI_V2]
   end
 
   def entity_has_idp_role?(ed_node)
@@ -98,6 +103,11 @@ module SetSamlTypeFromXml
       idp_supports_category?(ed_node, DP_COCO_CATEGORY)
   end
 
+  def refeds_coco_v2_entity?(ed_node)
+    sp_has_category?(ed_node, REFEDS_COCO_V2_CATEGORY) ||
+      idp_supports_category?(ed_node, REFEDS_COCO_V2_CATEGORY)
+  end
+
   def sp_has_category?(ed_node, category)
     return false unless entity_has_sp_role?(ed_node)
 
@@ -121,4 +131,14 @@ module SetSamlTypeFromXml
       'https://refeds.org/sirtfi'
     )
   end
+
+  def sirtfi_v2_entity?(ed_node)
+    matches_entity_attribute_value?(
+      ed_node,
+      'urn:oasis:names:tc:SAML:attribute:assurance-certification',
+      'https://refeds.org/sirtfi2'
+    )
+  end
 end
+
+# rubocop:enable Metrics/ModuleLength

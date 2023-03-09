@@ -294,13 +294,19 @@ RSpec.describe MetadataQueryController, type: :controller do
   end
 
   describe '#specific_entity' do
+    let(:entity_source) do
+      es = create(:basic_federation)
+      create :derived_tag, tag_name: primary_tag, when_tags: es.source_tag, unless_tags: ''
+      es
+    end
+
     RSpec.shared_examples 'Specific Entity Descriptor' do
       context 'GET' do
         before { request.accept = saml_content }
         context 'valid client request' do
           let(:etag) do
             caching.generate_document_entities_etag(
-              metadata_instance, [entity_descriptor.known_entity]
+              metadata_instance, [entity_descriptor.known_entity, entity_descriptor.known_entity]
             )
           end
           context 'valid entity_descriptor' do
@@ -476,12 +482,15 @@ RSpec.describe MetadataQueryController, type: :controller do
     RSpec.shared_examples 'EntityDescriptors from multiple sources' do
       before { request.accept = saml_content }
 
-      let(:entity_source) { create :basic_federation }
       let(:sp) { create :basic_federation_entity, :sp, entity_source: entity_source }
       let(:entity_descriptor) { sp.entity_descriptor }
       let(:entity_id) { entity_descriptor.entity_id.uri }
 
-      let(:external_entity_source) { create :entity_source, rank: entity_source.rank + 1 }
+      let(:external_entity_source) do
+        es = create(:entity_source, rank: entity_source.rank + 1)
+        create :derived_tag, tag_name: primary_tag, when_tags: es.source_tag, unless_tags: ''
+        es
+      end
       let(:external_sp) do
         create :basic_federation_entity, :sp, entity_source: external_entity_source
       end
@@ -523,15 +532,16 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
 
       context 'EntityDescriptor' do
-        let(:idp_sso_descriptor) { create :idp_sso_descriptor }
-        let(:entity_descriptor) { idp_sso_descriptor.entity_descriptor }
+        let(:known_entity) { create(:known_entity, :with_idp, entity_source: entity_source) }
+        let(:entity_descriptor) { known_entity.entity_descriptor }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
       end
 
       context 'RawEntityDescriptor' do
-        let(:entity_descriptor) { create :raw_entity_descriptor }
+        let(:known_entity) { create(:known_entity, entity_source: entity_source) }
+        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity: known_entity) }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
@@ -552,15 +562,16 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
 
       context 'EntityDescriptor' do
-        let(:idp_sso_descriptor) { create :idp_sso_descriptor }
-        let(:entity_descriptor) { idp_sso_descriptor.entity_descriptor }
+        let(:known_entity) { create(:known_entity, :with_idp, entity_source: entity_source) }
+        let(:entity_descriptor) { known_entity.entity_descriptor }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
       end
 
       context 'RawEntityDescriptor' do
-        let(:entity_descriptor) { create :raw_entity_descriptor }
+        let(:known_entity) { create(:known_entity, entity_source: entity_source) }
+        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity: known_entity) }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'

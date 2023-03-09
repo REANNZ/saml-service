@@ -22,5 +22,9 @@ FactoryBot.define do
         ke.raw_entity_descriptor = red
       end
     end
+
+    after(:create) do |ke|
+      ke.tag_as(ke.entity_source.source_tag)
+    end
   end
 end

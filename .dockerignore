@@ -6,3 +6,7 @@ public/assets
 tmp
 storage
 .vscode
+.env*
+.bundle
+Makefile
+README.md

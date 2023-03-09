@@ -10,13 +10,13 @@ describe Edugain::IdentityProviderExport do
       let(:entity_descriptor) { create(:entity_descriptor, :with_idp) }
       let(:entity_id) { entity_descriptor.entity_id.uri }
 
-      it 'tags the KnownEntity as aaf-edugain-verified' do
-        expect(entity_descriptor.known_entity.tags).to be_empty
+      it 'tags the KnownEntity as aaf-edugain-export' do
+        expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-export'
 
         save
         entity_descriptor.reload
 
-        expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-export'
+        expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-export'
       end
 
       it 'adds attributes for Edugain' do

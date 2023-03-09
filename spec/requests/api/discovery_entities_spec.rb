@@ -8,23 +8,10 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
   let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
   shared_examples 'a discovery entity' do
-    it 'includes the entity id and no tags' do
+    it 'includes the entity id and tags' do
       expect(subject.pluck(:entity_id))
         .to include(entity.entity_id.uri)
-      expect(entry[:tags]).to eq([])
-    end
-
-    context 'with tags on the known entity' do
-      let!(:tags) do
-        %w[tag_a tag_b tag_c].map do |tag|
-          create(:known_entity_tag,
-                 name: tag, known_entity: entity.known_entity)
-        end
-      end
-
-      it 'returns the tags' do
-        expect(entry[:tags]).to contain_exactly('tag_a', 'tag_b', 'tag_c')
-      end
+      expect(entry[:tags]).to match_array(entity.known_entity.tags.map(&:name))
     end
 
     context 'with no mdui info' do

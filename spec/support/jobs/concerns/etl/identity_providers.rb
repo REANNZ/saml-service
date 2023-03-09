@@ -124,7 +124,7 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
 
   let(:attributes) { attributes_list }
 
-  let(:entity_descriptor) { create :entity_descriptor }
+  let!(:entity_descriptor) { create :entity_descriptor }
 
   let(:ed_data) do
     {
