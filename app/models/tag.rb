@@ -23,6 +23,8 @@ class Tag < Sequel::Model
   SP = 'sp'
   RESEARCH_SCHOLARSHIP = 'research-and-scholarship'
   DP_COCO = 'dp-coco'
+  REFEDS_COCO_V2 = 'refeds-coco-v2'
   SIRTFI = 'sirtfi'
+  SIRTFI_V2 = 'sirtfi-v2'
   BLACKLIST = 'blacklist'
 end

@@ -25,18 +25,19 @@ class MetadataQueryController < ApplicationController
   end
 
   def specific_entity
-    handle_entity_request(select_entity_by_rank(EntityId.where(uri: params[:identifier]).all))
+    handle_entity_request(select_entity_with_tag_by_rank(EntityId.where(uri: params[:identifier]).all))
   end
 
   def specific_entity_sha1
     sha1_identifier = params[:identifier].match(SHA1_REGEX)
-    handle_entity_request(select_entity_by_rank(EntityId.where(sha1: sha1_identifier[1]).all))
+    handle_entity_request(select_entity_with_tag_by_rank(EntityId.where(sha1: sha1_identifier[1]).all))
   end
 
   private
 
-  def select_entity_by_rank(entity_ids)
-    entity_ids.min_by { |e| e.parent.known_entity.entity_source.rank }
+  def select_entity_with_tag_by_rank(entity_ids)
+    entity_ids.select { |e| e.parent.known_entity.tags.map(&:name).include?(@metadata_instance.primary_tag) }
+              .min_by { |e| e.parent.known_entity.entity_source.rank }
   end
 
   def handle_entities_request(tags)
@@ -56,7 +57,7 @@ class MetadataQueryController < ApplicationController
 
     Sequel::Model.db.transaction(isolation: :repeatable) do
       known_entity = entity_id.parent.known_entity
-      etag = generate_document_entities_etag(@metadata_instance, [known_entity])
+      etag = generate_document_entities_etag(@metadata_instance, [known_entity, known_entity])
       return head :not_modified if known_entity_unmodified?(known_entity, etag)
 
       create_known_entity_response(known_entity, etag)

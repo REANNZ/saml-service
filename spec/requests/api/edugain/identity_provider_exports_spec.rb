@@ -15,13 +15,13 @@ RSpec.describe API::Edugain::IdentityProviderExportsController, type: :request d
            headers: { Authorization: +"Bearer #{api_subject.token}" }
     end
 
-    it 'tags the KnownEntity as aaf-edugain-verified' do
-      expect(entity_descriptor.known_entity.tags).to be_empty
+    it 'tags the KnownEntity as aaf-edugain-export' do
+      expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-export'
 
       run
       entity_descriptor.reload
 
-      expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-export'
+      expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-export'
     end
 
     it 'adds attributes for Edugain' do

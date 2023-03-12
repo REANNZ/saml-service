@@ -25,6 +25,13 @@ RSpec.describe SetSamlTypeFromXml do
     }
   end
 
+  let(:sirtfi_v2) do
+    {
+      'urn:oasis:names:tc:SAML:attribute:assurance-certification' =>
+      [attribute_value('https://refeds.org/sirtfi2')]
+    }
+  end
+
   let(:supports_research_scholarship) do
     {
       'http://macedir.org/entity-category-support' =>
@@ -50,6 +57,20 @@ RSpec.describe SetSamlTypeFromXml do
     {
       'http://macedir.org/entity-category' =>
       [attribute_value('http://www.geant.net/uri/dataprotection-code-of-conduct/v1')]
+    }
+  end
+
+  let(:supports_refeds_coco_v2) do
+    {
+      'http://macedir.org/entity-category-support' =>
+      [attribute_value('https://refeds.org/category/code-of-conduct/v2')]
+    }
+  end
+
+  let(:conforms_to_refeds_coco_v2) do
+    {
+      'http://macedir.org/entity-category' =>
+      [attribute_value('https://refeds.org/category/code-of-conduct/v2')]
     }
   end
 
@@ -113,9 +134,11 @@ RSpec.describe SetSamlTypeFromXml do
         expect(known_entity).to have_received(:untag_as).with('sp')
         expect(known_entity).to have_received(:untag_as).with('standalone-aa')
         expect(known_entity).to have_received(:untag_as).with('sirtfi')
+        expect(known_entity).to have_received(:untag_as).with('sirtfi-v2')
         expect(known_entity).to have_received(:untag_as)
           .with('research-and-scholarship')
         expect(known_entity).to have_received(:untag_as).with('dp-coco')
+        expect(known_entity).to have_received(:untag_as).with('refeds-coco-v2')
       end
     end
 
@@ -145,6 +168,14 @@ RSpec.describe SetSamlTypeFromXml do
         end
       end
 
+      context 'when SIRTFIv2 is asserted' do
+        let(:entity_attributes) { sirtfi_v2 }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as).with('sirtfi-v2')
+        end
+      end
+
       context 'when R&S is supported' do
         let(:entity_attributes) { supports_research_scholarship }
 
@@ -160,6 +191,15 @@ RSpec.describe SetSamlTypeFromXml do
         it 'adds the tag' do
           expect(known_entity).to have_received(:tag_as)
             .with('dp-coco')
+        end
+      end
+
+      context 'when REFEDS CoCo V2 is supported' do
+        let(:entity_attributes) { supports_refeds_coco_v2 }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('refeds-coco-v2')
         end
       end
     end
@@ -190,6 +230,14 @@ RSpec.describe SetSamlTypeFromXml do
         end
       end
 
+      context 'when SIRTFI V2 is asserted' do
+        let(:entity_attributes) { sirtfi_v2 }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as).with('sirtfi-v2')
+        end
+      end
+
       context 'when conforming to R&S' do
         let(:entity_attributes) { conforms_to_research_scholarship }
 
@@ -205,6 +253,15 @@ RSpec.describe SetSamlTypeFromXml do
         it 'adds the tag' do
           expect(known_entity).to have_received(:tag_as)
             .with('dp-coco')
+        end
+      end
+
+      context 'when conforming to REFEDS CoCo V2' do
+        let(:entity_attributes) { conforms_to_refeds_coco_v2 }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('refeds-coco-v2')
         end
       end
     end

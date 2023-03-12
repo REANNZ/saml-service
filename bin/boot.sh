@@ -16,6 +16,6 @@ if [ "${DEBUG_CONTAINER-}" == "true" ]; then
   echo 'Debugging!'
   exec tail -f /dev/null
 else
-  echo 'Running!'
-  exec bundle exec $1
+  echo "Running! exec $*"
+  exec $*
 fi

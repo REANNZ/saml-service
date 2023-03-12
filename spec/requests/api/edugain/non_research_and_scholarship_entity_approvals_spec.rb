@@ -16,12 +16,12 @@ RSpec.describe API::Edugain::NonResearchAndScholarshipEntityApprovalsController,
     end
 
     it 'tags the KnownEntity as aaf-edugain-verified' do
-      expect(entity_descriptor.known_entity.tags).to be_empty
+      expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-verified'
 
       run
       entity_descriptor.reload
 
-      expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-verified'
+      expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-verified'
       expect(response).to have_http_status :no_content
     end
   end

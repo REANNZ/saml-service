@@ -11,12 +11,12 @@ describe Edugain::NonResearchAndScholarshipEntity do
       let(:id) { entity_descriptor.entity_id.uri }
 
       it 'tags the KnownEntity as aaf-edugain-verified' do
-        expect(entity_descriptor.known_entity.tags).to be_empty
+        expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-verified'
 
         approve
         entity_descriptor.reload
 
-        expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-verified'
+        expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-verified'
       end
     end
 
@@ -25,12 +25,12 @@ describe Edugain::NonResearchAndScholarshipEntity do
       let(:id) { entity_descriptor.entity_id.uri }
 
       it 'tags the KnownEntity as aaf-edugain-verified' do
-        expect(entity_descriptor.known_entity.tags).to be_empty
+        expect(entity_descriptor.known_entity.tags.map(&:name)).not_to include 'aaf-edugain-verified'
 
         approve
         entity_descriptor.reload
 
-        expect(entity_descriptor.known_entity.tags.first.name).to eq 'aaf-edugain-verified'
+        expect(entity_descriptor.known_entity.tags.map(&:name)).to include 'aaf-edugain-verified'
       end
     end
 
