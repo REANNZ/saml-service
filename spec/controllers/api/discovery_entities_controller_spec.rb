@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe API::DiscoveryEntitiesController, type: :controller do
+RSpec.describe API::DiscoveryEntitiesController, type: :request do
   let(:api_subject) { create(:api_subject, :x509_cn, :authorized, permission: '*') }
 
   let!(:entity_source) { create(:entity_source, rank: rand(1..10)) }
@@ -53,39 +53,63 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
   let!(:other_sp_sso_descriptor) {}
   let!(:other_raw_ed_sp) {}
 
-  before do
-    request.env['HTTP_X509_DN'] = +"CN=#{api_subject.x509_cn}" if api_subject
+  let(:headers) { { 'X509_DN' => "CN=#{api_subject.x509_cn}" } if api_subject }
+
+  def expect_response_to_include(type, *entity_descriptors)
+    expect_response_content(type, *entity_descriptors, include: true)
   end
 
-  describe 'get :index' do
-    before { get :index, format: :json }
+  def expect_response_to_exclude(type, *entity_descriptors)
+    expect_response_content(type, *entity_descriptors, include: false)
+  end
+
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
+  def expect_response_content(type, *entity_descriptors, include:)
+    actual = response.parsed_body[type].map do |entity_descriptor|
+      {
+        entity_id: entity_descriptor['entity_id'],
+        name: entity_descriptor['names'].first&.[]('value'),
+        description: entity_descriptor['descriptions'].first&.[]('value')
+      }
+    end
+    expected = entity_descriptors.map do |entity_descriptor|
+      ui_info =
+        entity_descriptor.try(:idp_sso_descriptors).try(:first).try(:ui_info) ||
+        entity_descriptor.try(:sp_sso_descriptors).try(:first).try(:ui_info) ||
+        entity_descriptor.try(:ui_info)
+      {
+        entity_id: entity_descriptor.entity_id.uri,
+        name: ui_info&.display_names&.first&.value,
+        description: ui_info&.descriptions&.first&.value
+      }
+    end
+
+    if include
+      expect(actual).to include(*expected)
+    else
+      expect(actual).not_to include(*expected)
+    end
+  end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
+
+  describe '#index' do
+    before { get api_discovery_entities_path, headers: headers }
 
     subject { response }
 
     it {
-      is_expected.to have_http_status(:ok).and(
-        render_template('api/discovery_entities/index')
-      )
-
-      expect(assigns[:identity_provider_entities])
-        .to include(identity_provider)
-        .and include(raw_ed_idp)
-        .and not_include(service_provider)
-        .and not_include(raw_ed_sp)
-
-      expect(assigns[:service_provider_entities])
-        .to include(service_provider)
-        .and include(raw_ed_sp)
-        .and not_include(identity_provider)
-        .and not_include(raw_ed_idp)
+      is_expected.to have_http_status(:ok)
+      expect_response_to_include('identity_providers', identity_provider, raw_ed_idp)
+      expect_response_to_include('service_providers', service_provider, raw_ed_sp)
     }
 
     context 'for a disabled identity provider' do
       let!(:identity_provider) { create(:entity_descriptor, enabled: false) }
 
-      it 'excludes the identity provider and has no nil values' do
-        expect(assigns[:identity_provider_entities])
-          .not_to include(identity_provider, nil)
+      it 'excludes the identity provider' do
+        expect_response_to_exclude('identity_providers', identity_provider)
       end
     end
 
@@ -95,8 +119,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
       end
 
       it 'excludes the identity provider and has no nil values' do
-        expect(assigns[:identity_provider_entities])
-          .not_to include(raw_ed_idp, nil)
+        expect_response_to_exclude('identity_providers', raw_ed_idp)
       end
     end
 
@@ -104,8 +127,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
       let!(:service_provider) { create(:entity_descriptor, enabled: false) }
 
       it 'excludes the service provider and has no nil values' do
-        expect(assigns[:service_provider_entities])
-          .not_to include(service_provider, nil)
+        expect_response_to_exclude('service_providers', service_provider)
       end
     end
 
@@ -114,9 +136,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
         create(:raw_entity_descriptor_sp, enabled: false)
       end
 
-      it 'excludes the service provider and has no nil values' do
-        expect(assigns[:service_provider_entities])
-          .not_to include(raw_ed_sp, nil)
+      it 'excludes the service provider' do
+        expect_response_to_exclude('service_providers', raw_ed_sp)
       end
     end
 
@@ -146,7 +167,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
         end
 
         let!(:other_idp_sso_descriptor) do
-          create(:idp_sso_descriptor,
+          create(:idp_sso_descriptor, :with_ui_info,
                  entity_descriptor: other_identity_provider)
         end
 
@@ -157,9 +178,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(identity_provider)
-                .and not_include(other_identity_provider)
+              expect_response_to_include('identity_providers', identity_provider)
+              expect_response_to_exclude('identity_providers', other_identity_provider)
             end
           end
 
@@ -167,9 +187,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes other, ignores existing' do
-              expect(assigns[:identity_provider_entities])
-                .to include(other_identity_provider)
-                .and not_include(identity_provider)
+              expect_response_to_include('identity_providers', other_identity_provider)
+              expect_response_to_exclude('identity_providers', identity_provider)
             end
           end
         end
@@ -181,9 +200,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(identity_provider)
-                .and not_include(other_identity_provider)
+              expect_response_to_include('identity_providers', identity_provider)
+              expect_response_to_exclude('identity_providers', other_identity_provider)
             end
           end
 
@@ -191,9 +209,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(identity_provider)
-                .and not_include(other_identity_provider)
+              expect_response_to_include('identity_providers', identity_provider)
+              expect_response_to_exclude('identity_providers', other_identity_provider)
             end
           end
         end
@@ -216,9 +233,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(raw_ed_idp)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', raw_ed_idp)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
 
@@ -226,9 +242,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes other, ignores existing' do
-              expect(assigns[:identity_provider_entities])
-                .to include(other_raw_ed_idp)
-                .and not_include(raw_ed_idp)
+              expect_response_to_include('identity_providers', other_raw_ed_idp)
+              expect_response_to_exclude('identity_providers', raw_ed_idp)
             end
           end
         end
@@ -240,9 +255,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(raw_ed_idp)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', raw_ed_idp)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
 
@@ -250,9 +264,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:identity_provider_entities])
-                .to include(raw_ed_idp)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', raw_ed_idp)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
         end
@@ -275,9 +288,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes ed-idp, ignores rad-idp' do
-              expect(assigns[:identity_provider_entities])
-                .to include(identity_provider)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', identity_provider)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
 
@@ -285,9 +297,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes rad-idp, ignores ed-idp' do
-              expect(assigns[:identity_provider_entities])
-                .to include(other_raw_ed_idp)
-                .and not_include(identity_provider)
+              expect_response_to_include('identity_providers', other_raw_ed_idp)
+              expect_response_to_exclude('identity_providers', identity_provider)
             end
           end
         end
@@ -299,9 +310,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { false }
 
             it 'includes ed-idp, ignores rad-idp' do
-              expect(assigns[:identity_provider_entities])
-                .to include(identity_provider)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', identity_provider)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
 
@@ -309,9 +319,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_idp_enabled) { true }
 
             it 'includes ed-idp, ignores rad-idp' do
-              expect(assigns[:identity_provider_entities])
-                .to include(raw_ed_idp)
-                .and not_include(other_raw_ed_idp)
+              expect_response_to_include('identity_providers', raw_ed_idp)
+              expect_response_to_exclude('identity_providers', other_raw_ed_idp)
             end
           end
         end
@@ -327,7 +336,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
         end
 
         let!(:other_sp_sso_descriptor) do
-          create(:sp_sso_descriptor,
+          create(:sp_sso_descriptor, :with_ui_info,
                  entity_descriptor: other_service_provider)
         end
 
@@ -338,9 +347,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_service_provider)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_service_provider)
             end
           end
 
@@ -348,9 +356,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes other, ignores existing' do
-              expect(assigns[:service_provider_entities])
-                .to include(other_service_provider)
-                .and not_include(service_provider)
+              expect_response_to_include('service_providers', other_service_provider)
+              expect_response_to_exclude('service_providers', service_provider)
             end
           end
         end
@@ -362,9 +369,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_service_provider)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_service_provider)
             end
           end
 
@@ -372,9 +378,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_service_provider)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_service_provider)
             end
           end
         end
@@ -397,9 +402,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(raw_ed_sp)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', raw_ed_sp)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
 
@@ -407,9 +411,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes other, ignores existing' do
-              expect(assigns[:service_provider_entities])
-                .to include(other_raw_ed_sp)
-                .and not_include(raw_ed_sp)
+              expect_response_to_include('service_providers', other_raw_ed_sp)
+              expect_response_to_exclude('service_providers', raw_ed_sp)
             end
           end
         end
@@ -421,9 +424,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(raw_ed_sp)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', raw_ed_sp)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
 
@@ -431,9 +433,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes existing, ignores other' do
-              expect(assigns[:service_provider_entities])
-                .to include(raw_ed_sp)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', raw_ed_sp)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
         end
@@ -456,9 +457,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes ed-sp, ignores rad-sp' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
 
@@ -466,9 +466,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes rad-sp, ignores ed-sp' do
-              expect(assigns[:service_provider_entities])
-                .to include(other_raw_ed_sp)
-                .and not_include(service_provider)
+              expect_response_to_include('service_providers', other_raw_ed_sp)
+              expect_response_to_exclude('service_providers', service_provider)
             end
           end
         end
@@ -480,9 +479,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { false }
 
             it 'includes ed-sp, ignores rad-sp' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
 
@@ -490,9 +488,8 @@ RSpec.describe API::DiscoveryEntitiesController, type: :controller do
             let!(:other_sp_enabled) { true }
 
             it 'includes ed-sp, ignores rad-sp' do
-              expect(assigns[:service_provider_entities])
-                .to include(service_provider)
-                .and not_include(other_raw_ed_sp)
+              expect_response_to_include('service_providers', service_provider)
+              expect_response_to_exclude('service_providers', other_raw_ed_sp)
             end
           end
         end

@@ -22,14 +22,14 @@ FactoryBot.define do
 
       discovery_response { nil }
 
-      ui_info do
+      sequence(:ui_info) do |n|
         <<~ENTITY.strip
           <mdui:UIInfo>
             <mdui:DisplayName xml:lang="en">
               #{Faker::Lorem.word}
             </mdui:DisplayName>
             <mdui:Description xml:lang="en">
-              #{Faker::Lorem.sentence}
+               #{n} #{Faker::Lorem.sentence} (raw)
             </mdui:Description>
             <mdui:Logo height="16" width="16">
                 https://example.edu/img.png

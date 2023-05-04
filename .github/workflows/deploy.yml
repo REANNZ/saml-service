@@ -13,13 +13,14 @@ jobs:
       id-token: write
       contents: read
       statuses: write
-      pull-requests: read
+      pull-requests: write
     secrets: inherit
     uses: ausaccessfed/workflows/.github/workflows/deploy-sync.yml@main
     with:
       ecr_repository: saml-service
       dev_url: https://saml.dev.aaf.edu.au
       event_name: ${{ github.event_name }}
+      event_comment_id: ${{ github.event.comment.id }}
       event_comment_body: ${{ github.event.comment.body }}
       production_environments: "test,production"
       extra_task_1_name: Tests

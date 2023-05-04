@@ -2,10 +2,10 @@
   "ignored_warnings": [
     {
       "warning_type": "Unmaintained Dependency",
-      "warning_code": 123,
-      "fingerprint": "870fa4a5cfd770898e1b7a159368b4210fe366634512563f9fb1c1cbbfef1d78",
+      "warning_code": 121,
+      "fingerprint": "9a3951031616a07c8e02c86652f537e92c08685da97f5ec2b12d5d3602b55bb8",
       "check_name": "EOLRuby",
-      "message": "Support for Ruby 2.7.4 ends on 2023-03-31",
+      "message": "Support for Ruby 2.7.4 ended on 2023-03-31",
       "file": "Gemfile.lock",
       "line": 214,
       "link": "https://brakemanscanner.org/docs/warning_types/unmaintained_dependency/",
@@ -13,7 +13,7 @@
       "render_path": null,
       "location": null,
       "user_input": null,
-      "confidence": "Medium",
+      "confidence": "High",
       "note": ""
     },
     {
@@ -23,7 +23,7 @@
       "check_name": "VerbConfusion",
       "message": "Potential HTTP verb confusion. `HEAD` is routed like `GET` but `request.get?` will return `false`",
       "file": "app/controllers/metadata_query_controller.rb",
-      "line": 67,
+      "line": 68,
       "link": "https://brakemanscanner.org/docs/warning_types/http_verb_confusion/",
       "code": "return if request.get?",
       "render_path": null,
@@ -37,6 +37,6 @@
       "note": ""
     }
   ],
-  "updated": "2023-03-02 17:32:25 +1000",
+  "updated": "2023-04-20 16:00:41 +1000",
   "brakeman_version": "5.2.1"
 }

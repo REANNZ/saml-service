@@ -37,6 +37,7 @@ group :development, :test do
   gem 'capybara'
   gem 'rspec-rails'
   gem 'rspec-retry'
+  gem 'simplecov-console', require: false
   gem 'webmock', require: false
 
   gem 'aaf-gumboot'

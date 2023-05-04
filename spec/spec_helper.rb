@@ -3,6 +3,9 @@
 require 'simplecov'
 require 'webmock/rspec'
 require 'fakeredis/rspec'
+require 'simplecov-console'
+
+SimpleCov.formatter = SimpleCov::Formatter::Console
 
 RSpec.configure do |config|
   config.filter_run :focus
@@ -19,7 +22,9 @@ RSpec.configure do |config|
     mocks.syntax = :expect
     mocks.verify_partial_doubles = true
   end
-
+  config.after(:each) do
+    Rails.cache.clear
+  end
   config.after(:suite) do
     WebMock.disable_net_connect!
   end
