@@ -10,7 +10,7 @@ min_threads_count = ENV.fetch('MIN_THREADS', max_threads_count)
 threads min_threads_count, max_threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-if ENV.fetch('RAILS_ENV', 'development') == 'production' and ENV.has_key?('CERT_PATH') and ENV.has_key?('KEY_PATH')
+if ENV.fetch('RAILS_ENV', 'development') == 'production' && ENV.key?('CERT_PATH') && ENV.key?('KEY_PATH')
   ssl_bind '0.0.0.0', ENV.fetch('PORT', 8081), {
     key: ENV.fetch('KEY_PATH', '/run/secrets/apache_key'),
     cert: ENV.fetch('CERT_PATH', '/run/secrets/apache_cert'),

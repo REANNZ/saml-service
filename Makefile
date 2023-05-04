@@ -57,5 +57,6 @@ run-image-tests:
 	-v ${PWD}/spec:/app/spec \
 	-v ${PWD}/log:/app/log \
 	-v ${PWD}/db:/app/db \
+	-v ${PWD}/.simplecov:/app/.simplecov \
 	-e SAML_DB_HOST=${LOCAL_IP} \
-	--name  saml-service:${BUILD_TARGET}  saml-service "rspec -fd ${FILE}"
+	--name  saml-service  saml-service:${BUILD_TARGET} "rspec -fd ${FILE}"
