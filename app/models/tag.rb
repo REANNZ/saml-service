@@ -26,5 +26,9 @@ class Tag < Sequel::Model
   REFEDS_COCO_V2 = 'refeds-coco-v2'
   SIRTFI = 'sirtfi'
   SIRTFI_V2 = 'sirtfi-v2'
+  HIDE_FROM_DISCOVERY = 'hide-from-discovery'
+  ANONYMOUS_ACCESS = 'anonymous-access'
+  PSEUDONYMOUS_ACCESS = 'pseudonymous-access'
+  PERSONALIZED_ACCESS = 'personalized-access'
   BLACKLIST = 'blacklist'
 end
