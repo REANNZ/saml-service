@@ -74,6 +74,55 @@ RSpec.describe SetSamlTypeFromXml do
     }
   end
 
+  let(:requests_hide_from_discovery) do
+    {
+      'http://macedir.org/entity-category' =>
+      [attribute_value('http://refeds.org/category/hide-from-discovery')]
+    }
+  end
+
+  let(:requests_refeds_anonymous_access) do
+    {
+      'http://macedir.org/entity-category' =>
+      [attribute_value('https://refeds.org/category/anonymous')]
+    }
+  end
+
+  let(:supports_refeds_anonymous_access) do
+    {
+      'http://macedir.org/entity-category-support' =>
+      [attribute_value('https://refeds.org/category/anonymous')]
+    }
+  end
+
+  let(:requests_refeds_pseudonymous_access) do
+    {
+      'http://macedir.org/entity-category' =>
+      [attribute_value('https://refeds.org/category/pseudonymous')]
+    }
+  end
+
+  let(:supports_refeds_pseudonymous_access) do
+    {
+      'http://macedir.org/entity-category-support' =>
+      [attribute_value('https://refeds.org/category/pseudonymous')]
+    }
+  end
+
+  let(:requests_refeds_personalized_access) do
+    {
+      'http://macedir.org/entity-category' =>
+      [attribute_value('https://refeds.org/category/personalized')]
+    }
+  end
+
+  let(:supports_refeds_personalized_access) do
+    {
+      'http://macedir.org/entity-category-support' =>
+      [attribute_value('https://refeds.org/category/personalized')]
+    }
+  end
+
   let(:xpath_results) do
     {
       'IDPSSODescriptor' => idp_sso_descriptor,
@@ -139,6 +188,10 @@ RSpec.describe SetSamlTypeFromXml do
           .with('research-and-scholarship')
         expect(known_entity).to have_received(:untag_as).with('dp-coco')
         expect(known_entity).to have_received(:untag_as).with('refeds-coco-v2')
+        expect(known_entity).to have_received(:untag_as).with('hide-from-discovery')
+        expect(known_entity).to have_received(:untag_as).with('anonymous-access')
+        expect(known_entity).to have_received(:untag_as).with('pseudonymous-access')
+        expect(known_entity).to have_received(:untag_as).with('personalized-access')
       end
     end
 
@@ -202,6 +255,42 @@ RSpec.describe SetSamlTypeFromXml do
             .with('refeds-coco-v2')
         end
       end
+
+      context 'when hide from discovery is requested' do
+        let(:entity_attributes) { requests_hide_from_discovery }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('hide-from-discovery')
+        end
+      end
+
+      context 'when REFEDS anonymous access is supported' do
+        let(:entity_attributes) { supports_refeds_anonymous_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('anonymous-access')
+        end
+      end
+
+      context 'when REFEDS pseudonymous access is supported' do
+        let(:entity_attributes) { supports_refeds_pseudonymous_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('pseudonymous-access')
+        end
+      end
+
+      context 'when REFEDS personalized access is supported' do
+        let(:entity_attributes) { supports_refeds_personalized_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('personalized-access')
+        end
+      end
     end
 
     context 'with an SPSSODescriptor' do
@@ -262,6 +351,33 @@ RSpec.describe SetSamlTypeFromXml do
         it 'adds the tag' do
           expect(known_entity).to have_received(:tag_as)
             .with('refeds-coco-v2')
+        end
+      end
+
+      context 'when requesting anonymous access' do
+        let(:entity_attributes) { requests_refeds_anonymous_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('anonymous-access')
+        end
+      end
+
+      context 'when requesting pseudonymous access' do
+        let(:entity_attributes) { requests_refeds_pseudonymous_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('pseudonymous-access')
+        end
+      end
+
+      context 'when requesting personalized access' do
+        let(:entity_attributes) { requests_refeds_personalized_access }
+
+        it 'adds the tag' do
+          expect(known_entity).to have_received(:tag_as)
+            .with('personalized-access')
         end
       end
     end

@@ -16,6 +16,10 @@ module SetSamlTypeFromXml
   RESEARCH_AND_SCHOLARSHIP_CATEGORY = 'http://refeds.org/category/research-and-scholarship'
   DP_COCO_CATEGORY = 'http://www.geant.net/uri/dataprotection-code-of-conduct/v1'
   REFEDS_COCO_V2_CATEGORY = 'https://refeds.org/category/code-of-conduct/v2'
+  HIDE_FROM_DISCOVERY_CATEGORY = 'http://refeds.org/category/hide-from-discovery'
+  ANONYMOUS_ACCESS_CATEGORY = 'https://refeds.org/category/anonymous'
+  PSEUDONYMOUS_ACCESS_CATEGORY = 'https://refeds.org/category/pseudonymous'
+  PERSONALIZED_ACCESS_CATEGORY = 'https://refeds.org/category/personalized'
   ENTITY_CATEGORY_ATTR = 'http://macedir.org/entity-category'
   ENTITY_CATEGORY_SUPPORT_ATTR = 'http://macedir.org/entity-category-support'
 
@@ -61,6 +65,10 @@ module SetSamlTypeFromXml
     tags
   end
 
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/PerceivedComplexity
   def desired_entity_category_tags(ed_node)
     tags = []
     tags << Tag::RESEARCH_SCHOLARSHIP if research_scholarship_entity?(ed_node)
@@ -68,12 +76,21 @@ module SetSamlTypeFromXml
     tags << Tag::REFEDS_COCO_V2 if refeds_coco_v2_entity?(ed_node)
     tags << Tag::SIRTFI if sirtfi_entity?(ed_node)
     tags << Tag::SIRTFI_V2 if sirtfi_v2_entity?(ed_node)
+    tags << Tag::HIDE_FROM_DISCOVERY if hide_from_discovery_entity?(ed_node)
+    tags << Tag::ANONYMOUS_ACCESS if anonymous_access_entity?(ed_node)
+    tags << Tag::PSEUDONYMOUS_ACCESS if psedonymous_access_entity?(ed_node)
+    tags << Tag::PERSONALIZED_ACCESS if personalized_access_entity?(ed_node)
     tags
   end
+  # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/AbcSize
 
   def all_entity_tags
     [Tag::IDP, Tag::AA, Tag::STANDALONE_AA, Tag::SP,
-     Tag::RESEARCH_SCHOLARSHIP, Tag::DP_COCO, Tag::REFEDS_COCO_V2, Tag::SIRTFI, Tag::SIRTFI_V2]
+     Tag::RESEARCH_SCHOLARSHIP, Tag::DP_COCO, Tag::REFEDS_COCO_V2, Tag::SIRTFI, Tag::SIRTFI_V2,
+     Tag::HIDE_FROM_DISCOVERY, Tag::ANONYMOUS_ACCESS, Tag::PSEUDONYMOUS_ACCESS, Tag::PERSONALIZED_ACCESS]
   end
 
   def entity_has_idp_role?(ed_node)
@@ -108,6 +125,25 @@ module SetSamlTypeFromXml
       idp_supports_category?(ed_node, REFEDS_COCO_V2_CATEGORY)
   end
 
+  def hide_from_discovery_entity?(ed_node)
+    idp_has_category?(ed_node, HIDE_FROM_DISCOVERY_CATEGORY)
+  end
+
+  def anonymous_access_entity?(ed_node)
+    sp_has_category?(ed_node, ANONYMOUS_ACCESS_CATEGORY) ||
+      idp_supports_category?(ed_node, ANONYMOUS_ACCESS_CATEGORY)
+  end
+
+  def psedonymous_access_entity?(ed_node)
+    sp_has_category?(ed_node, PSEUDONYMOUS_ACCESS_CATEGORY) ||
+      idp_supports_category?(ed_node, PSEUDONYMOUS_ACCESS_CATEGORY)
+  end
+
+  def personalized_access_entity?(ed_node)
+    sp_has_category?(ed_node, PERSONALIZED_ACCESS_CATEGORY) ||
+      idp_supports_category?(ed_node, PERSONALIZED_ACCESS_CATEGORY)
+  end
+
   def sp_has_category?(ed_node, category)
     return false unless entity_has_sp_role?(ed_node)
 
@@ -121,6 +157,14 @@ module SetSamlTypeFromXml
 
     matches_entity_attribute_value?(
       ed_node, ENTITY_CATEGORY_SUPPORT_ATTR, category
+    )
+  end
+
+  def idp_has_category?(ed_node, category)
+    return false unless entity_has_idp_role?(ed_node)
+
+    matches_entity_attribute_value?(
+      ed_node, ENTITY_CATEGORY_ATTR, category
     )
   end
 
