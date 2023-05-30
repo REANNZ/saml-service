@@ -204,7 +204,7 @@ RSpec.describe SyncToGitRepository do
 
             expect(commit_spy).to have_received(:create)
               .with(repo,
-                    author: author, committer: author, tree: new_tree,
+                    author:, committer: author, tree: new_tree,
                     message: '[sync] remove stale entity', parents: [head_commit],
                     update_ref: 'HEAD')
           end
