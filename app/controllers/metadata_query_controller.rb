@@ -5,7 +5,7 @@ require 'metadata/schema_invalid_error'
 
 class MetadataQueryController < ApplicationController
   SAML_CONTENT_TYPE = 'application/samlmetadata+xml'
-  SHA1_REGEX = /{sha1}(.*)?/.freeze
+  SHA1_REGEX = /{sha1}(.*)?/
 
   include MetadataQueryCaching
 
@@ -43,10 +43,10 @@ class MetadataQueryController < ApplicationController
   def handle_entities_request(tags)
     Sequel::Model.db.transaction(isolation: :repeatable) do
       known_entities = KnownEntity.with_all_tags(tags)
-      return not_found if known_entities.blank?
+      next not_found if known_entities.blank?
 
       etag = generate_document_entities_etag(@metadata_instance, known_entities)
-      return head :not_modified if known_entities_unmodified?(known_entities, etag)
+      next head :not_modified if known_entities_unmodified?(known_entities, etag)
 
       create_known_entities_response(known_entities, etag)
     end
@@ -58,7 +58,7 @@ class MetadataQueryController < ApplicationController
     Sequel::Model.db.transaction(isolation: :repeatable) do
       known_entity = entity_id.parent.known_entity
       etag = generate_document_entities_etag(@metadata_instance, [known_entity, known_entity])
-      return head :not_modified if known_entity_unmodified?(known_entity, etag)
+      next head :not_modified if known_entity_unmodified?(known_entity, etag)
 
       create_known_entity_response(known_entity, etag)
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module StoreFederationRegistryData
-  def create_or_update_by_fr_id(dataset, fr_id, **attrs)
+  def create_or_update_by_fr_id(dataset, fr_id, attrs)
     update_by_fr_id(dataset, fr_id, attrs) ||
       create_by_fr_id(dataset, fr_id, attrs) { |o| yield o if block_given? }
   end
@@ -26,11 +26,11 @@ module StoreFederationRegistryData
 
   def record_fr_id(object, fr_id)
     ds = FederationRegistryObject[internal_class_name: object.class.name,
-                                  fr_id: fr_id]
+                                  fr_id:]
     ds.try!(&:delete)
 
     FederationRegistryObject.create(internal_class_name: object.class.name,
                                     internal_id: object.id,
-                                    fr_id: fr_id)
+                                    fr_id:)
   end
 end

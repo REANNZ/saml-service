@@ -24,8 +24,7 @@ FactoryBot.define do
       end
     end
 
-    factory :minimal_attribute do
-    end
+    factory :minimal_attribute
 
     factory :attribute do
       after :create do |a|

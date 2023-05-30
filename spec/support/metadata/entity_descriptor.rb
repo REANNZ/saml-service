@@ -25,25 +25,25 @@ RSpec.shared_examples 'EntityDescriptor xml' do
   let(:add_entity_attributes) { false }
 
   before do
-    create(:idp_sso_descriptor, entity_descriptor: entity_descriptor) if create_idp
+    create(:idp_sso_descriptor, entity_descriptor:) if create_idp
     if create_non_functioning_idp
-      create(:idp_sso_descriptor, entity_descriptor: entity_descriptor,
+      create(:idp_sso_descriptor, entity_descriptor:,
                                   enabled: false)
     end
-    create(:sp_sso_descriptor, entity_descriptor: entity_descriptor) if create_sp
+    create(:sp_sso_descriptor, entity_descriptor:) if create_sp
     if create_aa
       create(:attribute_authority_descriptor,
-             entity_descriptor: entity_descriptor)
+             entity_descriptor:)
     end
     if create_non_functioning_aa
       create(:attribute_authority_descriptor,
-             entity_descriptor: entity_descriptor, enabled: false)
+             entity_descriptor:, enabled: false)
     end
     if create_non_functioning_sp
-      create(:sp_sso_descriptor, entity_descriptor: entity_descriptor,
+      create(:sp_sso_descriptor, entity_descriptor:,
                                  enabled: false)
     end
-    create(:mdattr_entity_attribute, entity_descriptor: entity_descriptor) if add_entity_attributes
+    create(:mdattr_entity_attribute, entity_descriptor:) if add_entity_attributes
   end
 
   RSpec.shared_examples 'md:EntityDescriptor xml' do

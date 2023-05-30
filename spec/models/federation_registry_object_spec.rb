@@ -7,7 +7,7 @@ RSpec.describe FederationRegistryObject do
     let!(:idp) { create :idp_sso_descriptor }
     let(:fr_id) { rand(10..200) }
     let!(:fr_obj) do
-      FederationRegistryObject.create(fr_id: fr_id,
+      FederationRegistryObject.create(fr_id:,
                                       internal_class_name: idp.class.name,
                                       internal_id: idp.id)
     end

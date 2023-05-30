@@ -8,11 +8,11 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
   let!(:entity_source) { create(:entity_source, rank: rand(1..10)) }
 
   let(:idp_known_entity) do
-    create(:known_entity, entity_source: entity_source)
+    create(:known_entity, entity_source:)
   end
 
   let(:raw_ed_idp_known_entity) do
-    create(:known_entity, entity_source: entity_source)
+    create(:known_entity, entity_source:)
   end
 
   let!(:identity_provider) do
@@ -27,14 +27,14 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
     create(:raw_entity_descriptor_idp, known_entity: raw_ed_idp_known_entity)
   end
 
-  let(:sp_known_entity) { create(:known_entity, entity_source: entity_source) }
+  let(:sp_known_entity) { create(:known_entity, entity_source:) }
 
   let!(:service_provider) do
     create(:entity_descriptor, known_entity: sp_known_entity)
   end
 
   let(:raw_ed_sp_known_entity) do
-    create(:known_entity, entity_source: entity_source)
+    create(:known_entity, entity_source:)
   end
 
   let!(:raw_ed_sp) do
@@ -45,6 +45,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
     create(:sp_sso_descriptor, entity_descriptor: service_provider)
   end
 
+  # rubocop:disable Lint/EmptyBlock
   let!(:other_identity_provider) {}
   let!(:other_idp_sso_descriptor) {}
   let!(:other_raw_ed_idp) {}
@@ -52,6 +53,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
   let!(:other_service_provider) {}
   let!(:other_sp_sso_descriptor) {}
   let!(:other_raw_ed_sp) {}
+  # rubocop:enable Lint/EmptyBlock
 
   let(:headers) { { 'X509_DN' => "CN=#{api_subject.x509_cn}" } if api_subject }
 
@@ -63,8 +65,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
     expect_response_content(type, *entity_descriptors, include: false)
   end
 
-  # rubocop:disable Metrics/AbcSize
-  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   def expect_response_content(type, *entity_descriptors, include:)
     actual = response.parsed_body[type].map do |entity_descriptor|
       {
@@ -91,11 +92,10 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
       expect(actual).not_to include(*expected)
     end
   end
-  # rubocop:enable Metrics/AbcSize
-  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize,Metrics/MethodLength,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 
   describe '#index' do
-    before { get api_discovery_entities_path, headers: headers }
+    before { get api_discovery_entities_path, headers: }
 
     subject { response }
 

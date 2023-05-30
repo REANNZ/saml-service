@@ -2,6 +2,32 @@
 
 require 'rails_helper'
 
+EMPTY_SIGNATURE = <<~SIG
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod
+        Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+      <ds:SignatureMethod
+        Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+
+      <ds:Reference URI="#_x">
+        <ds:Transforms>
+          <ds:Transform Algorithm=
+            "http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+          <ds:Transform
+            Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        </ds:Transforms>
+
+        <ds:DigestMethod
+          Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue></ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+
+    <ds:SignatureValue></ds:SignatureValue>
+  </ds:Signature>
+SIG
+
 RSpec.describe UpdateEntitySource do
   subject { create(:entity_source, :external, certificate: certificate.to_pem) }
   before { stub_request(:get, subject.url).to_return(response) }
@@ -37,39 +63,13 @@ RSpec.describe UpdateEntitySource do
     fragments.join("\n")
   end
 
-  EMPTY_SIGNATURE = <<~SIG
-    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-      <ds:SignedInfo>
-        <ds:CanonicalizationMethod
-          Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-        <ds:SignatureMethod
-          Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-
-        <ds:Reference URI="#_x">
-          <ds:Transforms>
-            <ds:Transform Algorithm=
-              "http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
-            <ds:Transform
-              Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-          </ds:Transforms>
-
-          <ds:DigestMethod
-            Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-          <ds:DigestValue></ds:DigestValue>
-        </ds:Reference>
-      </ds:SignedInfo>
-
-      <ds:SignatureValue></ds:SignatureValue>
-    </ds:Signature>
-  SIG
-
   def entities_descriptor(entities:, fore: nil, type: :raw_entity_descriptor)
     [
       '<EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" ',
       'ID="_x">',
       EMPTY_SIGNATURE.indent(2),
       fore,
-      entity_descriptors(entities: entities, type: type).indent(2),
+      entity_descriptors(entities:, type:).indent(2),
       '</EntitiesDescriptor>'
     ].compact.join("\n")
   end
@@ -89,7 +89,7 @@ RSpec.describe UpdateEntitySource do
     let(:entity_id) { entity_ids.first }
 
     it 'creates the known entity' do
-      expect { run }.to change { subject.known_entities(true).count }.by(1)
+      expect { run }.to change(KnownEntity, :count).by(1)
     end
 
     it 'has known_entity with federation tag' do
@@ -266,7 +266,7 @@ RSpec.describe UpdateEntitySource do
 
     it 'creates the raw entity descriptors' do
       expect { run }.to(
-        change { subject.known_entities(true).count }
+        change { KnownEntity.count }
           .by(3)
           .and(change(RawEntityDescriptor, :count).by(3))
       )
@@ -378,7 +378,7 @@ RSpec.describe UpdateEntitySource do
 
     it 'creates the entity record' do
       expect { run }.to(
-        change { subject.known_entities(true).count }
+        change { KnownEntity.count }
           .by(1)
           .and(change(RawEntityDescriptor, :count).by(1))
       )
@@ -436,7 +436,7 @@ RSpec.describe UpdateEntitySource do
     let(:saml_md_uri) { 'urn:oasis:names:tc:SAML:2.0:metadata' }
 
     it 'creates the known entity' do
-      expect { run }.to change { subject.known_entities(true).count }.by(1)
+      expect { run }.to change { KnownEntity.count }.by(1)
     end
 
     it 'has known_entity with federation tag' do

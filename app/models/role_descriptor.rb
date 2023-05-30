@@ -12,7 +12,7 @@ class RoleDescriptor < Sequel::Model
 
   one_to_one :ui_info, class: 'MDUI::UIInfo'
 
-  plugin :class_table_inheritance, key: :kind
+  plugin :class_table_inheritance, key: :kind, ignore_subclass_columns: [:entity_descriptor_id]
   plugin :association_dependencies, protocol_supports: :destroy,
                                     key_descriptors: :destroy,
                                     contact_people: :destroy,

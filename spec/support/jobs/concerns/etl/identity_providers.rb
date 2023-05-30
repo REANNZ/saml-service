@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'ETL::IdentityProviders' do
   include_examples 'ETL::Common'
-  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   def create_json(idp)
     contact_people =
       contact_instances.map { |cp| contact_person_json(cp) } +
@@ -11,12 +11,12 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
     {
       id: idp.id,
       display_name: Faker::Lorem.sentence,
-      description: description,
+      description:,
       attribute_authority_only: false,
       functioning: idp.functioning?,
       created_at: idp_created_at,
       saml: {
-        scope: scope,
+        scope:,
         authnrequests_signed: idp.want_authn_requests_signed,
         single_sign_on_services:
           idp.single_sign_on_services.map { |s| endpoint_json(s, functioning: services_functioning) },
@@ -34,7 +34,7 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
             key_descriptors:
               idp.key_descriptors.map { |kd| key_descriptor_json(kd) }
                  .push(bad_key_descriptor_json),
-            contact_people: contact_people,
+            contact_people:,
             error_url: idp.error_url
           },
           name_id_formats:
@@ -51,7 +51,7 @@ RSpec.shared_examples 'ETL::IdentityProviders' do
       }
     }
   end
-  # rubocop:enable Metrics/MethodLength,Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength,Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 
   def attribute_json(a)
     {

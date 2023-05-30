@@ -29,12 +29,12 @@ RSpec.describe Tag, type: :model do
   context '[name, known_entity] uniqueness' do
     before do
       create(:known_entity_tag,
-             known_entity: known_entity, name: tag_name)
+             known_entity:, name: tag_name)
     end
 
     let(:tag) do
       build(:known_entity_tag,
-            known_entity: known_entity, name: tag_name)
+            known_entity:, name: tag_name)
     end
 
     subject { tag }

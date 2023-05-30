@@ -80,7 +80,7 @@ class EntityDescriptor < Sequel::Model
   def technical_contact_count
     ContactPerson.join(:entity_descriptors, id: :entity_descriptor_id)
                  .where(Sequel.qualify(:entity_descriptors, :id) => id)
-                 .and(Sequel.qualify(:contact_people, :contact_type_id) =>
+                 .where(Sequel.qualify(:contact_people, :contact_type_id) =>
            ContactPerson::TYPE[:technical])
                  .count
   end
@@ -88,15 +88,17 @@ class EntityDescriptor < Sequel::Model
   def support_contact_count
     ContactPerson.join(:entity_descriptors, id: :entity_descriptor_id)
                  .where(Sequel.qualify(:entity_descriptors, :id) => id)
-                 .and(Sequel.qualify(:contact_people, :contact_type_id) =>
+                 .where(Sequel.qualify(:contact_people, :contact_type_id) =>
            ContactPerson::TYPE[:support])
                  .count
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity
   def functional_role_descriptor?
     sp_sso_descriptors.any?(&:functioning?) ||
       idp_sso_descriptors.any?(&:functioning?) ||
       attribute_authority_descriptors.any?(&:functioning?) ||
       role_descriptors.any?(&:functioning?)
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 end

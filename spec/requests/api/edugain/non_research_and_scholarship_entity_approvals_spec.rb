@@ -11,7 +11,7 @@ RSpec.describe API::Edugain::NonResearchAndScholarshipEntityApprovalsController,
   describe 'POST /api/edugain/non_research_and_scholarship_entity_approvals' do
     subject(:run) do
       post '/api/edugain/non_research_and_scholarship_entity_approvals',
-           params: { entity_id: entity_id },
+           params: { entity_id: },
            headers: { Authorization: +"Bearer #{api_subject.token}" }
     end
 

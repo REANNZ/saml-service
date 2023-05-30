@@ -80,10 +80,10 @@ class ConfigureCLI < Thor
   def keypair
     cert, key = load_keypair
     fingerprint = sha1_fingerprint(cert)
-    return if Keypair.first_where(fingerprint: fingerprint)
+    return if Keypair.first(fingerprint:)
 
     Keypair.create(certificate: cert.to_pem, key: key.to_pem,
-                   fingerprint: fingerprint)
+                   fingerprint:)
   end
 
   desc 'md_instance [options...]', 'Create or update a Metadata Instance'
@@ -119,7 +119,7 @@ class ConfigureCLI < Thor
     FederationRegistrySource.new do |source|
       source.entity_source = EntitySource.create(enabled: true,
                                                  rank: 10,
-                                                 source_tag: source_tag)
+                                                 source_tag:)
     end
   end
 
@@ -144,7 +144,7 @@ class ConfigureCLI < Thor
   def md_instance_attrs
     opts = options
     fingerprint = sha1_fingerprint(load_certificate)
-    keypair = Keypair.first_where(fingerprint: fingerprint)
+    keypair = Keypair.first(fingerprint:)
 
     keypair || raise('The provided certificate has not been registered')
 

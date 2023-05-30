@@ -11,10 +11,6 @@ class SSODescriptor < RoleDescriptor
                                     manage_name_id_services: :destroy,
                                     name_id_formats: :destroy
 
-  def validate
-    super
-  end
-
   def artifact_resolution_services?
     artifact_resolution_services.present?
   end

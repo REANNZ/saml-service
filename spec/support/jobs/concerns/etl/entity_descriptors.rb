@@ -4,7 +4,7 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
   # rubocop:disable Metrics/MethodLength
   def create_json(id, functioning: true, services_functioning: true, empty: false)
     {
-      id: id,
+      id:,
       entity_id: Faker::Internet.url,
       organization: {
         id: 2000 + id,
@@ -29,10 +29,10 @@ RSpec.shared_examples 'ETL::EntityDescriptors' do
       active: true,
       archived: false,
       approved: true,
-      functioning: functioning,
+      functioning:,
       created_at: fr_time(ed_created_at),
       saml: {
-        empty: empty,
+        empty:,
         identity_providers: [
           {
             id: 3000 + id,

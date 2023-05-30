@@ -11,7 +11,7 @@ RSpec.describe API::Edugain::IdentityProviderExportsController, type: :request d
   describe 'POST /api/edugain/identity_provider_exports' do
     subject(:run) do
       post '/api/edugain/identity_provider_exports',
-           params: { entity_id: entity_id },
+           params: { entity_id: },
            headers: { Authorization: +"Bearer #{api_subject.token}" }
     end
 

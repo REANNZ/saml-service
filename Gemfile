@@ -2,11 +2,11 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '<7'
+gem 'rails', '~> 7.0'
 
 gem 'accession'
 gem 'mysql2'
-gem 'sequel', '>= 4.0.0', '< 5'
+gem 'sequel', '~> 5.0'
 gem 'sequel-rails'
 
 gem 'crawler_detect'
@@ -26,7 +26,7 @@ gem 'jbuilder'
 
 gem 'bcrypt', '~> 3.1'
 
-gem 'rugged', '0.28.4.1', require: false
+gem 'rugged', '~> 1.1', require: false
 
 gem 'puma', require: false
 
@@ -55,11 +55,11 @@ group :development, :test do
   gem 'guard-brakeman', require: false
   gem 'guard-bundler', require: false
   gem 'guard-rspec', require: false
-  gem 'guard-rubocop', '1.3.0', require: false
+  gem 'guard-rubocop', require: false
   gem 'pry-byebug'
   gem 'pry-rails'
-  gem 'rubocop', '0.85.1', require: false
-  gem 'rubocop-ast', '0.0.3', require: false
-  gem 'rubocop-faker', '1.0.0', require: false
-  gem 'rubocop-rails', '2.6.0', require: false
+  gem 'rubocop', '~> 1.51', require: false
+  gem 'rubocop-ast', require: false
+  gem 'rubocop-faker', require: false
+  gem 'rubocop-rails', require: false
 end

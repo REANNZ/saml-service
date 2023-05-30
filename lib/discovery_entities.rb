@@ -14,8 +14,8 @@ module API
 
     def generate_json
       DiscoveryEntitiesController.render(template: 'api/discovery_entities/index', assigns: {
-                                           identity_provider_entities: identity_provider_entities,
-                                           service_provider_entities: service_provider_entities
+                                           identity_provider_entities:,
+                                           service_provider_entities:
                                          })
     end
 

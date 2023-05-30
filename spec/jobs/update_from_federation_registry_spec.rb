@@ -21,7 +21,7 @@ RSpec.describe UpdateFromFederationRegistry do
   def record_fr_id(object, fr_id)
     FederationRegistryObject.create(internal_class_name: object.class.name,
                                     internal_id: object.id,
-                                    fr_id: fr_id)
+                                    fr_id:)
   end
 
   let(:fr_source) { create(:federation_registry_source) }

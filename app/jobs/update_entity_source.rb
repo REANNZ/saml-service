@@ -8,7 +8,7 @@ class UpdateEntitySource
   include Metadata::Schema
 
   def self.perform(id:)
-    new.perform(id: id)
+    new.perform(id:)
   end
 
   def perform(id:)
@@ -44,7 +44,6 @@ class UpdateEntitySource
     # Changes updated_at timestamp for associated KnownEntity
     # which is used by MDQP for etag generation / caching.
     ke.touch
-
     untouched.delete(ke.id)
   end
 

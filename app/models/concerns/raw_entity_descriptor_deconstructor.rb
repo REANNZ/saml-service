@@ -138,9 +138,11 @@ module RawEntityDescriptorDeconstructor
 
   private
 
+  # rubocop:disable Style/OpenStructUse
   def os(hash)
     OpenStruct.new(hash)
   end
+  # rubocop:enable Style/OpenStructUse
 
   class << self
     private

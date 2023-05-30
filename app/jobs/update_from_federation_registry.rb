@@ -14,7 +14,7 @@ class UpdateFromFederationRegistry
   include Etl::ServiceProviders
 
   def self.perform(id:)
-    new(id: id).perform
+    new(id:).perform
   end
 
   def initialize(id:)

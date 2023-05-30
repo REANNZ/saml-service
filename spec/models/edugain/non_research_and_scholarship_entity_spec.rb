@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe Edugain::NonResearchAndScholarshipEntity do
   describe '#approve' do
-    subject(:approve) { described_class.new(id: id).approve }
+    subject(:approve) { described_class.new(id:).approve }
 
     context 'with an extant entity with an entity descriptor' do
       let(:entity_descriptor) { create(:entity_descriptor, :with_sp) }

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class DerivedTag < Sequel::Model
-  VALID_TAG_CHARS = /[a-zA-Z0-9_-]+/.freeze
+  VALID_TAG_CHARS = /[a-zA-Z0-9_-]+/
   VALID_TAG = Tag::URL_SAFE_BASE_64_ALPHABET
-  VALID_TAG_LIST = /\A((#{VALID_TAG_CHARS},)*#{VALID_TAG_CHARS})?\z/.freeze
+  VALID_TAG_LIST = /\A((#{VALID_TAG_CHARS},)*#{VALID_TAG_CHARS})?\z/
 
   def validate
     super
@@ -16,6 +16,6 @@ class DerivedTag < Sequel::Model
   def matches?(tags)
     cond_when = when_tags.split(',').sort
     cond_unless = unless_tags.split(',').sort
-    (tags.sort & cond_when == cond_when) && (tags & cond_unless).empty?
+    (tags.sort & cond_when == cond_when) && !tags.intersect?(cond_unless)
   end
 end

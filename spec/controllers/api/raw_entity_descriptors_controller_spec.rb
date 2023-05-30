@@ -29,10 +29,10 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
     end
 
     let(:raw_entity_descriptor) do
-      { xml: xml,
-        tags: tags,
-        enabled: enabled,
-        edugain_enabled: edugain_enabled }
+      { xml:,
+        tags:,
+        enabled:,
+        edugain_enabled: }
     end
 
     def run
@@ -40,8 +40,8 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
 
       patch :update, as: :json, params: {
         tag: source_tag,
-        base64_urlsafe_entity_id: base64_urlsafe_entity_id,
-        raw_entity_descriptor: raw_entity_descriptor
+        base64_urlsafe_entity_id:,
+        raw_entity_descriptor:
       }
     end
 
@@ -66,7 +66,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
       subject { response }
       it {
         is_expected.to have_http_status(:forbidden)
-        data = JSON.parse(response.body)
+        data = response.parsed_body
         expect(data['message']).to match(/explicitly denied/)
       }
     end
@@ -264,7 +264,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :controller do
         end
 
         let(:original_known_entity) do
-          create(:known_entity, entity_source: entity_source,
+          create(:known_entity, entity_source:,
                                 enabled: original_enabled)
         end
 

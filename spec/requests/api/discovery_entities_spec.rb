@@ -24,7 +24,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
     context 'with mdui info' do
       let!(:ui_info) do
-        create(:mdui_ui_info, :with_content, role_descriptor: role_descriptor)
+        create(:mdui_ui_info, :with_content, role_descriptor:)
       end
 
       it 'includes the display names, logo uri, descriptions' do
@@ -43,7 +43,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
   context 'get /api/discovery/entities' do
     def run
-      get '/api/discovery/entities', headers: headers
+      get '/api/discovery/entities', headers:
     end
 
     context 'response' do
@@ -165,7 +165,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
               create(:idp_sso_descriptor, entity_descriptor: idp).tap do |rd|
                 disco_hints = create(:mdui_disco_hint, idp_sso_descriptor: rd)
                 create(:mdui_geolocation_hint, :with_altitude,
-                       disco_hints: disco_hints)
+                       disco_hints:)
               end
             end
           end
@@ -337,7 +337,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
 
       context 'with mdui info' do
         let!(:ui_info) do
-          create(:mdui_ui_info, :with_content, role_descriptor: role_descriptor)
+          create(:mdui_ui_info, :with_content, role_descriptor:)
         end
 
         it 'includes the information urls and privacy urls' do

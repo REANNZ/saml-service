@@ -41,13 +41,13 @@ module Etl
 
     def contact_person(role_descriptor, contact, type)
       entity_descriptor = role_descriptor.entity_descriptor
-      cp = ContactPerson.create(contact: contact, contact_type: type)
+      cp = ContactPerson.create(contact:, contact_type: type)
       entity_descriptor.add_contact_person(cp)
     end
 
     def sirtfi_contact_person(role_descriptor, contact)
       entity_descriptor = role_descriptor.entity_descriptor
-      cp = SIRTFIContactPerson.create(contact: contact)
+      cp = SIRTFIContactPerson.create(contact:)
       entity_descriptor.add_sirtfi_contact_person(cp)
     end
 
@@ -86,7 +86,7 @@ module Etl
 
     def key_descriptor(kd_data)
       key_type = kd_data.key?(:type) ? kd_data[:type].to_sym : nil
-      kd = KeyDescriptor.create(key_type: key_type,
+      kd = KeyDescriptor.create(key_type:,
                                 disabled: kd_data.fetch(:disabled, false))
       key_info(kd, kd_data)
       kd

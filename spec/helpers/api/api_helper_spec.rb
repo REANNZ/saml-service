@@ -2,5 +2,4 @@
 
 require 'rails_helper'
 
-RSpec.describe API::APIHelper, type: :helper do
-end
+RSpec.describe API::APIHelper, type: :helper

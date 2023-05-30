@@ -10,7 +10,7 @@ class Attribute < Sequel::Model
   many_to_one :attribute_authority_descriptor
   many_to_one :entity_attribute, class: 'MDATTR::EntityAttribute'
 
-  plugin :class_table_inheritance
+  plugin :class_table_inheritance, ignore_subclass_columns: %i[created_at updated_at]
   plugin :association_dependencies, name_format: :destroy,
                                     attribute_values: :destroy
 

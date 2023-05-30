@@ -22,7 +22,7 @@ RSpec.shared_examples 'ds:Signature xml' do
     ## has a <Signature> element
     e = signed_info.find(:xpath, 'ds:CanonicalizationMethod')
     transforms = reference.all(:xpath, 'ds:Transforms/ds:Transform')
-                          .map { |transform| transform['Algorithm'] }
+                          .pluck('Algorithm')
 
     expect(xml).to have_xpath(sig_xpath.to_s)
     ## has algorithm

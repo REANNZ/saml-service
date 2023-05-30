@@ -16,7 +16,7 @@ RSpec.describe API::RawEntityDescriptorsController, type: :routing do
         controller: 'api/raw_entity_descriptors',
         action: 'update',
         tag: source_tag,
-        base64_urlsafe_entity_id: base64_urlsafe_entity_id,
+        base64_urlsafe_entity_id:,
         format: 'json'
       )
   end

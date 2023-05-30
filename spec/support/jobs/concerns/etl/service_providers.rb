@@ -7,12 +7,12 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
     contact_instances.map { |cp| contact_person_json(cp) } +
       sirtfi_contact_instances.map { |cp| sirtfi_contact_person_json(cp) }
   end
-  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   def create_json(sp, services_functioning: true)
     {
       id: sp.id,
       display_name: Faker::Lorem.sentence,
-      description: description,
+      description:,
       functioning: sp.functioning?,
       created_at: sp_created_at,
       saml: {
@@ -43,7 +43,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
             key_descriptors:
               sp.key_descriptors.map { |kd| key_descriptor_json(kd) }
                 .push(bad_key_descriptor_json),
-            contact_people: contact_people,
+            contact_people:,
             error_url: sp.error_url
           },
           name_id_formats:
@@ -60,7 +60,7 @@ RSpec.shared_examples 'ETL::ServiceProviders' do
       }
     }
   end
-  # rubocop:enable  Metrics/MethodLength,Metrics/AbcSize
+  # rubocop:enable  Metrics/MethodLength,Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 
   def requested_attribute_json(ra)
     {

@@ -42,7 +42,7 @@ module Metadata
       @created_at = Time.now.utc
       @expires_at = created_at + metadata_instance.validity_period
       @instance_id = "#{metadata_instance.federation_identifier}" \
-                     "#{created_at.to_formatted_s(:number)}"
+                     "#{created_at.to_fs(:number)}"
     end
 
     def sign
@@ -109,9 +109,9 @@ module Metadata
       Sequel::Model.db.transaction(isolation: :repeatable) do
         attributes = { ID: instance_id, validUntil: expires_at.xmlschema }
         if ke.entity_descriptor.try(:functioning?)
-          entity_descriptor(ke.entity_descriptor, attributes, true)
+          entity_descriptor(ke.entity_descriptor, attributes, root_node: true)
         elsif ke.raw_entity_descriptor.try(:functioning?)
-          raw_entity_descriptor(ke.raw_entity_descriptor, attributes, true)
+          raw_entity_descriptor(ke.raw_entity_descriptor, attributes, root_node: true)
         end
       end
     end
@@ -223,7 +223,7 @@ module Metadata
       saml.AttributeValue(ns, attr_val.value)
     end
 
-    def raw_entity_descriptor(red, attributes = {}, root_node = false)
+    def raw_entity_descriptor(red, attributes = {}, root_node: false)
       return root << red.xml unless root_node
 
       # A dodgy hack to prevent Nokogiri from adding 'default' as a
@@ -241,7 +241,7 @@ module Metadata
       end
     end
 
-    def entity_descriptor(ed, attributes = {}, root_node = false)
+    def entity_descriptor(ed, attributes = {}, root_node: false)
       root.EntityDescriptor(ns, attributes, entityID: ed.entity_id.uri) do |_|
         signature_element if root_node
         entity_descriptor_extensions(ed, root_node)

@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe SetSamlTypeFromXml do
   let(:known_entity) { spy(KnownEntity) }
-  let(:red) { spy(RawEntityDescriptor, known_entity: known_entity) }
+  let(:red) { spy(RawEntityDescriptor, known_entity:) }
   let(:ed_node) { double(Nokogiri::XML::Node) }
   let(:klass) { Class.new { include SetSamlTypeFromXml } }
   let(:absent_role_descriptor) { nil }

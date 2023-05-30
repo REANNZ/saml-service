@@ -2,7 +2,6 @@ require: rubocop-rails
 
 inherit_from:
   - https://raw.githubusercontent.com/ausaccessfed/aaf-gumboot/develop/aaf-rubocop.yml
-
 AllCops:
   NewCops: enable
   Exclude:
@@ -39,7 +38,7 @@ Metrics/BlockLength:
 # List duplicated from here, but with `touch` removed:
 # https://github.com/bbatsov/rubocop/blob/863037ac719d3539c1dd7e7f7715915f5b612c93/config/default.yml#L1539-L1551
 Rails/SkipsModelValidations:
-  Blacklist:
+  ForbiddenMethods:
     - decrement!
     - decrement_counter
     - increment!

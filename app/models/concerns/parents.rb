@@ -10,8 +10,8 @@ module Parents
     if parent_instances.none?
       errors.add(:ownership, "Must be owned by one of #{parents.join(', ')}")
     else
-      errors.add(:ownership, 'Cannot be owned by more than one of' \
-                             " #{parents.join(', ')}")
+      errors.add(:ownership, 'Cannot be owned by more than one of ' \
+                             "#{parents.join(', ')}")
     end
   end
 end
