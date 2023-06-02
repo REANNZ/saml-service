@@ -30,6 +30,22 @@ RSpec.describe MetadataQueryController, type: :controller do
       it { is_expected.to have_http_status(:not_acceptable) }
     end
 
+    context 'with deprecated sha1 metadata_instance' do
+      let!(:metadata_instance) do
+        create :metadata_instance, hash_algorithm: 'sha1'
+      end
+
+      before do
+        request.accept = saml_content
+        query
+      end
+
+      it 'respond with not_found and has relevant MUST/SHOULD headers per specification' do
+        is_expected.to have_http_status(:not_found)
+        expect(subject.headers['Cache-Control']).to eq('max-age=600, private')
+      end
+    end
+
     context 'with invalid instance identifier' do
       let(:instance_identifier) { Faker::Lorem.word }
       let!(:metadata_instance) { nil }
