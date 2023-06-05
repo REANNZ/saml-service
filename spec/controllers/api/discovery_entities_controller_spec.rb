@@ -113,6 +113,18 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
       end
     end
 
+    context 'for an identity provider hidden from discovery' do
+      let!(:identity_provider) do
+        idp = create(:entity_descriptor)
+        idp.known_entity.tag_as('hide-from-discovery')
+        idp
+      end
+
+      it 'excludes the identity provider' do
+        expect_response_to_exclude('identity_providers', identity_provider)
+      end
+    end
+
     context 'for a disabled raw entity descriptor - idp' do
       let!(:raw_ed_idp) do
         create(:raw_entity_descriptor_idp, enabled: false)
@@ -123,8 +135,32 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
       end
     end
 
+    context 'for a blacklisted raw entity descriptor - idp' do
+      let!(:raw_ed_idp) do
+        idp = create(:raw_entity_descriptor_idp)
+        idp.known_entity.tag_as('blacklist')
+        idp
+      end
+
+      it 'excludes the identity provider and has no nil values' do
+        expect_response_to_exclude('identity_providers', raw_ed_idp)
+      end
+    end
+
     context 'for a disabled service provider' do
       let!(:service_provider) { create(:entity_descriptor, enabled: false) }
+
+      it 'excludes the service provider and has no nil values' do
+        expect_response_to_exclude('service_providers', service_provider)
+      end
+    end
+
+    context 'for a blacklisted service provider' do
+      let!(:service_provider) do
+        sp = create(:entity_descriptor)
+        sp.known_entity.tag_as('blacklist')
+        sp
+      end
 
       it 'excludes the service provider and has no nil values' do
         expect_response_to_exclude('service_providers', service_provider)

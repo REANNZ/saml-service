@@ -88,7 +88,7 @@ class MetadataQueryController < ApplicationController
   def ensure_metadata_instance
     @metadata_instance = MetadataInstance[identifier: params[:instance]]
 
-    if @metadata_instance
+    if @metadata_instance && @metadata_instance.hash_algorithm != 'sha1'
       @saml_renderer = Metadata::Saml.new(metadata_instance: @metadata_instance)
       return
     end
