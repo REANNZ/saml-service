@@ -40,7 +40,7 @@ FactoryBot.define do
   factory :keypair do
     transient do
       rsa_key { create(:rsa_key) }
-      x509_certificate { create(:certificate, rsa_key: rsa_key) }
+      x509_certificate { create(:certificate, rsa_key:) }
     end
 
     fingerprint do

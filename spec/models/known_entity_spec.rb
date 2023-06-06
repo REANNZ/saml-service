@@ -54,7 +54,7 @@ RSpec.describe KnownEntity do
     subject { create :known_entity }
 
     context 'tag already exists' do
-      before { subject.add_tag(Tag.new(name: name)) }
+      before { subject.add_tag(Tag.new(name:)) }
 
       it 'does not increase tag count' do
         expect { subject.tag_as(name) }.not_to(change { subject.tags.length })
@@ -93,12 +93,12 @@ RSpec.describe KnownEntity do
     subject { create :known_entity }
 
     context 'tag already exists' do
-      before { subject.add_tag(Tag.new(name: name)) }
+      before { subject.add_tag(Tag.new(name:)) }
 
       it 'decreases tag count and removes the tag' do
         expect(subject.tags.any? { |t| t.name == name }).to be_truthy
         expect { subject.untag_as(name) }.to(change { subject.tags.length }.and(
-          change(Tag.where(name: name), :count)
+          change(Tag.where(name:), :count)
           .by(-1)
         ).and(change { subject.tags.map(&:name) }.to(not_include(name))))
       end
@@ -221,10 +221,10 @@ RSpec.describe KnownEntity do
         context 'when one of the condition tags is derived' do
           before do
             tag_name = tags.sample
-            Tag.where(known_entity: known_entity, name: tag_name).destroy
+            Tag.where(known_entity:, name: tag_name).destroy
 
             create(:derived_tag,
-                   tag_name: tag_name,
+                   tag_name:,
                    when_tags: (tags - [tag_name]).join(','),
                    unless_tags: negative_tags.join(','))
 
@@ -320,9 +320,9 @@ RSpec.describe KnownEntity do
     subject { entity.functioning_entity }
 
     context 'as entity descriptor' do
-      let(:entity) { create(:known_entity, :with_idp, enabled: enabled) }
+      let(:entity) { create(:known_entity, :with_idp, enabled:) }
 
-      before { entity.entity_descriptor.update(enabled: enabled) }
+      before { entity.entity_descriptor.update(enabled:) }
 
       context 'non functioning' do
         let(:enabled) { false }
@@ -339,10 +339,10 @@ RSpec.describe KnownEntity do
 
     context 'as raw entity descriptor' do
       let(:entity) do
-        create(:known_entity, :with_raw_entity_descriptor, enabled: enabled)
+        create(:known_entity, :with_raw_entity_descriptor, enabled:)
       end
 
-      before { entity.raw_entity_descriptor.update(enabled: enabled) }
+      before { entity.raw_entity_descriptor.update(enabled:) }
 
       context 'non functioning' do
         let(:enabled) { false }

@@ -5,7 +5,7 @@ module Edugain
     attr_reader :information_url
 
     def initialize(entity_id:, information_url:)
-      super entity_id: entity_id
+      super(entity_id:)
       @information_url = information_url
     end
 
@@ -25,7 +25,7 @@ module Edugain
         ui_info = descriptor.ui_info || raise('no UIInfo, should not be possible')
         next if ui_info.information_urls.any?
 
-        MDUI::InformationURL.create ui_info: ui_info, uri: information_url, lang: 'en'
+        MDUI::InformationURL.create ui_info:, uri: information_url, lang: 'en'
       end
     end
   end

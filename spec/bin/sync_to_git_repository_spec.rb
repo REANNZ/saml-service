@@ -78,8 +78,8 @@ RSpec.describe SyncToGitRepository do
 
     let(:repo) do
       double(Rugged::Repository,
-             empty?: empty, index: index, workdir: path, head: head, push: nil,
-             config: config, branches: [branch])
+             empty?: empty, index:, workdir: path, head:, push: nil,
+             config:, branches: [branch])
     end
 
     let(:argv) { [sync_config_path, md_instance.identifier, path] }
@@ -108,7 +108,7 @@ RSpec.describe SyncToGitRepository do
 
           expect(commit_spy).to have_received(:create)
             .with(repo,
-                  author: author, committer: author, tree: new_tree,
+                  author:, committer: author, tree: new_tree,
                   message: "[sync] #{entity.entity_id}", parents: [head_commit],
                   update_ref: 'HEAD')
         end
@@ -144,7 +144,7 @@ RSpec.describe SyncToGitRepository do
 
           expect(commit_spy).to have_received(:create)
             .with(repo,
-                  author: author, committer: author, tree: new_tree,
+                  author:, committer: author, tree: new_tree,
                   message: "[sync] remove #{stale_entity_id}", parents: [head_commit],
                   update_ref: 'HEAD')
         end
@@ -189,7 +189,7 @@ RSpec.describe SyncToGitRepository do
         let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
 
         before do
-          allow(index).to receive(:map).and_return([stale])
+          allow(index).to receive(:pluck).and_return([stale])
         end
 
         it_behaves_like 'a removed entity'
@@ -204,7 +204,7 @@ RSpec.describe SyncToGitRepository do
 
             expect(commit_spy).to have_received(:create)
               .with(repo,
-                    author: author, committer: author, tree: new_tree,
+                    author:, committer: author, tree: new_tree,
                     message: '[sync] remove stale entity', parents: [head_commit],
                     update_ref: 'HEAD')
           end
@@ -217,7 +217,7 @@ RSpec.describe SyncToGitRepository do
         let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
 
         before do
-          allow(index).to receive(:map).and_return([stale])
+          allow(index).to receive(:pluck).and_return([stale])
         end
 
         it_behaves_like 'a removed entity without known entityId'
@@ -229,7 +229,7 @@ RSpec.describe SyncToGitRepository do
         let(:stale) { "entities/#{md_instance.identifier}-#{stale_entity_id_encoded}.xml" }
 
         before do
-          allow(index).to receive(:map).and_return([stale])
+          allow(index).to receive(:pluck).and_return([stale])
         end
 
         it_behaves_like 'a removed entity without known entityId'

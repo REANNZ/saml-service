@@ -11,7 +11,7 @@ class SamlURI < Sequel::Model
   # models and not part of the SamlURI hierachy as they are distinct types
   # in their own right.
 
-  plugin :class_table_inheritance
+  plugin :class_table_inheritance, ignore_subclass_columns: [:role_descriptor_id]
 
   def validate
     super

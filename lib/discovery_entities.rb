@@ -14,8 +14,8 @@ module API
 
     def generate_json
       DiscoveryEntitiesController.render(template: 'api/discovery_entities/index', assigns: {
-                                           identity_provider_entities: identity_provider_entities,
-                                           service_provider_entities: service_provider_entities
+                                           identity_provider_entities:,
+                                           service_provider_entities:
                                          })
     end
 
@@ -65,6 +65,7 @@ module API
 
     def filter_by_rank(entities)
       entities.collect(&:known_entity)
+              .select { |ke| ke.tags.map(&:name).intersection([Tag::BLACKLIST, Tag::HIDE_FROM_DISCOVERY]).empty? }
               .group_by(&:entity_id)
               .map { |_, es| functioning_entity(order_by_rank(es)) }
               .compact

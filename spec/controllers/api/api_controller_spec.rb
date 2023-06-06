@@ -27,7 +27,7 @@ RSpec.describe API::APIController, type: :controller do
     end
 
     subject { response }
-    let(:data) { JSON.parse(response.body) }
+    let(:data) { response.parsed_body }
 
     it {
       is_expected.to have_http_status(:not_found)
@@ -54,7 +54,7 @@ RSpec.describe API::APIController, type: :controller do
     end
 
     subject { response }
-    let(:data) { JSON.parse(response.body) }
+    let(:data) { response.parsed_body }
 
     it {
       is_expected.to have_http_status(:bad_request)
@@ -248,7 +248,7 @@ RSpec.describe API::APIController, type: :controller do
 
   context '#ensure_access_checked as after_action' do
     subject(:api_subject) { create :api_subject, :x509_cn }
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     RSpec.shared_examples 'APIController base state' do
       it 'fails request to incorrectly implemented action' do

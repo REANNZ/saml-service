@@ -71,7 +71,7 @@ class SyncToGitRepository
 
   def sweep(touched)
     prefix = "entities/#{@md_instance.identifier}-"
-    all = @repository.index.map { |e| e[:path] }
+    all = @repository.index.pluck(:path)
                      .select { |p| p.start_with?(prefix) }
 
     (all - touched).each { |path| remove_stale(path) }
@@ -79,7 +79,9 @@ class SyncToGitRepository
 
   def write_metadata(ke, filename, xml)
     full_path = File.join(@repository.workdir, filename)
+    # rubocop:disable Style/FileWrite
     File.open(full_path, 'w') { |f| f.write(xml) }
+    # rubocop:enable Style/FileWrite
 
     return if @repository.status(filename).empty?
 
@@ -96,7 +98,7 @@ class SyncToGitRepository
       renderer.entity_descriptor(ke.entity_descriptor, NAMESPACES)
     elsif ke.raw_entity_descriptor.try(:functioning?)
       renderer.raw_entity_descriptor(ke.raw_entity_descriptor, NAMESPACES,
-                                     @config['raw_entity_descriptor_root_node'])
+                                     root_node: @config['raw_entity_descriptor_root_node'])
     end
 
     doc = renderer.builder.doc
@@ -145,8 +147,8 @@ class SyncToGitRepository
                email: @config['git_author_email'] }
 
     Rugged::Commit.create(@repository,
-                          tree: tree, message: message,
-                          author: author, committer: author,
+                          tree:, message:,
+                          author:, committer: author,
                           parents: [@repository.head.target],
                           update_ref: 'HEAD')
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Tag < Sequel::Model
-  URL_SAFE_BASE_64_ALPHABET = /^[a-zA-Z0-9_-]+$/.freeze
+  URL_SAFE_BASE_64_ALPHABET = /^[a-zA-Z0-9_-]+$/
 
   include Parents
   plugin :validation_helpers

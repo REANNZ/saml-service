@@ -36,7 +36,7 @@ RSpec.describe FederationRegistrySource do
     end
 
     it 'accepts the urlsafe base64 alphabet' do
-      subject.secret = alphabet.split('').shuffle.join
+      subject.secret = alphabet.chars.shuffle.join
       expect(subject).to be_valid
     end
   end

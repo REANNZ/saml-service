@@ -7,7 +7,7 @@ RSpec.shared_examples 'ETL::Common' do
       binding: {
         uri: s.binding
       },
-      functioning: functioning
+      functioning:
     }
   end
 
@@ -19,7 +19,7 @@ RSpec.shared_examples 'ETL::Common' do
       binding: {
         uri: s.binding
       },
-      functioning: functioning
+      functioning:
     }
   end
 

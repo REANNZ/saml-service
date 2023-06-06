@@ -8,7 +8,7 @@ require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 require 'capybara/rails'
 
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each do |f|
+Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each do |f|
   require f
 end
 
@@ -16,7 +16,7 @@ Timecop.safe_mode = true
 
 RSpec.configure do |config|
   config.raise_errors_for_deprecations!
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  config.fixture_path = Rails.root.join('spec', 'fixtures')
   config.include FactoryBot::Syntax::Methods
   config.include Rails.application.routes.url_helpers
 

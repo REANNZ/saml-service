@@ -29,11 +29,11 @@ class KnownEntity < Sequel::Model
   end
 
   def self.with_any_tag(tags, include_blacklisted: false)
-    join_tags(tags, include_blacklisted: include_blacklisted).all
+    join_tags(tags, include_blacklisted:).all
   end
 
   def self.with_all_tags(tags, include_blacklisted: false)
-    join_tags(tags, include_blacklisted: include_blacklisted)
+    join_tags(tags, include_blacklisted:)
       .having { Sequel.lit("count(*) = #{[tags].flatten.length}") }.all
   end
 
@@ -51,13 +51,13 @@ class KnownEntity < Sequel::Model
   def tag_as(name)
     return if tags.any? { |t| t.name == name }
 
-    add_tag(Tag.new(name: name))
+    add_tag(Tag.new(name:))
     update_derived_tags
   end
 
   def untag_as(name)
     tags.delete_if { |t| t.name == name }
-    Tag.where(name: name, known_entity: self).destroy
+    Tag.where(name:, known_entity: self).destroy
     update_derived_tags
   end
 
@@ -68,6 +68,7 @@ class KnownEntity < Sequel::Model
     nil
   end
 
+  # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity:
   def update_derived_tags
     current_derived_tags, current_tags =
       tags.partition(&:derived?).map { |t| t.map(&:name) }
@@ -81,6 +82,7 @@ class KnownEntity < Sequel::Model
 
     desired_derived_tags.each { |tag| apply_derived_tag(tag) }
   end
+  # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity
 
   def functioning_entity
     return entity_descriptor if entity_descriptor.try(:functioning?)
@@ -94,11 +96,11 @@ class KnownEntity < Sequel::Model
   def apply_derived_tag(name)
     return if tags.any? { |t| t.name == name }
 
-    add_tag(name: name, derived: true)
+    add_tag(name:, derived: true)
   end
 
   def remove_derived_tag(name)
     tags.delete_if { |t| t.name == name && t.derived? }
-    Tag.where(known_entity_id: id, name: name, derived: true).destroy
+    Tag.where(known_entity_id: id, name:, derived: true).destroy
   end
 end

@@ -14,12 +14,12 @@ RSpec.describe ConfigureCLI do
 
     def run(**overrides)
       args = overrides.reverse_merge(
-        hostname: hostname,
-        secret: secret,
-        registration_authority: registration_authority,
-        registration_policy: registration_policy,
-        lang: lang,
-        source_tag: source_tag
+        hostname:,
+        secret:,
+        registration_authority:,
+        registration_policy:,
+        lang:,
+        source_tag:
       ).transform_keys { |sym| "--#{sym.to_s.dasherize}" }.to_a.flatten
 
       ConfigureCLI.start(['fr_source', *args])
@@ -75,13 +75,13 @@ RSpec.describe ConfigureCLI do
           .to change(EntitySource, :count).by(1)
 
         expect(EntitySource.last)
-          .to have_attributes(enabled: true, rank: 10, source_tag: source_tag)
+          .to have_attributes(enabled: true, rank: 10, source_tag:)
       end
 
       it 'sets the correct registration attributes on the new source' do
         run
         expected = {
-          registration_authority: registration_authority,
+          registration_authority:,
           registration_policy_uri: registration_policy,
           registration_policy_uri_lang: lang
         }
@@ -95,7 +95,7 @@ RSpec.describe ConfigureCLI do
     let(:key_file) { '/nonexistent/path/to/key.pem' }
 
     let(:rsa_key) { create(:rsa_key) }
-    let(:x509_certificate) { create(:certificate, rsa_key: rsa_key) }
+    let(:x509_certificate) { create(:certificate, rsa_key:) }
 
     before do
       allow(File).to receive(:read).with(cert_file)
@@ -111,7 +111,7 @@ RSpec.describe ConfigureCLI do
 
     context 'when the keypair exists' do
       let!(:keypair) do
-        create(:keypair, x509_certificate: x509_certificate, rsa_key: rsa_key)
+        create(:keypair, x509_certificate:, rsa_key:)
       end
 
       it 'creates no new keypair' do
@@ -164,14 +164,14 @@ RSpec.describe ConfigureCLI do
     end
 
     context 'when the metadata instance exists' do
-      let!(:instance) { create(:metadata_instance, identifier: identifier) }
+      let!(:instance) { create(:metadata_instance, identifier:) }
 
       it 'does not create a new metadata instance' do
         expect { run }.not_to change(MetadataInstance, :count)
       end
 
       it 'updates the attributes' do
-        attrs = { keypair_id: keypair.id, name: name, hash_algorithm: 'sha256' }
+        attrs = { keypair_id: keypair.id, name:, hash_algorithm: 'sha256' }
         expect { run }.to change { instance.reload.to_hash }.to include(attrs)
       end
 
@@ -186,7 +186,7 @@ RSpec.describe ConfigureCLI do
         run
 
         expect { pi.reload }.to change { pi.values }
-          .to include(publisher: publisher)
+          .to include(publisher:)
       end
     end
 
@@ -195,7 +195,7 @@ RSpec.describe ConfigureCLI do
         expect { run }.to change(MetadataInstance, :count).by(1)
 
         expect(MetadataInstance.last).to be_valid
-          .and have_attributes(keypair_id: keypair.id, name: name)
+          .and have_attributes(keypair_id: keypair.id, name:)
       end
 
       it 'creates a valid PublicationInfo' do
@@ -205,7 +205,7 @@ RSpec.describe ConfigureCLI do
         md_instance = MetadataInstance.last
 
         expect(md_instance.publication_info)
-          .to have_attributes(publisher: publisher)
+          .to have_attributes(publisher:)
       end
     end
 
@@ -232,7 +232,7 @@ RSpec.describe ConfigureCLI do
     let(:url) { Faker::Internet.url }
     let(:cert_path) { Rails.root.join('spec', 'tmp', 'res_cert.pem') }
     let(:rsa_key) { create(:rsa_key) }
-    let(:x509_certificate) { create(:certificate, rsa_key: rsa_key) }
+    let(:x509_certificate) { create(:certificate, rsa_key:) }
     let(:source_tag) { Faker::Lorem.words.join('-') }
 
     before do
@@ -245,10 +245,10 @@ RSpec.describe ConfigureCLI do
 
     def run(**overrides)
       args = overrides.reverse_merge(
-        rank: rank,
-        url: url,
+        rank:,
+        url:,
         cert: cert_path,
-        source_tag: source_tag
+        source_tag:
       ).transform_keys { |sym| "--#{sym.to_s.dasherize}" }.to_a.flatten
 
       ConfigureCLI.start(['raw_entity_source', *args])
@@ -257,10 +257,10 @@ RSpec.describe ConfigureCLI do
     context 'when a source exists' do
       let(:cert_path2) { Rails.root.join('spec', 'tmp', 'res_cert_new.pem') }
       let(:rsa_key2) { create(:rsa_key) }
-      let(:x509_certificate2) { create(:certificate, rsa_key: rsa_key) }
+      let(:x509_certificate2) { create(:certificate, rsa_key:) }
       let!(:source) do
-        create(:entity_source, rank: rank, certificate: x509_certificate,
-                               source_tag: source_tag)
+        create(:entity_source, rank:, certificate: x509_certificate,
+                               source_tag:)
       end
 
       before do
@@ -291,9 +291,9 @@ RSpec.describe ConfigureCLI do
       it 'creates the expected EntitySource' do
         run
         expect(EntitySource.last)
-          .to have_attributes(enabled: true, rank: rank,
-                              url: url, certificate: x509_certificate.to_pem,
-                              source_tag: source_tag)
+          .to have_attributes(enabled: true, rank:,
+                              url:, certificate: x509_certificate.to_pem,
+                              source_tag:)
       end
     end
   end

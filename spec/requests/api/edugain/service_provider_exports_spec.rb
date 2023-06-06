@@ -12,7 +12,7 @@ RSpec.describe API::Edugain::ServiceProviderExportsController, type: :request do
   describe 'POST /api/edugain/service_provider_exports' do
     subject(:run) do
       post '/api/edugain/service_provider_exports',
-           params: { entity_id: entity_id, information_url: 'https://google.co.nz' },
+           params: { entity_id:, information_url: 'https://google.co.nz' },
            headers: { Authorization: +"Bearer #{api_subject.token}" }
     end
 

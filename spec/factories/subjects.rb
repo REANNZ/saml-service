@@ -17,7 +17,7 @@ FactoryBot.define do
 
       after(:create) do |subject, attrs|
         role = create :role
-        permission = create :permission, value: attrs.permission, role: role
+        permission = create(:permission, value: attrs.permission, role:)
         role.add_permission(permission)
         role.add_subject(subject)
       end

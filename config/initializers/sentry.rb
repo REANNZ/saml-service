@@ -7,7 +7,7 @@ Sentry.init do |config|
   config.release = Rails.application.config.saml_service[:version]
   config.logger = Logger.new(ENV.fetch('STDOUT', $stdout))
   config.logger.level = Logger::WARN
-  config.capture_exception_frame_locals = true
+  config.include_local_variables = true
 
   config.traces_sampler = lambda do |sampling_context|
     transaction_context = sampling_context[:transaction_context]

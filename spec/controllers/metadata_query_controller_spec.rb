@@ -30,6 +30,22 @@ RSpec.describe MetadataQueryController, type: :controller do
       it { is_expected.to have_http_status(:not_acceptable) }
     end
 
+    context 'with deprecated sha1 metadata_instance' do
+      let!(:metadata_instance) do
+        create :metadata_instance, hash_algorithm: 'sha1'
+      end
+
+      before do
+        request.accept = saml_content
+        query
+      end
+
+      it 'respond with not_found and has relevant MUST/SHOULD headers per specification' do
+        is_expected.to have_http_status(:not_found)
+        expect(subject.headers['Cache-Control']).to eq('max-age=600, private')
+      end
+    end
+
     context 'with invalid instance identifier' do
       let(:instance_identifier) { Faker::Lorem.word }
       let!(:metadata_instance) { nil }
@@ -116,7 +132,7 @@ RSpec.describe MetadataQueryController, type: :controller do
   let(:primary_tag) { Faker::Lorem.word }
 
   let!(:metadata_instance) do
-    create :metadata_instance, primary_tag: primary_tag
+    create :metadata_instance, primary_tag:
   end
 
   describe '#all_entities' do
@@ -124,7 +140,7 @@ RSpec.describe MetadataQueryController, type: :controller do
       context 'valid client request' do
         context 'MetadataInstance does not allow rendering all entities' do
           let!(:metadata_instance) do
-            create :metadata_instance, primary_tag: primary_tag,
+            create :metadata_instance, primary_tag:,
                                        all_entities: false
           end
 
@@ -145,7 +161,7 @@ RSpec.describe MetadataQueryController, type: :controller do
 
         context 'MetadataInstance does allow rendering all entities' do
           let!(:metadata_instance) do
-            create :metadata_instance, primary_tag: primary_tag,
+            create :metadata_instance, primary_tag:,
                                        all_entities: true
           end
           let!(:known_entities) do
@@ -482,7 +498,7 @@ RSpec.describe MetadataQueryController, type: :controller do
     RSpec.shared_examples 'EntityDescriptors from multiple sources' do
       before { request.accept = saml_content }
 
-      let(:sp) { create :basic_federation_entity, :sp, entity_source: entity_source }
+      let(:sp) { create :basic_federation_entity, :sp, entity_source: }
       let(:entity_descriptor) { sp.entity_descriptor }
       let(:entity_id) { entity_descriptor.entity_id.uri }
 
@@ -532,7 +548,7 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
 
       context 'EntityDescriptor' do
-        let(:known_entity) { create(:known_entity, :with_idp, entity_source: entity_source) }
+        let(:known_entity) { create(:known_entity, :with_idp, entity_source:) }
         let(:entity_descriptor) { known_entity.entity_descriptor }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
@@ -540,8 +556,8 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
 
       context 'RawEntityDescriptor' do
-        let(:known_entity) { create(:known_entity, entity_source: entity_source) }
-        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity: known_entity) }
+        let(:known_entity) { create(:known_entity, entity_source:) }
+        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity:) }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'
@@ -557,12 +573,12 @@ RSpec.describe MetadataQueryController, type: :controller do
         identifier = "{sha1}#{Digest::SHA1.hexdigest(entity_id)}"
         get :specific_entity_sha1, params: {
           instance: instance_identifier,
-          identifier: identifier
+          identifier:
         }
       end
 
       context 'EntityDescriptor' do
-        let(:known_entity) { create(:known_entity, :with_idp, entity_source: entity_source) }
+        let(:known_entity) { create(:known_entity, :with_idp, entity_source:) }
         let(:entity_descriptor) { known_entity.entity_descriptor }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
@@ -570,8 +586,8 @@ RSpec.describe MetadataQueryController, type: :controller do
       end
 
       context 'RawEntityDescriptor' do
-        let(:known_entity) { create(:known_entity, entity_source: entity_source) }
-        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity: known_entity) }
+        let(:known_entity) { create(:known_entity, entity_source:) }
+        let(:entity_descriptor) { create(:raw_entity_descriptor, known_entity:) }
         let(:entity_id) { entity_descriptor.entity_id.uri }
 
         include_examples 'Specific Entity Descriptor'

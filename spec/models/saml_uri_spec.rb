@@ -9,7 +9,7 @@ describe SamlURI do
 
   context 'validations' do
     context 'uri' do
-      let(:saml_uri) { build(:saml_uri, uri: uri) }
+      let(:saml_uri) { build(:saml_uri, uri:) }
       before { saml_uri.valid? }
       subject { saml_uri }
 

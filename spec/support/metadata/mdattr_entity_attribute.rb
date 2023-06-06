@@ -25,8 +25,8 @@ RSpec.shared_examples 'mdattr:EntityAttribute xml' do
 
     it 'creates the expected saml:Attribute and saml:AttributeValue' do
       refeds_attribute_path = "#{attribute_path}" \
-                              "[@Name='http://macedir.org/entity-category'" \
-                              " and @NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri']" \
+                              "[@Name='http://macedir.org/entity-category' " \
+                              "and @NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri']" \
                               '/saml:AttributeValue' \
                               "[text()='http://refeds.org/category/research-and-scholarship']"
       expect(xml).to have_xpath(refeds_attribute_path, count: 1)

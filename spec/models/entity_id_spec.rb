@@ -41,7 +41,7 @@ RSpec.describe EntityId, type: :model do
         let(:known_entity) { entity_descriptor.known_entity }
 
         subject do
-          build(:entity_id, entity_descriptor: entity_descriptor,
+          build(:entity_id, entity_descriptor:,
                             raw_entity_descriptor: nil)
         end
 
@@ -56,7 +56,7 @@ RSpec.describe EntityId, type: :model do
         let(:known_entity) { raw_entity_descriptor.known_entity }
 
         subject do
-          build(:entity_id, raw_entity_descriptor: raw_entity_descriptor,
+          build(:entity_id, raw_entity_descriptor:,
                             entity_descriptor: nil)
         end
 

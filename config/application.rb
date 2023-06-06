@@ -43,7 +43,7 @@ module Saml
         version: ENV.fetch('RELEASE_VERSION', 'OWO')
       }.deep_symbolize_keys)
 
-    config.load_defaults 6.0
+    config.load_defaults 7.0
     config.autoloader = :zeitwerk
 
     config.lograge.enabled = true

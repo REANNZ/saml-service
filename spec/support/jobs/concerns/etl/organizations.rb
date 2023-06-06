@@ -4,7 +4,7 @@ RSpec.shared_examples 'ETL::Organizations' do
   # rubocop:disable Metrics/MethodLength
   def create_json(id)
     {
-      id: id,
+      id:,
       domain: Faker::Internet.domain_name,
       display_name: Faker::Lorem.sentence,
       description: Faker::Lorem.sentence,

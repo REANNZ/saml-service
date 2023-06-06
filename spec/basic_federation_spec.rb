@@ -7,8 +7,8 @@ RSpec.describe 'BasicFederation' do
     create :basic_federation
   end
 
-  it 'creates 5 EntityDescriptor, 2 IDPSSODescriptor, 3 AttributeAuthorityDescriptor,' \
-     ' 2 SPSSODescriptor and 1 EntitySource' do
+  it 'creates 5 EntityDescriptor, 2 IDPSSODescriptor, 3 AttributeAuthorityDescriptor, ' \
+     '2 SPSSODescriptor and 1 EntitySource' do
     expect { run }.to change(EntitySource, :count).by(1).and(
       change(EntityDescriptor, :count).by(5)
     ).and(

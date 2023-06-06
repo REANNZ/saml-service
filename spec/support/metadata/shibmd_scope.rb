@@ -4,7 +4,7 @@ RSpec.shared_examples 'shibmd:Scope xml' do
   let(:shibmd_scope_path) { '/shibmd:Scope' }
   let(:node) { xml.first(:xpath, shibmd_scope_path) }
   let(:regexp) { false }
-  let(:scope) { create :shibmd_scope, regexp: regexp }
+  let(:scope) { create :shibmd_scope, regexp: }
 
   before { subject.shibmd_scope(scope) }
 

@@ -2,10 +2,10 @@
 
 require 'api_constraints'
 
-Rails.application.routes.draw do
-  SHA1_REGEXP = /{sha1}(.*)?/.freeze
-  URN_REGEXP = /(http|https|urn)(.*)?/.freeze
+SHA1_REGEXP = /{sha1}(.*)?/
+URN_REGEXP = /(http|https|urn)(.*)?/
 
+Rails.application.routes.draw do
   get 'health' => 'health#show'
 
   scope '/mdq' do

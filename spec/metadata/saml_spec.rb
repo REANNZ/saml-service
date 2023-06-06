@@ -6,7 +6,7 @@ require 'metadata/saml'
 
 RSpec.describe Metadata::Saml do
   subject do
-    Metadata::Saml.new(metadata_instance: metadata_instance)
+    Metadata::Saml.new(metadata_instance:)
   end
 
   let(:federation_identifier) { Faker::Internet.domain_word }
@@ -16,9 +16,9 @@ RSpec.describe Metadata::Saml do
   let(:hash_algorithm) { 'sha256' }
 
   let(:metadata_instance) do
-    create(:metadata_instance, hash_algorithm: hash_algorithm,
+    create(:metadata_instance, hash_algorithm:,
                                name: metadata_name,
-                               federation_identifier: federation_identifier,
+                               federation_identifier:,
                                validity_period: metadata_validity_period)
   end
 
@@ -55,15 +55,15 @@ RSpec.describe Metadata::Saml do
     context 'with functioning and non functioning EntityDescriptors' do
       before do
         idp = create(:basic_federation_entity, :idp,
-                     entity_source: entity_source)
+                     entity_source:)
         idp.entity_descriptor.enabled = false
         idp.entity_descriptor.save
 
-        sp = create(:basic_federation_entity, :sp, entity_source: entity_source)
+        sp = create(:basic_federation_entity, :sp, entity_source:)
         sp.entity_descriptor.enabled = false
         sp.entity_descriptor.save
 
-        raw_aa = create(:known_entity, entity_source: entity_source)
+        raw_aa = create(:known_entity, entity_source:)
         raw_aa.raw_entity_descriptor = create(:raw_entity_descriptor,
                                               known_entity: raw_aa,
                                               enabled: false)
@@ -81,13 +81,13 @@ RSpec.describe Metadata::Saml do
 
     context 'with the same EntityDescriptor from multiple sources' do
       let(:rank) { entity_source.rank + [1, -1].sample }
-      let(:external_entity_source) { create :entity_source, rank: rank }
+      let(:external_entity_source) { create :entity_source, rank: }
       let(:entity) { entity_source.known_entities.first }
       let(:entity_id) { entity.entity_id }
       let(:enabled) { [true, false].sample }
       let(:idp) do
         create(:basic_federation_entity, :idp,
-               entity_source: external_entity_source, enabled: enabled)
+               entity_source: external_entity_source, enabled:)
       end
       before do
         idp.entity_descriptor.entity_id.update(uri: entity_id)

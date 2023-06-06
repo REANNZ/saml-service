@@ -4,6 +4,9 @@ FROM $BASE_IMAGE as base
 COPY .FORCE_NEW_DOCKER_BUILD .FORCE_NEW_DOCKER_BUILD
 USER app
 
+# allow sha1 signatures for ruby version >= 3.1
+ENV OPENSSL_ENABLE_SHA1_SIGNATURES=1
+
 RUN mkdir -p ./public/assets \
 	sockets \
 	tmp/pids

@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe Edugain::IdentityProviderExport do
   describe '#save' do
-    subject(:save) { described_class.new(entity_id: entity_id).save }
+    subject(:save) { described_class.new(entity_id:).save }
 
     context 'with an extant entity' do
       let(:entity_descriptor) { create(:entity_descriptor, :with_idp) }
@@ -45,7 +45,7 @@ describe Edugain::IdentityProviderExport do
 
       context 'with an EntityAttribute' do
         let!(:entity_attribute) do
-          MDATTR::EntityAttribute.create(entity_descriptor: entity_descriptor)
+          MDATTR::EntityAttribute.create(entity_descriptor:)
         end
 
         it 'uses that entity attribute' do

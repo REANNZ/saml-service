@@ -6,7 +6,7 @@ describe Edugain::ServiceProviderExport do
   describe '#save' do
     subject(:save) do
       described_class.new(
-        entity_id: entity_id,
+        entity_id:,
         information_url: 'https://google.co.nz'
       ).save
     end
@@ -55,7 +55,7 @@ describe Edugain::ServiceProviderExport do
 
         context 'with an EntityAttribute' do
           let!(:entity_attribute) do
-            MDATTR::EntityAttribute.create(entity_descriptor: entity_descriptor)
+            MDATTR::EntityAttribute.create(entity_descriptor:)
           end
 
           it 'uses that entity attribute' do
@@ -78,7 +78,7 @@ describe Edugain::ServiceProviderExport do
         context 'with an InformationUrl' do
           before do
             ui_info = entity_descriptor.sp_sso_descriptors.first.ui_info
-            MDUI::InformationURL.create ui_info: ui_info, uri: 'http://zombo.com', lang: 'en'
+            MDUI::InformationURL.create ui_info:, uri: 'http://zombo.com', lang: 'en'
           end
 
           it 'leaves it alone' do

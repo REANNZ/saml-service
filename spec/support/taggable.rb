@@ -152,26 +152,26 @@ shared_examples 'a taggable model' do |tag_factory, association|
       end
 
       context "with many #{described_class.name} associated with all tags" do
-        let!(:another_instance_1) { create(klass) }
-        let!(:another_instance_2) { create(klass) }
+        let!(:another_instance_a) { create(klass) }
+        let!(:another_instance_b) { create(klass) }
 
         before do
           create(tag_factory, factory_args(tag_name, instance, association))
           create(tag_factory, factory_args(another_tag_name, instance,
                                            association))
-          create(tag_factory, factory_args(tag_name, another_instance_1,
+          create(tag_factory, factory_args(tag_name, another_instance_a,
                                            association))
-          create(tag_factory, factory_args(another_tag_name, another_instance_1,
+          create(tag_factory, factory_args(another_tag_name, another_instance_a,
                                            association))
-          create(tag_factory, factory_args(tag_name, another_instance_2,
+          create(tag_factory, factory_args(tag_name, another_instance_b,
                                            association))
-          create(tag_factory, factory_args(another_tag_name, another_instance_2,
+          create(tag_factory, factory_args(another_tag_name, another_instance_b,
                                            association))
         end
 
         it "should contain all #{described_class} instances" do
-          expect(subject).to contain_exactly(instance, another_instance_1,
-                                             another_instance_2)
+          expect(subject).to contain_exactly(instance, another_instance_a,
+                                             another_instance_b)
           expect(subject).to contain_exactly(an_instance_of(described_class),
                                              an_instance_of(described_class),
                                              an_instance_of(described_class))

@@ -56,13 +56,13 @@ module API
     def try_x509_authentication
       raise(Unauthorized, 'x509 API authentication method not provided') if x509_dn.blank?
 
-      @subject = APISubject[x509_cn: x509_cn]
+      @subject = APISubject[x509_cn:]
     end
 
     def x509_cn
       x509_dn_parsed = OpenSSL::X509::Name.parse(x509_dn)
       x509_dn_hash = x509_dn_parsed.to_a
-                                   .map { |components| components[0..1] }.to_h
+                                   .to_h { |components| components[0..1] }
 
       x509_dn_hash['CN'] || raise(Unauthorized, 'Subject CN invalid')
     rescue OpenSSL::X509::NameError
@@ -101,22 +101,22 @@ module API
     def unauthorized(exception)
       message = 'Client request failure.'
       error = exception.message
-      render json: { message: message, error: error }, status: :unauthorized
+      render json: { message:, error: }, status: :unauthorized
     end
 
     def forbidden(_exception)
       message = 'The request was understood but explicitly denied.'
-      render json: { message: message }, status: :forbidden
+      render json: { message: }, status: :forbidden
     end
 
     def resource_not_found(_exception)
       message = 'Resource not found.'
-      render json: { message: message }, status: :not_found
+      render json: { message: }, status: :not_found
     end
 
     def bad_request(_exception)
       message = 'Bad request.'
-      render json: { message: message }, status: :bad_request
+      render json: { message: }, status: :bad_request
     end
   end
 end

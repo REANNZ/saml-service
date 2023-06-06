@@ -13,28 +13,28 @@ RSpec.describe 'Routes for MetadataQueryController', type: :routing do
       .to route_to(
         controller: 'metadata_query',
         action: 'all_entities',
-        instance: instance
+        instance:
       )
     expect(get("/mdq/#{instance}/entities/#{identifier}"))
       .to route_to(
         controller: 'metadata_query',
         action: 'specific_entity',
-        instance: instance,
-        identifier: identifier
+        instance:,
+        identifier:
       )
-    uri = URI.encode("/mdq/#{instance}/entities/{sha1}#{sha1_identifier}")
+    uri = URI::Parser.new.escape("/mdq/#{instance}/entities/{sha1}#{sha1_identifier}")
     expect(get(uri))
       .to route_to(
         controller: 'metadata_query',
         action: 'specific_entity_sha1',
-        instance: instance,
+        instance:,
         identifier: "{sha1}#{sha1_identifier}"
       )
     expect(get("/mdq/#{instance}/entities/#{basic_identifier}"))
       .to route_to(
         controller: 'metadata_query',
         action: 'tagged_entities',
-        instance: instance,
+        instance:,
         identifier: basic_identifier
       )
   end
