@@ -265,12 +265,12 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
         context 'with a default' do
           let(:non_default) do
             create(:discovery_response_service,
-                   is_default: false, sp_sso_descriptor: role_descriptor)
+                   is_default: false, sp_sso_descriptor: role_descriptor, index: 0)
           end
 
           let(:default) do
             create(:discovery_response_service,
-                   is_default: true, sp_sso_descriptor: role_descriptor)
+                   is_default: true, sp_sso_descriptor: role_descriptor, index: 1)
           end
 
           let!(:discovery_response_services) do
@@ -285,7 +285,7 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
           context 'when multiple defaults exist' do
             let(:second_default) do
               create(:discovery_response_service,
-                     is_default: true, sp_sso_descriptor: role_descriptor)
+                     is_default: true, sp_sso_descriptor: role_descriptor, index: 2)
             end
 
             let!(:discovery_response_services) do
@@ -306,12 +306,12 @@ RSpec.describe API::DiscoveryEntitiesController, type: :request do
         context 'with no default' do
           let(:preferred) do
             create(:discovery_response_service,
-                   is_default: false, sp_sso_descriptor: role_descriptor)
+                   is_default: false, sp_sso_descriptor: role_descriptor, index: 0)
           end
 
           let(:non_preferred) do
             create(:discovery_response_service,
-                   is_default: false, sp_sso_descriptor: role_descriptor)
+                   is_default: false, sp_sso_descriptor: role_descriptor, index: 1)
           end
 
           let!(:discovery_response_services) do

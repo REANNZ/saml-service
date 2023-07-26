@@ -30,18 +30,22 @@ def insert_tags(json, entity)
   json.tags(tags.uniq)
 end
 
+# rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+
 def insert_discovery_response_endpoints(json, obj)
   dre =
-    obj.try(:sp_sso_descriptors).try(:first)
+    (obj.try(:sp_sso_descriptors).try(:first)
        .try(:discovery_response_services) ||
     obj.try(:discovery_response_services) ||
-    []
+    []).sort_by(&:index)
 
-  discovery_response_endpoints =
-    dre.sort_by { |e| [e.default? ? 0 : 1, e.id] }.map(&:location)
-  json.discovery_response(discovery_response_endpoints.first)
-  json.all_discovery_response_endpoints(discovery_response_endpoints)
+  default_endpoint = (dre.find(&:is_default) || dre.find do |dr|
+                        dr.is_default.nil?
+                      end || dre.first)&.location
+  json.discovery_response(default_endpoint)
+  json.all_discovery_response_endpoints(dre.map(&:location))
 end
+# rubocop:enable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
 
 def insert_single_sign_on_endpoints(json, obj)
   json.single_sign_on_endpoints do

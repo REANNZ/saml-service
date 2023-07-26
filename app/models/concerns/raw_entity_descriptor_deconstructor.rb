@@ -116,16 +116,24 @@ module RawEntityDescriptorDeconstructor
     MDUI::GeolocationHint.valid_uri?(uri)
   end
 
+  # rubocop:disable Metrics/MethodLength
+
   def extract_discovery_response_services(discovery_response_node)
     discovery_response_node.map do |ds|
       os(
         location: ds.attributes['Location'].value,
         binding: ds.attributes['Binding'].value,
-        index: ds.attributes['index'].value,
-        is_default: ds.attributes['isDefault'].try(:value)
+        index: ds.attributes['index'].value.to_i,
+        is_default: case ds.attributes['isDefault'].try(:value)
+                    when 'true'
+                      true
+                    when 'false'
+                      false
+                    end
       )
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
   def extract_single_sign_on_services(single_sign_on_services_node)
     single_sign_on_services_node.map do |sso|
