@@ -157,6 +157,28 @@ RSpec.describe RawEntityDescriptor do
         .and all(respond_to(:is_default))
     end
 
+    context 'with a "true" `isDefault` attribute' do
+      it 'returns true for `is_default`' do
+        expect(subject.discovery_response_services).to be_present
+        expect(subject.discovery_response_services)
+          .to all(have_attributes(is_default: true))
+      end
+    end
+
+    context 'with a `"false"` `isDefault` attribute' do
+      subject do
+        create(:raw_entity_descriptor_sp).tap do |red|
+          red.xml = red.xml.gsub('isDefault="true"', 'isDefault="false"')
+        end
+      end
+
+      it 'returns false for `is_default`' do
+        expect(subject.discovery_response_services).to be_present
+        expect(subject.discovery_response_services)
+          .to all(have_attributes(is_default: false))
+      end
+    end
+
     context 'with a missing `isDefault` attribute' do
       subject do
         create(:raw_entity_descriptor_sp).tap do |red|
