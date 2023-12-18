@@ -1,7 +1,7 @@
 require: rubocop-rails
 
 inherit_from:
-  - https://raw.githubusercontent.com/ausaccessfed/aaf-gumboot/develop/aaf-rubocop.yml
+  - https://raw.githubusercontent.com/ausaccessfed/aaf-gumboot/master/aaf-rubocop.yml
 AllCops:
   NewCops: enable
   Exclude:
