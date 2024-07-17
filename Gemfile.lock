@@ -292,8 +292,8 @@ GEM
       redis (>= 3.3)
       resque (>= 1.27)
       rufus-scheduler (~> 3.2, != 3.3)
-    rexml (3.2.8)
-      strscan (>= 3.0.9)
+    rexml (3.3.2)
+      strscan
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
