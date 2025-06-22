@@ -17,7 +17,7 @@ module Etl
     def create_or_update_sp(ed, ds, sp_data)
       attrs = sp_attrs(sp_data)
       sp = create_or_update_by_fr_id(ds, sp_data[:id], attrs) do |obj|
-        obj.entity_descriptor = ed
+        obj.entity_descriptor = ed unless obj.id # only when creating
         obj.organization = ed.organization
         ed.known_entity.tag_as(Tag::SP)
       end
