@@ -15,7 +15,7 @@ module Etl
     def create_or_update_aa(ed, ds, aa_data)
       attrs = aa_attrs(aa_data)
       aa = create_or_update_by_fr_id(ds, aa_data[:id], attrs) do |obj|
-        obj.entity_descriptor = ed
+        obj.entity_descriptor = ed unless obj.id # only when creating
         obj.organization = ed.organization
         add_aa_tag(ed)
       end

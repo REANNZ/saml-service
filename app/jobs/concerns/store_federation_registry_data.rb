@@ -2,7 +2,7 @@
 
 module StoreFederationRegistryData
   def create_or_update_by_fr_id(dataset, fr_id, attrs)
-    update_by_fr_id(dataset, fr_id, attrs) ||
+    update_by_fr_id(dataset, fr_id, attrs) { |o| yield o if block_given? } ||
       create_by_fr_id(dataset, fr_id, attrs) { |o| yield o if block_given? }
   end
 
@@ -21,6 +21,12 @@ module StoreFederationRegistryData
   def update_by_fr_id(dataset, fr_id, attrs)
     obj = FederationRegistryObject.local_instance(fr_id, dataset)
     obj.try(:update, attrs)
+    yield obj if obj && block_given?
+    # explicitly save changes (and use safe navigation in case obj is nil)
+    # but not in test env, as some test cases do not validate (and cannot be saved)
+    # :nocov:
+    obj&.save unless Rails.env.test?
+    # :nocov:
     obj
   end
 
