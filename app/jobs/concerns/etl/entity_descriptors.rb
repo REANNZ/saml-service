@@ -33,7 +33,7 @@ module Etl
     def create_or_update_ed_from_fr(o, ds, ed_data)
       create_or_update_by_fr_id(ds, ed_data[:id], ed_attrs(ed_data)) do |ed|
         ed.organization = o
-        ed.known_entity = known_entity(ed_data)
+        ed.known_entity = known_entity(ed_data) unless ed.id # only when creating
         ed.known_entity.tag_as(@source.source_tag)
       end
     end

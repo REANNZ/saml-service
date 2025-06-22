@@ -22,7 +22,7 @@ module Etl
     def create_or_update_idp(ed, ds, idp_data)
       attrs = idp_attrs(idp_data)
       idp = create_or_update_by_fr_id(ds, idp_data[:id], attrs) do |obj|
-        obj.entity_descriptor = ed
+        obj.entity_descriptor = ed unless obj.id # only when creating
         obj.organization = ed.organization
         ed.known_entity.tag_as(Tag::IDP)
       end
