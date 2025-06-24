@@ -20,12 +20,15 @@ module StoreFederationRegistryData
 
   def update_by_fr_id(dataset, fr_id, attrs)
     obj = FederationRegistryObject.local_instance(fr_id, dataset)
-    obj.try(:update, attrs)
+    # Avoid saving early, as validationa would fail
+    obj.try(:set, attrs)
     yield obj if obj && block_given?
     # explicitly save changes (and use safe navigation in case obj is nil)
     # but not in test env, as some test cases do not validate (and cannot be saved)
+    # however, even in test, still save if obj&.modified holds to compensate for set insted of update above
+    # TODO: fix test setup to be able to always save when running tests
     # :nocov:
-    obj&.save unless Rails.env.test?
+    obj&.save unless Rails.env.test? && !obj&.modified?
     # :nocov:
     obj
   end
