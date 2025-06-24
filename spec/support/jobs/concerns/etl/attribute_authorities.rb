@@ -266,6 +266,7 @@ RSpec.shared_examples 'ETL::AttributeAuthorities' do
         attribute_authorities_instances.map do |aa|
           json = create_aa_json(identity_provider_instances.first, aa, true)
           json[:saml][:attribute_services].each { |service| service[:functioning] = false }
+          json[:functioning] = false
           json
         end
       end
