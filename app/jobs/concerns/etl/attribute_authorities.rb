@@ -14,12 +14,16 @@ module Etl
 
     def create_or_update_aa(ed, ds, aa_data)
       attrs = aa_attrs(aa_data)
-      aa = create_or_update_by_fr_id(ds, aa_data[:id], attrs) do |obj|
+      create_or_update_by_fr_id(ds, aa_data[:id], attrs) do |obj|
         obj.entity_descriptor = ed unless obj.id # only when creating
         obj.organization = ed.organization
         add_aa_tag(ed)
+        # WORKAROUND: delayed save won't work for creating relationships
+        # For newly created objects, save them early now to get an ID created
+        # BUT do not save always, as some validations need the objects created below to pass.
+        obj.save if obj.new?
+        aa_saml_core(obj, aa_data)
       end
-      aa_saml_core(aa, aa_data)
     end
 
     def aa_attrs(aa_data)
