@@ -15,7 +15,7 @@ class AttributeAuthorityDescriptor < RoleDescriptor
 
   def validate
     super
-    validates_presence :attribute_services, allow_missing: new?
+    validates_presence :attribute_services, allow_missing: new? || !enabled
   end
 
   def assertion_id_request_services?
